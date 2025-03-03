@@ -5,7 +5,7 @@ include .launchpad/Makefile.header # see .launchpad/Makefile.documentation
 #-----------------------------------------------------------------------------------------------------------------------
 
 autorun : $(LP_PREREQUISITE_BUNDLE)  # $(LP_PREREQUISITE_TSC)
-	fd | $(call lp.run, build/bundler/filter-paths.js)
+	fd | $(call lp.run, build/bundler/filter-paths.js) --help
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Bundling
