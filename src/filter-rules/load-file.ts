@@ -3,7 +3,7 @@ import { dirname, isAbsolute, join, normalize, resolve } from "node:path";
 import { CommandLineParameters } from "../cli/command-line-parameters.js";
 import { fail } from "../utils/fail.js";
 import { parseRules } from "./parse-rules.js";
-import { ImportFileRule, Rule, RuleSource, RuleType } from "./rule-types.js";
+import { Rule, RuleSource, RuleType } from "./rule-types.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Load and parse given file
@@ -13,8 +13,8 @@ export function loadFile(commandLineParameters: CommandLineParameters, file: str
 export function loadFile(commandLineParameters: CommandLineParameters, file: string): ReadonlyArray<Rule>;
 export function loadFile(commandLineParameters: CommandLineParameters, file: string, parent?: Rule) {
     file = resolvePath(parent, file);
-    assertNoCyclicImports(parent);
     assertFileExists(file, parent);
+    assertNoCyclicImports(parent, file);
     const lines = loadLines(parent?.source, file);
     return parseRules(commandLineParameters, parent, lines);
 }
@@ -23,23 +23,31 @@ export function loadFile(commandLineParameters: CommandLineParameters, file: str
 // Verify that files don't include one another recursively
 //----------------------------------------------------------------------------------------------------------------------
 
-function assertNoCyclicImports(parent: Rule | undefined) {
-    for (let current = parent; current; current = current.parent) {
-        if (current.type === RuleType.IMPORT_FILE) {
-            assertNoCyclicImportsForInnerParent(current);
+function assertNoCyclicImports(parent: Rule | undefined, file: string) {
+    for (let current: Rule | undefined = parent; current; current = current.parent) {
+        if (current.source?.file && resolve(current.source.file) === resolve(file)) {
+            const message = `Detected cyclic inclusion of ${file}`;
+            const stack = getImportStack(parent).map((line, index) => `${"".padEnd(index * 2)}${line}`);
+            const combined = !stack.length ? [message] : [`${message}:`, "", ...stack];
+            fail(combined.join("\n"));
         }
     }
 }
 
-function assertNoCyclicImportsForInnerParent(child: ImportFileRule) {
-    for (let parent = child.parent; parent; parent = parent.parent) {
-        if (parent.type === RuleType.IMPORT_FILE && resolve(child.file) === resolve(parent.file)) {
-            const context = [parent.source, child.source].flatMap(source =>
-                source ? [source.file, `${source.lineNumber}: ${source.line.trim()}`] : []
-            );
-            fail(["Detected cyclic/recursive include directives:", ...context].join("\n"));
+function getImportStack(parent: Rule | undefined) {
+    const stack = new Array<string>();
+    for (let current: Rule | undefined = parent; current; current = current.parent) {
+        if (!current.parent) {
+            if (current.type === RuleType.IMPORT_FILE) {
+                stack.push(current.file);
+            } else if (current.source) {
+                stack.push(current.source.file.trim());
+            }
+        } else if (current.type === RuleType.IMPORT_FILE) {
+            stack.push(current.source ? current.source.line.trim() : current.file);
         }
     }
+    return stack.reverse();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
