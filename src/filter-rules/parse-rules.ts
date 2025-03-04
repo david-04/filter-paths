@@ -1,6 +1,8 @@
+import { normalize, resolve } from "path";
 import { CommandLineParameters } from "../cli/command-line-parameters.js";
+import { fail } from "../utils/fail.js";
 import { parseRule } from "./parse-rule.js";
-import { ParentRule, Rule, RuleSource } from "./rule-types.js";
+import { ParentRule, Rule, RuleSource, RuleType } from "./rule-types.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Parse all rules loaded from one file
@@ -13,7 +15,8 @@ export function parseRules(
 ): ReadonlyArray<Rule> {
     const result = new Array<Rule>();
     for (const rule of rules) {
-        const localParent = findLocalParent(result, rule.indentation);
+        const localParent = findLocalParent(result, rule);
+        assertNoNestingUnderImportRule(globalParent ?? localParent, rule);
         if (localParent) {
             parseRule(commandLineParameters, localParent, rule);
         } else {
@@ -27,21 +30,28 @@ export function parseRules(
 // Determine under which parent rule the given indentation sits
 //----------------------------------------------------------------------------------------------------------------------
 
-function findLocalParent(rules: ReadonlyArray<Rule>, indentation: number) {
-    const expandedRules = expandLastNestedChild(rules);
+function findLocalParent(parents: ReadonlyArray<Rule>, rule: RuleSource) {
+    const expandedRules = expandLastNestedChild(parents);
     for (let index = expandedRules.length - 1; 0 <= index; index--) {
-        const rule = expandedRules[index];
-        if (!rule) {
+        const parent = expandedRules[index];
+        if (!parent) {
             return undefined;
         }
-        const ruleIndentation = rule.source?.indentation ?? 0;
-        if (indentation === ruleIndentation) {
-            return rule.parent;
-        } else if (ruleIndentation < indentation) {
-            return rule;
+        if (isApplicableParent(parent, rule)) {
+            const ruleIndentation = parent.source?.indentation ?? 0;
+            if (rule.indentation === ruleIndentation) {
+                return parent.parent;
+            } else if (ruleIndentation < rule.indentation) {
+                return parent;
+            }
         }
     }
     return undefined;
+}
+
+function isApplicableParent(parent: Rule, rule: RuleSource) {
+    const parentSourceFile = parent.source?.file;
+    return undefined !== parentSourceFile && parentSourceFile === rule.file;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -54,4 +64,20 @@ function expandLastNestedChild(rules: ReadonlyArray<Rule>) {
         expandedRules.push(rule);
     }
     return expandedRules;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+// Verify that no rule is nested under an "import" rule
+//----------------------------------------------------------------------------------------------------------------------
+
+function assertNoNestingUnderImportRule(parent: ParentRule, rule: RuleSource) {
+    const ruleFile = normalize(resolve(rule.file));
+    for (let currentParent = parent; currentParent; currentParent = currentParent.parent) {
+        if (currentParent.type === RuleType.IMPORT_FILE) {
+            const currentParentSource = currentParent.source;
+            if (currentParentSource && ruleFile === normalize(resolve(currentParentSource.file))) {
+                fail(rule, 'Filter rules must not be nested as a child below an "import" rule.');
+            }
+        }
+    }
 }
