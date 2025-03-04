@@ -1,8 +1,8 @@
 import { normalize, resolve } from "path";
-import { CommandLineParameters } from "../cli/command-line-parameters.js";
-import { fail } from "../utils/fail.js";
+import { CommandLineParameters } from "../../cli/command-line-parameters.js";
+import { fail } from "../../utils/fail.js";
+import { ParentRule, Rule, RuleSource, RuleType } from "../types/rule-types.js";
 import { parseRule } from "./parse-rule.js";
-import { ParentRule, Rule, RuleSource, RuleType } from "./rule-types.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Parse all rules loaded from one file

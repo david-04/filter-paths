@@ -1,7 +1,7 @@
 import picomatch from "picomatch";
-import { CommandLineParameters } from "../cli/command-line-parameters.js";
-import { fail } from "../utils/fail.js";
-import { GlobRule, ParentRule, RuleBase, RuleSource } from "./rule-types.js";
+import { CommandLineParameters } from "../../cli/command-line-parameters.js";
+import { fail } from "../../utils/fail.js";
+import { GlobRule, ParentRule, RuleBase, RuleSource } from "../types/rule-types.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Create the "glob" part of a rule

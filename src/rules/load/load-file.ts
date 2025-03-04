@@ -1,9 +1,9 @@
 import { existsSync, readFileSync, statSync } from "node:fs";
 import { dirname, isAbsolute, join, normalize, resolve } from "node:path";
-import { CommandLineParameters } from "../cli/command-line-parameters.js";
-import { fail } from "../utils/fail.js";
-import { parseRules } from "./parse-rules.js";
-import { Rule, RuleSource, RuleType } from "./rule-types.js";
+import { CommandLineParameters } from "../../cli/command-line-parameters.js";
+import { fail } from "../../utils/fail.js";
+import { parseRules } from "../parse/parse-rules.js";
+import { Rule, RuleSource, RuleType } from "../types/rule-types.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Load and parse given file

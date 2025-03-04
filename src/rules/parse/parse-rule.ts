@@ -1,8 +1,8 @@
-import { CommandLineParameters } from "../cli/command-line-parameters.js";
-import { fail } from "../utils/fail.js";
+import { CommandLineParameters } from "../../cli/command-line-parameters.js";
+import { fail } from "../../utils/fail.js";
+import { parseExcludePathRule, parseIncludePathRule } from "../parse/parse-include-or-exclude-path-rule.js";
+import { ParentRule, RuleSource } from "../types/rule-types.js";
 import { parseImportFileRule } from "./parse-import-file-rule.js";
-import { parseExcludePathRule, parseIncludePathRule } from "./parse-include-or-exclude-path-rule.js";
-import { ParentRule, RuleSource } from "./rule-types.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Parsers

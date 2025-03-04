@@ -1,6 +1,6 @@
-import { CommandLineParameters } from "../cli/command-line-parameters.js";
+import { CommandLineParameters } from "../../cli/command-line-parameters.js";
+import { ImportFileRule, Rule, Ruleset, RuleType } from "../types/rule-types.js";
 import { loadFile } from "./load-file.js";
-import { ImportFileRule, Rule, Ruleset, RuleType } from "./rule-types.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Load the whole ruleset

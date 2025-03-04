@@ -1,8 +1,8 @@
-import { RuleSource } from "../filter-rules/rule-types.js";
-
 //----------------------------------------------------------------------------------------------------------------------
 // Error with a readable message (that does not require printing a stack trace)
 //----------------------------------------------------------------------------------------------------------------------
+
+import { RuleSource } from "../rules/types/rule-types.js";
 
 export class DescriptiveError extends Error {}
 

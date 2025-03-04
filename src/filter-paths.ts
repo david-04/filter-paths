@@ -1,7 +1,7 @@
 import { exit } from "node:process";
 import { Config } from "./cli/config.js";
 import { parseCommandLineParameters } from "./cli/parse-command-line-parameters.js";
-import { loadRuleset } from "./filter-rules/load-ruleset.js";
+import { loadRuleset } from "./rules/load/load-ruleset.js";
 import { DescriptiveError } from "./utils/fail.js";
 
 try {

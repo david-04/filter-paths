@@ -1,6 +1,6 @@
-import { CommandLineParameters } from "../cli/command-line-parameters.js";
-import { loadFile } from "./load-file.js";
-import { ImportFileRule, ParentRule, RuleSource, RuleType } from "./rule-types.js";
+import { CommandLineParameters } from "../../cli/command-line-parameters.js";
+import { loadFile } from "../load/load-file.js";
+import { ImportFileRule, ParentRule, RuleSource, RuleType } from "../types/rule-types.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Parse an "include path" rule

@@ -1,6 +1,6 @@
-import { CommandLineParameters } from "../cli/command-line-parameters.js";
-import { createGlob } from "./create-glob.js";
-import { ExcludePathRule, IncludePathRule, ParentRule, RuleSource, RuleType } from "./rule-types.js";
+import { CommandLineParameters } from "../../cli/command-line-parameters.js";
+import { createGlob } from "../helpers/create-glob.js";
+import { ExcludePathRule, IncludePathRule, ParentRule, RuleSource, RuleType } from "../types/rule-types.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Parse an "include path" rule
