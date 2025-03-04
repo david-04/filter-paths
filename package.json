@@ -1,6 +1,8 @@
 {
     "dependencies": {
-        "@types/node": "^22.13.9"
+        "@types/node": "^22.13.9",
+        "@types/picomatch": "^3.0.2",
+        "picomatch": "^4.0.2"
     },
     "name": "find-and-filter-files",
     "version": "0.0.0",

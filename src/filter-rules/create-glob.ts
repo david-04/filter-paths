@@ -1,3 +1,4 @@
+import picomatch from "picomatch";
 import { CommandLineParameters } from "../cli/command-line-parameters.js";
 import { fail } from "../utils/fail.js";
 import { GlobRule, ParentRule, RuleBase, RuleSource } from "./rule-types.js";
@@ -15,8 +16,8 @@ export function createGlob(
     const raw = data.trim();
     assertGlobIsValid(source, raw);
     const withAtDirectory = concatenateGlobs(parent?.atDirectory, raw);
-    const regexp = createRegularExpression(commandLineParameters, withAtDirectory);
-    return { glob: { raw, withAtDirectory }, regexp };
+    const matcher = createMatcher(commandLineParameters, withAtDirectory);
+    return { glob: { raw, withAtDirectory }, matcher };
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -41,9 +42,9 @@ function concatenateGlobs(atDirectory: string | undefined, glob: string) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-// Create the regular expression
+// Create a matcher
 //----------------------------------------------------------------------------------------------------------------------
 
-function createRegularExpression(_commandLineParameters: CommandLineParameters, _glob: string) {
-    return /regexp/;
+function createMatcher(commandLineParameters: CommandLineParameters, glob: string) {
+    return picomatch(glob, { nocase: !commandLineParameters.caseSensitive });
 }

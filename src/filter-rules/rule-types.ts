@@ -35,7 +35,7 @@ export type GlobRule = RuleBase & {
         readonly raw: string;
         readonly withAtDirectory: string;
     };
-    readonly regexp: RegExp;
+    readonly matcher: (path: string) => boolean;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
