@@ -1,13 +1,13 @@
-import { CommandLineParameters } from "../../cli/command-line-parameters.js";
-import { ImportFileRule, Rule, Ruleset, RuleType } from "../types/rule-types.js";
+import { Parameters } from "../../types/parameters.js";
+import { ImportFileRule, Rule, Ruleset, RuleType } from "../../types/rule-types.js";
 import { loadFile } from "./load-file.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Load the whole ruleset
 //----------------------------------------------------------------------------------------------------------------------
 
-export function loadRuleset(commandLineParameters: CommandLineParameters): Ruleset {
-    const rules = loadRulesFromAllFiles(commandLineParameters);
+export function loadRuleset(parameters: Parameters): Ruleset {
+    const rules = loadRulesFromAllFiles(parameters);
     const finalDefaultAction = validateRulesAndGetFinalDefaultAction(rules);
     const type = RuleType.RULESET;
     return { finalDefaultAction, rules, type };
@@ -17,12 +17,12 @@ export function loadRuleset(commandLineParameters: CommandLineParameters): Rules
 // Load the rules from one file
 //----------------------------------------------------------------------------------------------------------------------
 
-function loadRulesFromAllFiles(commandLineParameters: CommandLineParameters) {
-    const files = commandLineParameters.filterRuleFiles;
+function loadRulesFromAllFiles(parameters: Parameters) {
+    const files = parameters.files;
     if (1 < files.length) {
-        return files.map(file => loadFileAsImportFileRule(commandLineParameters, file));
+        return files.map(file => loadFileAsImportFileRule(parameters, file));
     } else {
-        return files.flatMap(file => loadFileAsAsRuleArray(commandLineParameters, file));
+        return files.flatMap(file => loadFileAsAsRuleArray(parameters, file));
     }
 }
 
@@ -30,7 +30,7 @@ function loadRulesFromAllFiles(commandLineParameters: CommandLineParameters) {
 // Load the rules from one file wrapped into an "import file" rule
 //----------------------------------------------------------------------------------------------------------------------
 
-function loadFileAsImportFileRule(commandLineParameters: CommandLineParameters, file: string) {
+function loadFileAsImportFileRule(parameters: Parameters, file: string) {
     const rule: ImportFileRule = {
         atDirectory: undefined,
         children: [],
@@ -39,7 +39,7 @@ function loadFileAsImportFileRule(commandLineParameters: CommandLineParameters, 
         source: undefined,
         type: RuleType.IMPORT_FILE,
     };
-    loadFile(commandLineParameters, file, rule);
+    loadFile(parameters, file, rule);
     return rule;
 }
 
@@ -47,8 +47,8 @@ function loadFileAsImportFileRule(commandLineParameters: CommandLineParameters, 
 // Load the rules from one file as a flat array of top-level rules
 //----------------------------------------------------------------------------------------------------------------------
 
-function loadFileAsAsRuleArray(commandLineParameters: CommandLineParameters, file: string) {
-    return loadFile(commandLineParameters, file);
+function loadFileAsAsRuleArray(parameters: Parameters, file: string) {
+    return loadFile(parameters, file);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

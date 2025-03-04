@@ -1,7 +1,7 @@
 import { normalize, resolve } from "path";
-import { CommandLineParameters } from "../../cli/command-line-parameters.js";
+import { Parameters } from "../../types/parameters.js";
+import { ParentRule, Rule, RuleSource, RuleType } from "../../types/rule-types.js";
 import { fail } from "../../utils/fail.js";
-import { ParentRule, Rule, RuleSource, RuleType } from "../types/rule-types.js";
 import { parseRule } from "./parse-rule.js";
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -9,7 +9,7 @@ import { parseRule } from "./parse-rule.js";
 //----------------------------------------------------------------------------------------------------------------------
 
 export function parseRules(
-    commandLineParameters: CommandLineParameters,
+    parameters: Parameters,
     globalParent: ParentRule,
     rules: ReadonlyArray<RuleSource>
 ): ReadonlyArray<Rule> {
@@ -18,9 +18,9 @@ export function parseRules(
         const localParent = findLocalParent(result, rule);
         assertNoNestingUnderImportRule(globalParent ?? localParent, rule);
         if (localParent) {
-            parseRule(commandLineParameters, localParent, rule);
+            parseRule(parameters, localParent, rule);
         } else {
-            result.push(parseRule(commandLineParameters, globalParent, rule));
+            result.push(parseRule(parameters, globalParent, rule));
         }
     }
     return result;

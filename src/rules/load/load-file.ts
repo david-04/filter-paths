@@ -1,22 +1,22 @@
 import { existsSync, readFileSync, statSync } from "node:fs";
 import { dirname, isAbsolute, join, normalize, resolve } from "node:path";
-import { CommandLineParameters } from "../../cli/command-line-parameters.js";
+import { Parameters } from "../../types/parameters.js";
+import { Rule, RuleSource, RuleType } from "../../types/rule-types.js";
 import { fail } from "../../utils/fail.js";
 import { parseRules } from "../parse/parse-rules.js";
-import { Rule, RuleSource, RuleType } from "../types/rule-types.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Load and parse given file
 //----------------------------------------------------------------------------------------------------------------------
 
-export function loadFile(commandLineParameters: CommandLineParameters, file: string, parent: Rule): void;
-export function loadFile(commandLineParameters: CommandLineParameters, file: string): ReadonlyArray<Rule>;
-export function loadFile(commandLineParameters: CommandLineParameters, file: string, parent?: Rule) {
+export function loadFile(parameters: Parameters, file: string, parent: Rule): void;
+export function loadFile(parameters: Parameters, file: string): ReadonlyArray<Rule>;
+export function loadFile(parameters: Parameters, file: string, parent?: Rule) {
     file = resolvePath(parent, file);
     assertFileExists(file, parent);
     assertNoCyclicImports(parent, file);
     const lines = loadLines(parent?.source, file);
-    return parseRules(commandLineParameters, parent, lines);
+    return parseRules(parameters, parent, lines);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

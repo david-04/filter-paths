@@ -2,7 +2,7 @@
 // Error with a readable message (that does not require printing a stack trace)
 //----------------------------------------------------------------------------------------------------------------------
 
-import { RuleSource } from "../rules/types/rule-types.js";
+import { RuleSource } from "../types/rule-types.js";
 
 export class DescriptiveError extends Error {}
 

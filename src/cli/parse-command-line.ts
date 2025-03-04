@@ -1,8 +1,8 @@
 import { exit } from "node:process";
+import { Parameters } from "../types/parameters.js";
 import { fail } from "../utils/fail.js";
-import { CommandLineParameters } from "./command-line-parameters.js";
 
-const FILTER_PATHS = "filter-paths";
+const APP_NAME = "filter-paths";
 const VERSION = "0.0.0";
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -11,9 +11,9 @@ const VERSION = "0.0.0";
 
 const USAGE = `
 
-${FILTER_PATHS} ${VERSION} - Filter file paths based on glob rules
+Filter file paths based on glob rules
 
-Usage: ${FILTER_PATHS} [OPTIONS] [--] [FILTER_RULE_FILES...]
+Usage: ${APP_NAME} [OPTIONS] [--] [FILTER_RULE_FILES...]
 
 [OPTIONS]
 
@@ -27,12 +27,12 @@ Usage: ${FILTER_PATHS} [OPTIONS] [--] [FILTER_RULE_FILES...]
 // Parse all command line arguments
 //----------------------------------------------------------------------------------------------------------------------
 
-export function parseCommandLineParameters(args: ReadonlyArray<string>): CommandLineParameters {
+export function parseCommandLine(args: ReadonlyArray<string>): Parameters {
     handleHelpOption(args);
     handleVersionOption(args);
-    const commandLineParameters = parseArgs(args);
-    assertHasFilterRuleFiles(commandLineParameters.filterRuleFiles);
-    return commandLineParameters;
+    const parameters = parseArgs(args);
+    assertHasFilterRuleFiles(parameters.files);
+    return parameters;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -61,33 +61,33 @@ function handleVersionOption(args: ReadonlyArray<string>) {
 // Parse the remaining command line arguments
 //----------------------------------------------------------------------------------------------------------------------
 
-function parseArgs(args: ReadonlyArray<string>) {
-    const config = { caseSensitive: false, filterRuleFiles: new Array<string>(), normalizePaths: true };
+function parseArgs(args: ReadonlyArray<string>): Parameters {
+    const parameters = { caseSensitive: false, files: new Array<string>(), normalizePaths: true };
     let acceptOptions = true;
 
     for (const arg of args.map(arg => arg.trim()).filter(arg => arg)) {
         if (!acceptOptions) {
-            config.filterRuleFiles.push(arg);
+            parameters.files.push(arg);
         } else if (arg === "--") {
             acceptOptions = false;
         } else if (["-c", "--case-sensitive"].includes(arg)) {
-            config.caseSensitive = true;
+            parameters.caseSensitive = true;
         } else if (arg.startsWith("-")) {
-            fail(`Unknown option: ${arg}. Try ${FILTER_PATHS} --help`);
+            fail(`Unknown option: ${arg}. Try ${APP_NAME} --help`);
         } else {
-            config.filterRuleFiles.push(arg);
+            parameters.files.push(arg);
         }
     }
 
-    return config;
+    return parameters;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 // Verify that all specified files exist
 //----------------------------------------------------------------------------------------------------------------------
 
-function assertHasFilterRuleFiles(filterRuleFiles: ReadonlyArray<string>) {
-    if (filterRuleFiles.length === 0) {
-        fail(`No filter rule files have been specified. Try ${FILTER_PATHS} --help`);
+function assertHasFilterRuleFiles(files: ReadonlyArray<string>) {
+    if (files.length === 0) {
+        fail(`No filter rule files have been specified. Try ${APP_NAME} --help`);
     }
 }

@@ -1,13 +1,13 @@
-import { CommandLineParameters } from "../../cli/command-line-parameters.js";
+import { Parameters } from "../../types/parameters.js";
+import { ImportFileRule, ParentRule, RuleSource, RuleType } from "../../types/rule-types.js";
 import { loadFile } from "../load/load-file.js";
-import { ImportFileRule, ParentRule, RuleSource, RuleType } from "../types/rule-types.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Parse an "include path" rule
 //----------------------------------------------------------------------------------------------------------------------
 
 export function parseImportFileRule(
-    commandLineParameters: CommandLineParameters,
+    parameters: Parameters,
     parent: ParentRule,
     source: RuleSource,
     _operator: string,
@@ -22,6 +22,6 @@ export function parseImportFileRule(
         source,
         type: RuleType.IMPORT_FILE,
     };
-    loadFile(commandLineParameters, file, rule);
+    loadFile(parameters, file, rule);
     return rule;
 }

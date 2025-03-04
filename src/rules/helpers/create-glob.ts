@@ -1,14 +1,14 @@
 import picomatch from "picomatch";
-import { CommandLineParameters } from "../../cli/command-line-parameters.js";
+import { Parameters } from "../../types/parameters.js";
+import { GlobRule, ParentRule, RuleBase, RuleSource } from "../../types/rule-types.js";
 import { fail } from "../../utils/fail.js";
-import { GlobRule, ParentRule, RuleBase, RuleSource } from "../types/rule-types.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Create the "glob" part of a rule
 //----------------------------------------------------------------------------------------------------------------------
 
 export function createGlob(
-    commandLineParameters: CommandLineParameters,
+    parameters: Parameters,
     parent: ParentRule,
     source: RuleSource,
     data: string
@@ -16,7 +16,7 @@ export function createGlob(
     const raw = data.trim();
     assertGlobIsValid(source, raw);
     const withAtDirectory = concatenateGlobs(parent?.atDirectory, raw);
-    const matcher = createMatcher(commandLineParameters, withAtDirectory);
+    const matcher = createMatcher(parameters, withAtDirectory);
     return { glob: { raw, withAtDirectory }, matcher };
 }
 
@@ -45,6 +45,6 @@ function concatenateGlobs(atDirectory: string | undefined, glob: string) {
 // Create a matcher
 //----------------------------------------------------------------------------------------------------------------------
 
-function createMatcher(commandLineParameters: CommandLineParameters, glob: string) {
-    return picomatch(glob, { nocase: !commandLineParameters.caseSensitive });
+function createMatcher(parameters: Parameters, glob: string) {
+    return picomatch(glob, { nocase: !parameters.caseSensitive });
 }

@@ -1,13 +1,13 @@
-import { CommandLineParameters } from "../../cli/command-line-parameters.js";
+import { Parameters } from "../../types/parameters.js";
+import { ExcludePathRule, IncludePathRule, ParentRule, RuleSource, RuleType } from "../../types/rule-types.js";
 import { createGlob } from "../helpers/create-glob.js";
-import { ExcludePathRule, IncludePathRule, ParentRule, RuleSource, RuleType } from "../types/rule-types.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Parse an "include path" rule
 //----------------------------------------------------------------------------------------------------------------------
 
 export function parseIncludePathRule(
-    commandLineParameters: CommandLineParameters,
+    parameters: Parameters,
     parent: ParentRule,
     source: RuleSource,
     _operator: string,
@@ -19,7 +19,7 @@ export function parseIncludePathRule(
         parent,
         source,
         type: RuleType.INCLUDE_PATH,
-        ...createGlob(commandLineParameters, parent, source, data),
+        ...createGlob(parameters, parent, source, data),
     };
 }
 
@@ -28,7 +28,7 @@ export function parseIncludePathRule(
 //----------------------------------------------------------------------------------------------------------------------
 
 export function parseExcludePathRule(
-    commandLineParameters: CommandLineParameters,
+    parameters: Parameters,
     parent: ParentRule,
     source: RuleSource,
     _operator: string,
@@ -40,6 +40,6 @@ export function parseExcludePathRule(
         parent,
         source,
         type: RuleType.EXCLUDE_PATH,
-        ...createGlob(commandLineParameters, parent, source, data),
+        ...createGlob(parameters, parent, source, data),
     };
 }

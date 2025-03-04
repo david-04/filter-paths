@@ -1,12 +1,12 @@
 import { exit } from "node:process";
-import { Config } from "./cli/config.js";
-import { parseCommandLineParameters } from "./cli/parse-command-line-parameters.js";
+import { parseCommandLine } from "./cli/parse-command-line.js";
 import { loadRuleset } from "./rules/load/load-ruleset.js";
+import { Config } from "./types/config.js";
 import { DescriptiveError } from "./utils/fail.js";
 
 try {
-    const commandLineParameters = parseCommandLineParameters(process.argv.slice(2));
-    const config: Config = { ...commandLineParameters, ruleset: loadRuleset(commandLineParameters) };
+    const parameters = parseCommandLine(process.argv.slice(2));
+    const config: Config = { ...parameters, ruleset: loadRuleset(parameters) };
     console.log(config);
 } catch (error) {
     if (error instanceof DescriptiveError) {
