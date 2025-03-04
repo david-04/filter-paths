@@ -1,5 +1,4 @@
-export type Config = {
-    readonly filterRuleFiles: ReadonlyArray<string>;
-    readonly caseSensitive: boolean;
-    readonly normalizePaths: boolean;
-};
+import { Ruleset } from "../filter-rules/rule-types.js";
+import { CommandLineParameters } from "./command-line-parameters.js";
+
+export type Config = CommandLineParameters & { readonly ruleset: Ruleset };

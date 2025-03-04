@@ -1,6 +1,6 @@
 import { exit } from "node:process";
 import { fail } from "../utils/fail.js";
-import { Config } from "./config.js";
+import { CommandLineParameters } from "./command-line-parameters.js";
 
 const FILTER_PATHS = "filter-paths";
 const VERSION = "0.0.0";
@@ -27,12 +27,12 @@ Usage: ${FILTER_PATHS} [OPTIONS] [--] [FILTER_RULE_FILES...]
 // Parse all command line arguments
 //----------------------------------------------------------------------------------------------------------------------
 
-export function parseCommandLine(args: ReadonlyArray<string>): Config {
+export function parseCommandLineParameters(args: ReadonlyArray<string>): CommandLineParameters {
     handleHelpOption(args);
     handleVersionOption(args);
-    const config = parseArgs(args);
-    assertHasFilterRuleFiles(config);
-    return config;
+    const commandLineParameters = parseArgs(args);
+    assertHasFilterRuleFiles(commandLineParameters.filterRuleFiles);
+    return commandLineParameters;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -86,8 +86,8 @@ function parseArgs(args: ReadonlyArray<string>) {
 // Verify that all specified files exist
 //----------------------------------------------------------------------------------------------------------------------
 
-function assertHasFilterRuleFiles(config: Config) {
-    if (config.filterRuleFiles.length === 0) {
+function assertHasFilterRuleFiles(filterRuleFiles: ReadonlyArray<string>) {
+    if (filterRuleFiles.length === 0) {
         fail(`No filter rule files have been specified. Try ${FILTER_PATHS} --help`);
     }
 }
