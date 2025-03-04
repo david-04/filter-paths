@@ -48,7 +48,7 @@ export type AtDirectoryRule = GlobRule & {
 };
 export type BreakRule = GlobRule & { readonly type: RuleType.BREAK; readonly parentToExit: Rule };
 export type ExcludePathRule = GlobRule & { readonly type: RuleType.EXCLUDE_PATH };
-export type ImportFileRule = RuleBase & { readonly file: string };
+export type ImportFileRule = RuleBase & { readonly file: string; type: RuleType.IMPORT_FILE };
 export type IncludePathRule = GlobRule & { readonly type: RuleType.INCLUDE_PATH };
 
 export type Rule = AtDirectoryRule | BreakRule | ExcludePathRule | ImportFileRule | IncludePathRule;

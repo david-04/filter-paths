@@ -8,7 +8,6 @@ try {
     const commandLineParameters = parseCommandLineParameters(process.argv.slice(2));
     const config: Config = { ...commandLineParameters, ruleset: loadRuleset(commandLineParameters) };
     console.log(config);
-    console.log(config.ruleset);
 } catch (error) {
     if (error instanceof DescriptiveError) {
         const message = error.message.replace(/^[a-z]*error:\s*/i, "");

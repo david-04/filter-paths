@@ -1,8 +1,9 @@
 import { existsSync, readFileSync, statSync } from "node:fs";
+import { dirname, isAbsolute, join, normalize } from "node:path";
 import { CommandLineParameters } from "../cli/command-line-parameters.js";
 import { fail } from "../utils/fail.js";
 import { parseRules } from "./parse-rules.js";
-import { Rule, RuleSource } from "./rule-types.js";
+import { Rule, RuleSource, RuleType } from "./rule-types.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Load and parse given file
@@ -11,9 +12,49 @@ import { Rule, RuleSource } from "./rule-types.js";
 export function loadFile(commandLineParameters: CommandLineParameters, file: string, parent: Rule): void;
 export function loadFile(commandLineParameters: CommandLineParameters, file: string): ReadonlyArray<Rule>;
 export function loadFile(commandLineParameters: CommandLineParameters, file: string, parent?: Rule) {
+    file = resolvePath(parent, file);
     assertFileExists(file, parent);
     const lines = loadLines(parent?.source, file);
     return parseRules(commandLineParameters, parent, lines);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+// Resole the path
+//----------------------------------------------------------------------------------------------------------------------
+
+function resolvePath(parent: Rule | undefined, path: string) {
+    path = normalizePath(expandEnvironmentVariables(path));
+    if (isAbsolute(path)) {
+        return path;
+    }
+    const parentPath = parent?.type === RuleType.IMPORT_FILE ? normalize(dirname(parent.file)) : undefined;
+    if (parentPath) {
+        return normalize(join(parentPath, path));
+    }
+    return path;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+// Resolve environment variables
+//----------------------------------------------------------------------------------------------------------------------
+
+export function expandEnvironmentVariables(path: string) {
+    return path.replace(/\${([^}]+)}/g, placeholder => {
+        const name = placeholder.replace(/^\$\{/, "").replace(/\}$/, "").trim();
+        if (!name) {
+            return fail(`Missing environment variable name in path: ${path}`);
+        } else {
+            return process.env[name] ?? fail(`Environment variable ${placeholder} is not set`);
+        }
+    });
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+// Normalize a path
+//----------------------------------------------------------------------------------------------------------------------
+
+export function normalizePath(path: string) {
+    return normalize(path).replaceAll("\\", "/");
 }
 
 //----------------------------------------------------------------------------------------------------------------------
