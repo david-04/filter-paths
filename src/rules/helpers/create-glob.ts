@@ -1,41 +1,32 @@
 import picomatch from "picomatch";
 import { Parameters } from "../../types/parameters.js";
-import { RuleSource } from "../../types/rule-source.js";
-import { Rule } from "../../types/rules.js";
-import { assertGlobIsValid } from "../validate/valid-glob.js";
 
 //----------------------------------------------------------------------------------------------------------------------
-// Create the "glob" part of a rule
+// Normalize a glob and merge it with a parent (at-directory)
 //----------------------------------------------------------------------------------------------------------------------
 
-export function createGlob(
-    parameters: Parameters,
-    parent: Rule.Parent,
-    rule: RuleSource.File,
-    glob: string
-): Rule.Internal.Glob {
-    const original = glob.trim();
-    assertGlobIsValid(rule, original);
-    const atDirectory = "atDirectory" in parent ? parent.atDirectory : undefined;
-    const effective = atDirectory?.effective.trim() ? getEffectiveGlob(atDirectory.effective, original) : original;
-    const matches = getMatcher(parameters, effective);
-    return { glob: { original, effective }, matches };
+export function getEffectiveGlob(parentGlob: string | undefined, glob: string) {
+    const childGlob = normalizeGlob(glob);
+    if (parentGlob) {
+        const separator = parentGlob.endsWith("/") || childGlob.startsWith("/") ? "" : "/";
+        return `${parentGlob}${separator}${childGlob}`;
+    } else {
+        return childGlob;
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-// Concatenate the glob with the parent's "at directory"
+// Normalize a glob
 //----------------------------------------------------------------------------------------------------------------------
 
-function getEffectiveGlob(atDirectory: string, glob: string) {
-    return atDirectory?.trim() ? `${atDirectory.trim()}/${glob.replace(/^\//, "")}` : glob;
+function normalizeGlob(glob: string) {
+    return glob.replace(/[/\\]+/g, "/").replace(/\/$/, "");
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 // Create a matcher
 //----------------------------------------------------------------------------------------------------------------------
 
-function getMatcher(parameters: Parameters, glob: string) {
+export function getGlobMatcher(parameters: Parameters, glob: string) {
     return picomatch(glob, { nocase: !parameters.caseSensitive });
 }
-
-// TODO: Revisit: this one only calculates "glob" - but we also need to calculate the "atDirectory" for the relevant rules

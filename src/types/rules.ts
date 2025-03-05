@@ -63,6 +63,11 @@ export namespace Rule {
     export type AtDirectory = Internal.BaseGlob & {
         readonly secondaryAction: Type.INCLUDE_GLOB | Type.EXCLUDE_GLOB | undefined;
         readonly type: Type.AT_DIRECTORY;
+    } & {
+        readonly atDirectory: {
+            readonly original: string;
+            readonly effective: string;
+        };
     };
     export type Break = Internal.BaseGlob & { readonly type: Type.BREAK; readonly parentToBreak: Rule };
     export type ImportFile = Internal.Base & { readonly file: string; type: Type.IMPORT_FILE };

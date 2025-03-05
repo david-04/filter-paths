@@ -18,6 +18,7 @@ Usage: ${APP_NAME} [OPTIONS] [--] [FILTER_RULE_FILES...]
 [OPTIONS]
 
   -c | --case-sensitive ................ match case-sensitive (default: case-insensitive)
+  -p | --print-rules ................... print the rules after before processing any input
   -h | --help .......................... display this help screen
   -v | --version ....................... display version information
 
@@ -62,7 +63,7 @@ function handleVersionOption(args: ReadonlyArray<string>) {
 //----------------------------------------------------------------------------------------------------------------------
 
 function parseArgs(args: ReadonlyArray<string>): Parameters {
-    const parameters = { caseSensitive: false, files: new Array<string>(), normalizePaths: true };
+    const parameters = { caseSensitive: false, files: new Array<string>(), normalizePaths: true, printRules: false };
     let acceptOptions = true;
 
     for (const arg of args.map(arg => arg.trim()).filter(arg => arg)) {
@@ -72,6 +73,8 @@ function parseArgs(args: ReadonlyArray<string>): Parameters {
             acceptOptions = false;
         } else if (["-c", "--case-sensitive"].includes(arg)) {
             parameters.caseSensitive = true;
+        } else if (["-p", "--print-rules"].includes(arg)) {
+            parameters.printRules = true;
         } else if (arg.startsWith("-")) {
             fail(`Unknown option: ${arg}. Try ${APP_NAME} --help`);
         } else {

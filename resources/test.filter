@@ -1,0 +1,17 @@
++ **{a,b}
+  + /b
+    # include E:\Projects\filter-paths\resources\test.filter
+    + /c
+    @ /home/david/
+      - /d/**
+      @ + /Workspace
+        - /*.log
+    - /e
+      + /f
+   - /g
+  - /h
++ /i
+  - /j
+  #<<< /xyz
+
+  # comment

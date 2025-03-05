@@ -1,7 +1,7 @@
 import { Parameters } from "../../types/parameters.js";
 import { RuleSource } from "../../types/rule-source.js";
 import { Rule } from "../../types/rules.js";
-import { createGlob } from "../helpers/create-glob.js";
+import { getEffectiveGlob, getGlobMatcher } from "../helpers/create-glob.js";
 import { assertGlobIsValid } from "../validate/valid-glob.js";
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -15,9 +15,10 @@ export function parseAtDirectoryRule(
     _operator: string,
     data: string
 ): Rule.AtDirectory {
-    const { glob, secondaryAction } = splitData(data);
+    const { glob, secondaryAction } = getGlobAndSecondaryAction(data);
     assertGlobIsValid(source, glob);
-    const atDirectory = getAtDirectory(parent, glob);
+    const parentGlob = "atDirectory" in parent ? parent.atDirectory?.effective : undefined;
+    const atDirectory = { original: glob, effective: getEffectiveGlob(parentGlob, glob) } as const;
 
     return {
         atDirectory,
@@ -26,7 +27,7 @@ export function parseAtDirectoryRule(
         secondaryAction,
         source,
         type: Rule.AT_DIRECTORY,
-        ...createGlob(parameters, parent, source, glob),
+        ...getGlobAndMatcher(parameters, atDirectory),
     };
 }
 
@@ -34,7 +35,7 @@ export function parseAtDirectoryRule(
 // Extract the secondary action
 //----------------------------------------------------------------------------------------------------------------------
 
-function splitData(data: string) {
+function getGlobAndSecondaryAction(data: string) {
     const match = /^([-+]) (.*)$/.exec(data);
     const operator = match?.[1]?.trim() ?? "";
     const glob = match?.[2]?.trim() ?? "";
@@ -51,17 +52,11 @@ function splitData(data: string) {
 // Build the "at-directory" property
 //----------------------------------------------------------------------------------------------------------------------
 
-function getAtDirectory(parent: Rule.Parent, glob: string) {
-    const parentGlob = "atDirectory" in parent ? parent.atDirectory?.effective : undefined;
-    const effective = parentGlob ? concatenateGlobs(parentGlob, glob) : glob;
-    return { original: glob, effective } as const;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-// Join two globs
-//----------------------------------------------------------------------------------------------------------------------
-
-function concatenateGlobs(parent: string, child: string) {
-    const separator = parent.endsWith("/") || child.startsWith("/") ? "" : "/";
-    return `${parent}${separator}${child}`;
+function getGlobAndMatcher(parameters: Parameters, atDirectory: Rule.AtDirectory["atDirectory"]) {
+    const glob = {
+        effective: getEffectiveGlob(atDirectory.effective, "/**"),
+        original: getEffectiveGlob(atDirectory.original, "/**"),
+    } as const;
+    const matches = getGlobMatcher(parameters, glob.effective);
+    return { glob, matches } as const;
 }

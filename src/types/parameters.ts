@@ -6,4 +6,5 @@ export type Parameters = {
     readonly caseSensitive: boolean;
     readonly files: ReadonlyArray<string>;
     readonly normalizePaths: boolean;
+    readonly printRules: boolean;
 };

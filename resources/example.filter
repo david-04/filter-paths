@@ -1,0 +1,97 @@
+#-----------------------------------------------------------------------------------------------------------------------
+# AppData
+#-----------------------------------------------------------------------------------------------------------------------
+
+- **/*.log
+    + /Workspace/Appdata/**
+
+
+
+# comment
+
+- *.log                       => implied: **/*.log (because it does not start with /)
+@ /Workspace/Appdata           => implied **/Workspace/Appdata
+  @ /Internet/Vivaldi
+    - **
+    +
+      + **/*.blah
+        -
+
+@ /Workspace/Appdata
+  include workspace.filter
+
+workspace.filter
+
+@ /TextProcessing/VSCode
+  - /*Cache**
+  - /*Shader**
+  - /User/
+
+
+@ /Internet/Vivaldi
+  - **
+    + /Profile *
+      - /Profile */Cache/**
+      - /Profile */Service Worker/**
+      - /Profile */Code Cache/**
+      - /Profile */AddBlockRules/**
+      - /Profile */GPUCache/**
+
+@ /Internet/Vivaldi
+  - **
+    @ /Profile
+      + **
+        - /AddBlockRules/**
+        - /Cache/**
+        - /Code Cache/**
+        - /GPUCache
+        - /Service Worker/**
+    <<<<< blah
+
+@ - /Internet/Vivaldi
+  + xxx
+    - yyy
+  @ + /Profile
+    - /AddBlockRules/**
+    - /Cache/**
+    - /Code Cache/**
+    - /GPUCache
+    - /Service Worker/**
+  <<< blah
+      - test
+
+
+
+
+
+
+                         $(foreach letter, A a B b C c D d E e F f G g H h I i J j K k L l M m N n O o Q q R r S s T t U u V v W w X x Y y Z z, **/Appdata/Internet/Vivaldi/$(letter)*) \
+                         **/Appdata/Internet/Vivaldi/PKIMetadata \
+                         **/Appdata/Internet/Vivaldi/Profile*/Cache \
+                         **/Appdata/Internet/Vivaldi/Profile*/Service*Worker/CacheStorage \
+                         **/Appdata/Internet/Vivaldi/Profile*/Code*Cache \
+                         **/Appdata/Internet/Vivaldi/Profile*/AddBlockRules \
+                         **/Appdata/Internet/Vivaldi/Profile*/GPUCache \
+
+
+
+
+@ /Workspace/Appdata
+  - /AppData/Utilities/Ollama**
+  @ /Internet/Vivaldi
+    - **
+      + /Profile{1,2,3,4,5}
+        << *.txt
+
+
+
+**/Workspace/
+
+
+
+
++   include
+-|! exclude
+@   apply nested rules on to those
+<   leave current nesting level
+<<  leave top-level role
