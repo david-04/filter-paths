@@ -51,7 +51,7 @@ function loadLines(parent: RuleSource, file: string) {
 
 function getIndentation(rule: RuleSource.File) {
     const leadingWhitespace = rule.line.replace(/[^\s].*$/, "");
-    const leadingArrows = (/^<+/.exec(rule.line.trim())?.[0] ?? "").replace(/<$/, "");
+    const leadingArrows = (/^[^\sa-z\d]*</i.exec(rule.line.trim())?.[0] ?? "").replace(/<$/, "");
     if (0 <= leadingWhitespace.indexOf("\t")) {
         fail(rule, "The line contains leading tabs. Filter rules must be indented with spaces only.");
     }

@@ -88,8 +88,27 @@ function getAtDirectorySecondaryOperator(rule: Rule.AtDirectory) {
 // Render a break rule
 //----------------------------------------------------------------------------------------------------------------------
 
-function printBreakRule(_rule: Rule.Break, _indent: string, _showImports: boolean) {
-    return [];
+function printBreakRule(rule: Rule.Break, indent: string, showImports: boolean) {
+    const levels = countBreakRuleLevels(rule);
+    const patchedIndent = `${indent.substring(0, indent.length - INDENT.length * levels)}|`.padEnd(
+        indent.length + 2,
+        "<"
+    );
+    const { effective, original } = rule.glob;
+    const suffix = effective === original ? "" : ` (original: ${original})`;
+    return [`${patchedIndent}< ${effective}${suffix}`, ...renderChildren(rule, `${indent}${INDENT}`, showImports)];
+}
+
+function countBreakRuleLevels(rule: Rule.Break) {
+    let levels = 0;
+    for (
+        let current: Rule.Parent | undefined = rule;
+        current && current !== rule.parentToBreak;
+        current = "parent" in current ? current.parent : undefined
+    ) {
+        levels++;
+    }
+    return levels;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

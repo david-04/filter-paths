@@ -3,6 +3,7 @@ import { RuleSource } from "../../types/rule-source.js";
 import { Rule } from "../../types/rules.js";
 import { fail } from "../../utils/fail.js";
 import { parseAtDirectoryRule } from "./parse-at-directory-rule.js";
+import { parseBreakRule } from "./parse-break-rule.js";
 import { parseGlobSelectorRule } from "./parse-glob-selector-rule.js";
 import { parseImportFileRule } from "./parse-import-file-rule.js";
 
@@ -15,7 +16,7 @@ const HANDLERS = [
     [/^-$/, parseGlobSelectorRule],
     [/^(include|import)$/, parseImportFileRule],
     [/^@$/, parseAtDirectoryRule],
-    // [/^<+$/, parseGlobSelectorRule], // TODO
+    [/^[^\sa-z\d]*<$/i, parseBreakRule],
 ] as const;
 
 const ALLOWED_OPERATORS = "+, -, @, <, include, import";

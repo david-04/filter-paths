@@ -19,7 +19,7 @@ export function parseGlobSelectorRule(
         const original = data.trim();
         const effective = getEffectiveGlob(atDirectory?.effective, original);
         return {
-            atDirectory: "atDirectory" in parent ? parent.atDirectory : undefined,
+            atDirectory,
             children: [],
             parent,
             source,
