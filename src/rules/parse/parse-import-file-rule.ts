@@ -1,6 +1,8 @@
 import { Parameters } from "../../types/parameters.js";
-import { ImportFileRule, ParentRule, RuleSource, RuleType } from "../../types/rule-types.js";
+import { RuleSource } from "../../types/rule-source.js";
+import { Rule } from "../../types/rules.js";
 import { loadFile } from "../load/load-file.js";
+import { parseRules } from "./parse-rules.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Parse an "include path" rule
@@ -8,20 +10,20 @@ import { loadFile } from "../load/load-file.js";
 
 export function parseImportFileRule(
     parameters: Parameters,
-    parent: ParentRule,
+    parent: Rule.Parent,
     source: RuleSource,
     _operator: string,
     data: string
 ) {
     const file = data.trim();
-    const rule: ImportFileRule = {
-        atDirectory: parent?.atDirectory,
+    const rule: Rule.ImportFile = {
+        atDirectory: "atDirectory" in parent ? parent.atDirectory : undefined,
         children: [],
         file,
         parent,
         source,
-        type: RuleType.IMPORT_FILE,
+        type: Rule.IMPORT_FILE,
     };
-    loadFile(parameters, file, rule);
+    parseRules(parameters, rule, loadFile(rule, file));
     return rule;
 }

@@ -1,83 +1,61 @@
-import { normalize, resolve } from "path";
 import { Parameters } from "../../types/parameters.js";
-import { ParentRule, Rule, RuleSource, RuleType } from "../../types/rule-types.js";
+import { RuleSource } from "../../types/rule-source.js";
+import { Rule } from "../../types/rules.js";
 import { fail } from "../../utils/fail.js";
+import { pathsAreEqual } from "../../utils/path.js";
 import { parseRule } from "./parse-rule.js";
 
 //----------------------------------------------------------------------------------------------------------------------
-// Parse all rules loaded from one file
+// Parse all rules
 //----------------------------------------------------------------------------------------------------------------------
 
-export function parseRules(
-    parameters: Parameters,
-    globalParent: ParentRule,
-    rules: ReadonlyArray<RuleSource>
-): ReadonlyArray<Rule> {
-    const result = new Array<Rule>();
+export function parseRules(parameters: Parameters, importRule: Rule.ImportFile, rules: ReadonlyArray<RuleSource.File>) {
     for (const rule of rules) {
-        const localParent = findLocalParent(result, rule);
-        assertNoNestingUnderImportRule(globalParent ?? localParent, rule);
-        if (localParent) {
-            parseRule(parameters, localParent, rule);
-        } else {
-            result.push(parseRule(parameters, globalParent, rule));
+        const parent = findParent(importRule, rule);
+        if (parent.type === Rule.IMPORT_FILE && parent !== importRule) {
+            console.log({ parent: parent.source, rule });
+            fail(rule, 'Rules must not be nested under "import" rules');
         }
+        parseRule(parameters, parent, rule);
     }
-    return result;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-// Determine under which parent rule the given indentation sits
+// Find the parent rule to attach the child to
 //----------------------------------------------------------------------------------------------------------------------
 
-function findLocalParent(parents: ReadonlyArray<Rule>, rule: RuleSource) {
-    const expandedRules = expandLastNestedChild(parents);
-    for (let index = expandedRules.length - 1; 0 <= index; index--) {
-        const parent = expandedRules[index];
-        if (!parent) {
-            return undefined;
+function findParent(importRule: Rule.ImportFile, rule: RuleSource.File): Rule {
+    for (const parent of flattenToLastChild(importRule.children).reverse()) {
+        if (!isSameFile(parent, rule)) {
+            continue;
         }
-        if (isApplicableParent(parent, rule)) {
-            const ruleIndentation = parent.source?.indentation ?? 0;
-            if (rule.indentation === ruleIndentation) {
-                return parent.parent;
-            } else if (ruleIndentation < rule.indentation) {
-                return parent;
-            }
+        const parentIndentation = "indentation" in parent.source ? parent.source.indentation : 0;
+        if (rule.indentation === parentIndentation && parent.parent.type !== Rule.RULESET) {
+            return parent.parent;
+        } else if (parentIndentation < rule.indentation) {
+            return parent;
         }
     }
-    return undefined;
+    return importRule;
 }
 
-function isApplicableParent(parent: Rule, rule: RuleSource) {
-    const parentSourceFile = parent.source?.file;
-    return undefined !== parentSourceFile && parentSourceFile === rule.file;
+function isSameFile(parent: Rule, rule: RuleSource.File) {
+    return pathsAreEqual(parent.source.type === "file" ? parent.source.file : parent.source.argv, rule.file);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-// For the last element in the rules array, recursively expand
+// Copy the array and, for the last top-level element, append the whole change chain to the last child
 //----------------------------------------------------------------------------------------------------------------------
 
-function expandLastNestedChild(rules: ReadonlyArray<Rule>) {
-    const expandedRules = [...rules];
-    for (let rule = rules[rules.length - 1]; rule; rule = rule.children[rule.children.length - 1]) {
-        expandedRules.push(rule);
+function flattenToLastChild(rules: ReadonlyArray<Rule>) {
+    const flattened = [...rules];
+    for (let lastChild = getLastChild(flattened); lastChild; lastChild = getLastChild(flattened)) {
+        flattened.push(lastChild);
     }
-    return expandedRules;
+    return flattened;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-// Verify that no rule is nested under an "import" rule
-//----------------------------------------------------------------------------------------------------------------------
-
-function assertNoNestingUnderImportRule(parent: ParentRule, rule: RuleSource) {
-    const ruleFile = normalize(resolve(rule.file));
-    for (let currentParent = parent; currentParent; currentParent = currentParent.parent) {
-        if (currentParent.type === RuleType.IMPORT_FILE) {
-            const currentParentSource = currentParent.source;
-            if (currentParentSource && ruleFile === normalize(resolve(currentParentSource.file))) {
-                fail(rule, 'Filter rules must not be nested as a child below an "import" rule.');
-            }
-        }
-    }
+function getLastChild(rules: ReadonlyArray<Rule>) {
+    const children = rules[rules.length - 1]?.children ?? [];
+    return children[children.length - 1];
 }

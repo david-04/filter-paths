@@ -1,7 +1,8 @@
 import picomatch from "picomatch";
 import { Parameters } from "../../types/parameters.js";
-import { GlobRule, ParentRule, RuleBase, RuleSource } from "../../types/rule-types.js";
-import { fail } from "../../utils/fail.js";
+import { RuleSource } from "../../types/rule-source.js";
+import { Rule } from "../../types/rules.js";
+import { assertGlobIsValid } from "../validate/valid-glob.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Create the "glob" part of a rule
@@ -9,35 +10,23 @@ import { fail } from "../../utils/fail.js";
 
 export function createGlob(
     parameters: Parameters,
-    parent: ParentRule,
-    source: RuleSource,
-    data: string
-): Omit<GlobRule, keyof RuleBase> {
-    const raw = data.trim();
-    assertGlobIsValid(source, raw);
-    const withAtDirectory = concatenateGlobs(parent?.atDirectory, raw);
-    const matcher = createMatcher(parameters, withAtDirectory);
-    return { glob: { raw, withAtDirectory }, matcher };
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-// Verify that the glob is not empty and starts with "/" or "**"
-//----------------------------------------------------------------------------------------------------------------------
-
-function assertGlobIsValid(source: RuleSource, glob: string) {
-    if (!glob) {
-        fail(source, "Missing glob pattern");
-    }
-    if (!glob.startsWith("/") && !glob.startsWith("**")) {
-        fail(source, 'Each glob must either start with "/" or "**"');
-    }
+    parent: Rule.Parent,
+    rule: RuleSource.File,
+    glob: string
+): Rule.Internal.Glob {
+    const original = glob.trim();
+    assertGlobIsValid(rule, original);
+    const atDirectory = "atDirectory" in parent ? parent.atDirectory : undefined;
+    const effective = atDirectory?.effective.trim() ? getEffectiveGlob(atDirectory.effective, original) : original;
+    const matches = getMatcher(parameters, effective);
+    return { glob: { original, effective }, matches };
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 // Concatenate the glob with the parent's "at directory"
 //----------------------------------------------------------------------------------------------------------------------
 
-function concatenateGlobs(atDirectory: string | undefined, glob: string) {
+function getEffectiveGlob(atDirectory: string, glob: string) {
     return atDirectory?.trim() ? `${atDirectory.trim()}/${glob.replace(/^\//, "")}` : glob;
 }
 
@@ -45,6 +34,8 @@ function concatenateGlobs(atDirectory: string | undefined, glob: string) {
 // Create a matcher
 //----------------------------------------------------------------------------------------------------------------------
 
-function createMatcher(parameters: Parameters, glob: string) {
+function getMatcher(parameters: Parameters, glob: string) {
     return picomatch(glob, { nocase: !parameters.caseSensitive });
 }
+
+// TODO: Revisit: this one only calculates "glob" - but we also need to calculate the "atDirectory" for the relevant rules
