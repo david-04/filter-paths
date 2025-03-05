@@ -1,2 +1,3 @@
-- /included
-include ../resources/test.filter
++ /included
+  - **/blah
+    # include test.filter

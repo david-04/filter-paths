@@ -18,7 +18,7 @@ export function fail(sourceOrMessage: RuleSource | string, messageOrCause: unkno
         throw new DescriptiveError(sourceOrMessage, { cause: messageOrCause });
     } else if (sourceOrMessage.type === "file") {
         const { file, line, lineNumber } = sourceOrMessage;
-        throw new DescriptiveError(`Invalid rule in ${file} at line ${lineNumber}:\n${line}\n${messageOrCause}`);
+        throw new DescriptiveError(`Invalid rule in ${file} at line ${lineNumber}:\n${line.trim()}\n${messageOrCause}`);
     } else {
         throw new DescriptiveError(`${messageOrCause}`);
     }

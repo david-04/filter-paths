@@ -5,4 +5,4 @@ import { Ruleset } from "./rules.js";
 // Configuration
 //----------------------------------------------------------------------------------------------------------------------
 
-export type Config = Parameters & { readonly ruleset: Ruleset };
+export type Config = Parameters & { readonly ruleset: Ruleset; readonly unmatchedPathAction: "include" | "exclude" };

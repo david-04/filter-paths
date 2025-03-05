@@ -21,6 +21,8 @@ export namespace Rule {
 
     export const { AT_DIRECTORY, BREAK, EXCLUDE_GLOB, IMPORT_FILE, INCLUDE_GLOB, RULESET } = Type;
 
+    export type IncludeOrExclude = Type.INCLUDE_GLOB | Type.EXCLUDE_GLOB;
+
     //------------------------------------------------------------------------------------------------------------------
     // Base class
     //------------------------------------------------------------------------------------------------------------------
