@@ -2,6 +2,7 @@ import { Parameters } from "../../types/parameters.js";
 import { RuleSource } from "../../types/rule-source.js";
 import { Rule } from "../../types/rules.js";
 import { fail } from "../../utils/fail.js";
+import { parseAtDirectoryRule } from "./parse-at-directory-rule.js";
 import { parseGlobSelectorRule } from "./parse-glob-selector-rule.js";
 import { parseImportFileRule } from "./parse-import-file-rule.js";
 
@@ -12,10 +13,12 @@ import { parseImportFileRule } from "./parse-import-file-rule.js";
 const HANDLERS = [
     [/^\+$/, parseGlobSelectorRule],
     [/^-$/, parseGlobSelectorRule],
-    [/^include$/, parseImportFileRule],
-    [/^@$/, parseGlobSelectorRule], // TODO
-    [/^<+$/, parseGlobSelectorRule], // TODO
+    [/^(include|import)$/, parseImportFileRule],
+    [/^@$/, parseAtDirectoryRule],
+    // [/^<+$/, parseGlobSelectorRule], // TODO
 ] as const;
+
+const ALLOWED_OPERATORS = "+, -, @, <, include, import";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Dispatch a single rule into the matching parser
@@ -31,5 +34,5 @@ export function parseRule(parameters: Parameters, parent: Rule, rule: RuleSource
             return newRule;
         }
     }
-    return fail(rule, "Invalid filter rule. It must start with one of the following operators: +, -, @, <, include");
+    return fail(rule, `Invalid filter rule. It must start with one of the following operators: ${ALLOWED_OPERATORS}`);
 }

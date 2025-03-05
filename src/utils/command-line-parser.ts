@@ -1,6 +1,6 @@
 import { exit } from "node:process";
 import { Parameters } from "../types/parameters.js";
-import { fail } from "../utils/fail.js";
+import { fail } from "./fail.js";
 
 const APP_NAME = "filter-paths";
 const VERSION = "0.0.0";

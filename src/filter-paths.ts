@@ -1,6 +1,6 @@
-import { parseCommandLine } from "./cli/parse-command-line.js";
 import { loadRuleset } from "./rules/load/load-ruleset.js";
 import { Config } from "./types/config.js";
+import { parseCommandLine } from "./utils/command-line-parser.js";
 import { withErrorHandler } from "./utils/fail.js";
 
 withErrorHandler(() => {
