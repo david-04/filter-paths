@@ -30,8 +30,8 @@ function countImportRules(rule: Rule): number {
 function renderRule(rule: Rule, indent: string, showImports: boolean): ReadonlyArray<string> {
     if (rule.type === Rule.IMPORT_FILE) {
         return renderImportRule(rule, indent, showImports);
-    } else if (rule.type === Rule.AT_DIRECTORY) {
-        return printAtDirectoryRule(rule, indent, showImports);
+    } else if (rule.type === Rule.DIRECTORY_SCOPE) {
+        return printDirectoryScopeRule(rule, indent, showImports);
     } else if (rule.type === Rule.BREAK) {
         return printBreakRule(rule, indent, showImports);
     } else {
@@ -60,13 +60,13 @@ function printGlobSelectorRule(rule: Rule.IncludeOrExcludeGlob, indent: string, 
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-// Render an at-directory rule
+// Render a directory scope rule
 //----------------------------------------------------------------------------------------------------------------------
 
-function printAtDirectoryRule(rule: Rule.AtDirectory, indent: string, showImports: boolean) {
-    const { effective, original } = rule.atDirectory;
+function printDirectoryScopeRule(rule: Rule.DirectoryScope, indent: string, showImports: boolean) {
+    const { effective, original } = rule.directoryScope;
     const suffix = effective === original ? "" : ` (original: ${original})`;
-    const secondaryOperator = getAtDirectorySecondaryOperator(rule);
+    const secondaryOperator = getDirectoryScopeSecondaryOperator(rule);
     const extraIndent = secondaryOperator.replace(/./g, " ");
     return [
         `${indent}@ ${secondaryOperator}${effective}${suffix}`,
@@ -74,7 +74,7 @@ function printAtDirectoryRule(rule: Rule.AtDirectory, indent: string, showImport
     ];
 }
 
-function getAtDirectorySecondaryOperator(rule: Rule.AtDirectory) {
+function getDirectoryScopeSecondaryOperator(rule: Rule.DirectoryScope) {
     if (rule.secondaryAction === Rule.INCLUDE_GLOB) {
         return "+ ";
     } else if (rule.secondaryAction === Rule.EXCLUDE_GLOB) {

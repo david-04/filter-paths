@@ -2,7 +2,7 @@ import picomatch from "picomatch";
 import { Parameters } from "../../types/parameters.js";
 
 //----------------------------------------------------------------------------------------------------------------------
-// Normalize a glob and merge it with a parent (at-directory)
+// Normalize a glob and merge it with a parent (directory scope)
 //----------------------------------------------------------------------------------------------------------------------
 
 export function getEffectiveGlob(parentGlob: string | undefined, glob: string) {

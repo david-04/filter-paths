@@ -19,7 +19,7 @@ function assertValidNesting(expectedMode: Rule.IncludeOrExclude, rule: Rule) {
         } else {
             rule.children.forEach(rule => assertValidNesting(invert(expectedMode), rule));
         }
-    } else if (rule.type === Rule.AT_DIRECTORY && rule.secondaryAction) {
+    } else if (rule.type === Rule.DIRECTORY_SCOPE && rule.secondaryAction) {
         if (expectedMode !== rule.secondaryAction) {
             failWithInvalidNesting(rule, expectedMode);
         } else {
@@ -43,7 +43,7 @@ function invert(filter: Rule.IncludeOrExclude) {
 //----------------------------------------------------------------------------------------------------------------------
 
 function failWithInvalidNesting(
-    rule: Rule.AtDirectory | Rule.IncludeGlob | Rule.ExcludeGlob,
+    rule: Rule.DirectoryScope | Rule.IncludeGlob | Rule.ExcludeGlob,
     expectedMode: Rule.IncludeOrExclude
 ) {
     const expected =

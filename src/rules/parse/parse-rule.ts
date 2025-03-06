@@ -2,7 +2,7 @@ import { Parameters } from "../../types/parameters.js";
 import { RuleSource } from "../../types/rule-source.js";
 import { Rule } from "../../types/rules.js";
 import { fail } from "../../utils/fail.js";
-import { parseAtDirectoryRule } from "./parse-at-directory-rule.js";
+import { parseDirectoryScopeRule } from "./parse-directory-scope-rule.js";
 import { parseBreakRule } from "./parse-break-rule.js";
 import { parseGlobSelectorRule } from "./parse-glob-selector-rule.js";
 import { parseImportFileRule } from "./parse-import-file-rule.js";
@@ -15,7 +15,7 @@ const HANDLERS = [
     [/^\+$/, parseGlobSelectorRule],
     [/^-$/, parseGlobSelectorRule],
     [/^(include|import)$/, parseImportFileRule],
-    [/^@$/, parseAtDirectoryRule],
+    [/^@$/, parseDirectoryScopeRule],
     [/^[^\sa-z\d]*<$/i, parseBreakRule],
 ] as const;
 

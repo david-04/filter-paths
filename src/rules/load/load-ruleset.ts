@@ -26,7 +26,7 @@ export function loadRuleset(parameters: Parameters) {
 
 function createImportFileRule(parameters: Parameters, file: string) {
     const rule: Rule.ImportFile = {
-        atDirectory: undefined,
+        directoryScope: undefined,
         children: [],
         file,
         parent: undefined,
@@ -45,7 +45,7 @@ function getTopLevelRuleType(rules: ReadonlyArray<Rule>): Rule.IncludeOrExclude 
     for (const rule of rules) {
         if (rule.type === Rule.EXCLUDE_GLOB || rule.type === Rule.INCLUDE_GLOB) {
             return rule.type;
-        } else if (rule.type === Rule.AT_DIRECTORY && rule.secondaryAction) {
+        } else if (rule.type === Rule.DIRECTORY_SCOPE && rule.secondaryAction) {
             return rule.secondaryAction;
         }
         const ruleType = getTopLevelRuleType(rule.children);

@@ -11,14 +11,14 @@ export namespace Rule {
     //------------------------------------------------------------------------------------------------------------------
 
     export enum Type {
-        AT_DIRECTORY = "at-directory",
+        DIRECTORY_SCOPE = "directory-scope",
         BREAK = "break",
         EXCLUDE_GLOB = "exclude-glob",
         IMPORT_FILE = "import-file",
         INCLUDE_GLOB = "include-glob",
     }
 
-    export const { AT_DIRECTORY, BREAK, EXCLUDE_GLOB, IMPORT_FILE, INCLUDE_GLOB } = Type;
+    export const { DIRECTORY_SCOPE, BREAK, EXCLUDE_GLOB, IMPORT_FILE, INCLUDE_GLOB } = Type;
 
     export type IncludeOrExclude = Type.INCLUDE_GLOB | Type.EXCLUDE_GLOB;
 
@@ -44,7 +44,7 @@ export namespace Rule {
     //------------------------------------------------------------------------------------------------------------------
 
     export type IncludeOrExcludeGlob = {
-        readonly atDirectory: Fragment.DirectoryScope | undefined;
+        readonly directoryScope: Fragment.DirectoryScope | undefined;
         readonly children: Array<Rule>;
         readonly glob: Fragment.Glob;
         readonly parent: Rule;
@@ -55,18 +55,18 @@ export namespace Rule {
     export type IncludeGlob = IncludeOrExcludeGlob & { readonly type: Type.INCLUDE_GLOB };
     export type ExcludeGlob = IncludeOrExcludeGlob & { readonly type: Type.EXCLUDE_GLOB };
 
-    export type AtDirectory = {
-        readonly atDirectory: Fragment.DirectoryScope;
+    export type DirectoryScope = {
+        readonly directoryScope: Fragment.DirectoryScope;
         readonly children: Array<Rule>;
         readonly glob: Fragment.Glob;
         readonly parent: Rule;
         readonly secondaryAction: undefined | IncludeOrExclude;
         readonly source: RuleSource.File;
-        readonly type: Type.AT_DIRECTORY;
+        readonly type: Type.DIRECTORY_SCOPE;
     };
 
     export type Break = {
-        readonly atDirectory: Fragment.DirectoryScope | undefined;
+        readonly directoryScope: Fragment.DirectoryScope | undefined;
         readonly children: Array<Rule>;
         readonly glob: Fragment.Glob;
         readonly parent: Rule;
@@ -76,7 +76,7 @@ export namespace Rule {
     };
 
     export type ImportFile = {
-        readonly atDirectory: Fragment.DirectoryScope | undefined;
+        readonly directoryScope: Fragment.DirectoryScope | undefined;
         readonly children: Array<Rule>;
         readonly file: string;
         readonly parent: Rule | undefined;
@@ -85,7 +85,7 @@ export namespace Rule {
     };
 }
 
-export type Rule = Rule.AtDirectory | Rule.Break | Rule.IncludeOrExcludeGlob | Rule.ImportFile;
+export type Rule = Rule.DirectoryScope | Rule.Break | Rule.IncludeOrExcludeGlob | Rule.ImportFile;
 
 //------------------------------------------------------------------------------------------------------------------
 // The whole rule set

@@ -5,30 +5,30 @@ import { getEffectiveGlob, getGlobMatcher } from "../helpers/create-glob.js";
 import { assertGlobIsValid } from "../validate/valid-glob.js";
 
 //----------------------------------------------------------------------------------------------------------------------
-// Parse an "at-directory" (@) rule
+// Parse an "directory scope" (@) rule
 //----------------------------------------------------------------------------------------------------------------------
 
-export function parseAtDirectoryRule(
+export function parseDirectoryScopeRule(
     parameters: Parameters,
     parent: Rule,
     source: RuleSource.File,
     _operator: string,
     data: string
-): Rule.AtDirectory {
+): Rule.DirectoryScope {
     const { effectiveData, secondaryAction } = splitData(data);
     assertGlobIsValid(source, effectiveData);
-    const atDirectory = getAtDirectory(parent, effectiveData);
-    const glob = getGlob(parameters, atDirectory);
+    const directoryScope = getDirectoryScope(parent, effectiveData);
+    const glob = getGlob(parameters, directoryScope);
 
     return {
-        atDirectory,
+        directoryScope,
         children: [],
         glob,
         parent,
         secondaryAction,
         source,
-        type: Rule.AT_DIRECTORY,
-        ...getGlob(parameters, atDirectory),
+        type: Rule.DIRECTORY_SCOPE,
+        ...getGlob(parameters, directoryScope),
     };
 }
 
@@ -49,8 +49,10 @@ function splitData(data: string) {
     }
 }
 
-function getAtDirectory(parent: Rule, glob: string) {
-    const effective = parent.atDirectory?.effective ? getEffectiveGlob(parent.atDirectory?.effective, glob) : glob;
+function getDirectoryScope(parent: Rule, glob: string) {
+    const effective = parent.directoryScope?.effective
+        ? getEffectiveGlob(parent.directoryScope?.effective, glob)
+        : glob;
     return { original: glob, effective };
 }
 
@@ -58,9 +60,9 @@ function getAtDirectory(parent: Rule, glob: string) {
 // Build the "at-directory" property
 //----------------------------------------------------------------------------------------------------------------------
 
-function getGlob(parameters: Parameters, atDirectory: Rule.AtDirectory["atDirectory"]) {
-    const effective = getEffectiveGlob(atDirectory.effective, "/**");
-    const original = getEffectiveGlob(atDirectory.original, "/**");
+function getGlob(parameters: Parameters, directoryScope: Rule.DirectoryScope["directoryScope"]) {
+    const effective = getEffectiveGlob(directoryScope.effective, "/**");
+    const original = getEffectiveGlob(directoryScope.original, "/**");
     const matches = getGlobMatcher(parameters, effective);
     return { effective, original, matches } as const;
 }

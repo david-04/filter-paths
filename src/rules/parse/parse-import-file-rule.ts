@@ -17,7 +17,7 @@ export function parseImportFileRule(
 ) {
     const file = data.trim();
     const rule: Rule.ImportFile = {
-        atDirectory: "atDirectory" in parent ? parent.atDirectory : undefined,
+        directoryScope: "directoryScope" in parent ? parent.directoryScope : undefined,
         children: [],
         file,
         parent,

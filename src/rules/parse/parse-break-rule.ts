@@ -16,12 +16,12 @@ export function parseBreakRule(
     operator: string,
     data: string
 ): Rule.Break {
-    const atDirectory = "atDirectory" in parent ? parent.atDirectory : undefined;
+    const directoryScope = "directoryScope" in parent ? parent.directoryScope : undefined;
     const original = data.trim();
-    const effective = getEffectiveGlob(atDirectory?.effective, original);
+    const effective = getEffectiveGlob(directoryScope?.effective, original);
     const matches = getGlobMatcher(parameters, effective);
     return {
-        atDirectory,
+        directoryScope,
         children: [],
         parent,
         parentToBreak: getParentToBreak(parent, operator, source),
