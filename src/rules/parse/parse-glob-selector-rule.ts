@@ -1,4 +1,4 @@
-import { Parameters } from "../../types/parameters.js";
+import { Config } from "../../types/config.js";
 import { RuleSource } from "../../types/rule-source.js";
 import { Rule } from "../../types/rules.js";
 import { getEffectiveGlob, getGlobMatcher } from "../helpers/create-glob.js";
@@ -8,7 +8,7 @@ import { getEffectiveGlob, getGlobMatcher } from "../helpers/create-glob.js";
 //----------------------------------------------------------------------------------------------------------------------
 
 export function parseGlobSelectorRule(
-    parameters: Parameters,
+    config: Config,
     parent: Rule,
     source: RuleSource.File,
     operator: string,
@@ -18,7 +18,7 @@ export function parseGlobSelectorRule(
         const directoryScope = "directoryScope" in parent ? parent.directoryScope : undefined;
         const original = data.trim();
         const effective = getEffectiveGlob(directoryScope?.effective, original);
-        const matches = getGlobMatcher(parameters, effective);
+        const matches = getGlobMatcher(config, effective);
         return {
             directoryScope,
             children: [],

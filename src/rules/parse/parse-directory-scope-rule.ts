@@ -1,4 +1,4 @@
-import { Parameters } from "../../types/parameters.js";
+import { Config } from "../../types/config.js";
 import { RuleSource } from "../../types/rule-source.js";
 import { Rule } from "../../types/rules.js";
 import { getEffectiveGlob, getGlobMatcher } from "../helpers/create-glob.js";
@@ -9,7 +9,7 @@ import { assertGlobIsValid } from "../validate/valid-glob.js";
 //----------------------------------------------------------------------------------------------------------------------
 
 export function parseDirectoryScopeRule(
-    parameters: Parameters,
+    config: Config,
     parent: Rule,
     source: RuleSource.File,
     _operator: string,
@@ -18,7 +18,7 @@ export function parseDirectoryScopeRule(
     const { effectiveData, secondaryAction } = splitData(data);
     assertGlobIsValid(source, effectiveData);
     const directoryScope = getDirectoryScope(parent, effectiveData);
-    const glob = getGlob(parameters, directoryScope);
+    const glob = getGlob(config, directoryScope);
 
     return {
         directoryScope,
@@ -28,7 +28,7 @@ export function parseDirectoryScopeRule(
         secondaryAction,
         source,
         type: Rule.DIRECTORY_SCOPE,
-        ...getGlob(parameters, directoryScope),
+        ...getGlob(config, directoryScope),
     };
 }
 
@@ -60,9 +60,9 @@ function getDirectoryScope(parent: Rule, glob: string) {
 // Build the "at-directory" property
 //----------------------------------------------------------------------------------------------------------------------
 
-function getGlob(parameters: Parameters, directoryScope: Rule.DirectoryScope["directoryScope"]) {
+function getGlob(config: Config, directoryScope: Rule.DirectoryScope["directoryScope"]) {
     const effective = getEffectiveGlob(directoryScope.effective, "/**");
     const original = getEffectiveGlob(directoryScope.original, "/**");
-    const matches = getGlobMatcher(parameters, effective);
+    const matches = getGlobMatcher(config, effective);
     return { effective, original, matches } as const;
 }

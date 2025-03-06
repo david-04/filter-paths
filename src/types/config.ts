@@ -1,8 +1,10 @@
-import { Parameters } from "./parameters.js";
-import { Ruleset } from "./rules.js";
-
 //----------------------------------------------------------------------------------------------------------------------
-// Configuration
+// Configuration controlled via command-line parameters
 //----------------------------------------------------------------------------------------------------------------------
 
-export type Config = Parameters & { readonly ruleset: Ruleset; readonly unmatchedPathAction: "include" | "exclude" };
+export type Config = {
+    readonly caseSensitive: boolean;
+    readonly files: ReadonlyArray<string>;
+    readonly normalizePaths: boolean;
+    readonly printRules: boolean;
+};

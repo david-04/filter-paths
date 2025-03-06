@@ -1,4 +1,4 @@
-import { Parameters } from "../../types/parameters.js";
+import { Config } from "../../types/config.js";
 import { Rule } from "../../types/rules.js";
 import { fail } from "../../utils/fail.js";
 import { parseRules } from "../parse/parse-rules.js";
@@ -9,9 +9,9 @@ import { loadFile } from "./load-file.js";
 // Load the whole ruleset
 //----------------------------------------------------------------------------------------------------------------------
 
-export function loadRuleset(parameters: Parameters) {
+export function loadRuleset(config: Config) {
     const rules = new Array<Rule>();
-    parameters.files.forEach(file => rules.push(createImportFileRule(parameters, file)));
+    config.files.forEach(file => rules.push(createImportFileRule(config, file)));
     const topLevelRuleType = getTopLevelRuleType(rules);
     if (!topLevelRuleType) {
         fail("No filter rules have been defined");
@@ -24,7 +24,7 @@ export function loadRuleset(parameters: Parameters) {
 // Load the rules from one file (wrapped into a single "import file" rule)
 //----------------------------------------------------------------------------------------------------------------------
 
-function createImportFileRule(parameters: Parameters, file: string) {
+function createImportFileRule(config: Config, file: string) {
     const rule: Rule.ImportFile = {
         directoryScope: undefined,
         children: [],
@@ -33,7 +33,7 @@ function createImportFileRule(parameters: Parameters, file: string) {
         source: { type: "argv", argv: file },
         type: Rule.IMPORT_FILE,
     };
-    parseRules(parameters, rule, loadFile(rule, file));
+    parseRules(config, rule, loadFile(rule, file));
     return rule;
 }
 

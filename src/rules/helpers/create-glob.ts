@@ -1,5 +1,5 @@
 import picomatch from "picomatch";
-import { Parameters } from "../../types/parameters.js";
+import { Config } from "../../types/config.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Normalize a glob and merge it with a parent (directory scope)
@@ -27,6 +27,6 @@ function normalizeGlob(glob: string) {
 // Create a matcher
 //----------------------------------------------------------------------------------------------------------------------
 
-export function getGlobMatcher(parameters: Parameters, glob: string) {
-    return picomatch(glob, { nocase: !parameters.caseSensitive });
+export function getGlobMatcher(config: Config, glob: string) {
+    return picomatch(glob, { nocase: !config.caseSensitive });
 }

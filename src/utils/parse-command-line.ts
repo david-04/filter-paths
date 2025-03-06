@@ -1,5 +1,5 @@
 import { exit } from "node:process";
-import { Parameters } from "../types/parameters.js";
+import { Config } from "../types/config.js";
 import { fail } from "./fail.js";
 
 const APP_NAME = "filter-paths";
@@ -28,12 +28,12 @@ Usage: ${APP_NAME} [OPTIONS] [--] [FILTER_RULE_FILES...]
 // Parse all command line arguments
 //----------------------------------------------------------------------------------------------------------------------
 
-export function parseCommandLine(args: ReadonlyArray<string>): Parameters {
+export function parseCommandLine(args: ReadonlyArray<string>): Config {
     handleHelpOption(args);
     handleVersionOption(args);
-    const parameters = parseArgs(args);
-    assertHasFilterRuleFiles(parameters.files);
-    return parameters;
+    const config = parseArgs(args);
+    validateConfig(config);
+    return config;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -62,35 +62,35 @@ function handleVersionOption(args: ReadonlyArray<string>) {
 // Parse the remaining command line arguments
 //----------------------------------------------------------------------------------------------------------------------
 
-function parseArgs(args: ReadonlyArray<string>): Parameters {
-    const parameters = { caseSensitive: false, files: new Array<string>(), normalizePaths: true, printRules: false };
+function parseArgs(args: ReadonlyArray<string>): Config {
+    const config = { caseSensitive: false, files: new Array<string>(), normalizePaths: true, printRules: false };
     let acceptOptions = true;
 
     for (const arg of args.map(arg => arg.trim()).filter(arg => arg)) {
         if (!acceptOptions) {
-            parameters.files.push(arg);
+            config.files.push(arg);
         } else if (arg === "--") {
             acceptOptions = false;
         } else if (["-c", "--case-sensitive"].includes(arg)) {
-            parameters.caseSensitive = true;
+            config.caseSensitive = true;
         } else if (["-p", "--print-rules"].includes(arg)) {
-            parameters.printRules = true;
+            config.printRules = true;
         } else if (arg.startsWith("-")) {
             fail(`Unknown option: ${arg}. Try ${APP_NAME} --help`);
         } else {
-            parameters.files.push(arg);
+            config.files.push(arg);
         }
     }
 
-    return parameters;
+    return config;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-// Verify that all specified files exist
+// Validate the configuration
 //----------------------------------------------------------------------------------------------------------------------
 
-function assertHasFilterRuleFiles(files: ReadonlyArray<string>) {
-    if (files.length === 0) {
+function validateConfig(config: Config) {
+    if (config.files.length === 0) {
         fail(`No filter rule files have been specified. Try ${APP_NAME} --help`);
     }
 }
