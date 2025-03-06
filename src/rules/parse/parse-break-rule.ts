@@ -8,17 +8,23 @@ import { createGlob } from "./create-glob.js";
 // Parse a "break" rule
 //----------------------------------------------------------------------------------------------------------------------
 
-export function parseBreakRule(
-    config: Config,
-    parent: Rule,
-    source: Rule.Source.File,
-    operator: string,
-    data: string
-): Rule.Break {
+export function parseBreakRule(config: Config, parent: Rule, source: Rule.Source.File, operator: string, data: string) {
     const { directoryScope } = parent;
     const glob = createGlob(config, source, directoryScope, data);
     const parentToBreak = getParentToBreak(parent, operator, source);
-    return { children: [], directoryScope, glob: glob, parent, parentToBreak, source, type: Rule.BREAK };
+    const stack = [...parent.stack];
+    const rule: Rule.Break = {
+        children: [],
+        directoryScope,
+        glob: glob,
+        parent,
+        parentToBreak,
+        source,
+        stack,
+        type: Rule.BREAK,
+    };
+    stack.push(rule);
+    return rule;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

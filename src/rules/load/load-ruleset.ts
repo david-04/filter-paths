@@ -25,14 +25,17 @@ export function loadRuleset(config: Config) {
 //----------------------------------------------------------------------------------------------------------------------
 
 function createImportFileRule(config: Config, file: string) {
+    const stack = new Array<Rule>();
     const rule: Rule.ImportFile = {
         directoryScope: undefined,
         children: [],
         file,
         parent: undefined,
         source: { type: "argv", argv: file },
+        stack,
         type: Rule.IMPORT_FILE,
     };
+    stack.push(rule);
     parseRules(config, rule, loadFile(rule, file));
     return rule;
 }

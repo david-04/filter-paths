@@ -12,8 +12,11 @@ export function parseGlobSelectorRule(
     source: Rule.Source.File,
     type: Rule.IncludeOrExclude,
     data: string
-): Rule.IncludeOrExcludeGlob {
+) {
     const { directoryScope } = parent;
     const glob = createGlob(config, source, directoryScope, data);
-    return { directoryScope, children: [], parent, source, type, glob };
+    const stack = [...parent.stack];
+    const rule: Rule.IncludeOrExcludeGlob = { directoryScope, children: [], parent, source, stack, type, glob };
+    stack.push(rule);
+    return rule;
 }

@@ -59,6 +59,8 @@ export namespace Rule {
         };
     }
 
+    export type Stack = ReadonlyArray<Rule>;
+
     //------------------------------------------------------------------------------------------------------------------
     // Type-specific rules
     //------------------------------------------------------------------------------------------------------------------
@@ -69,6 +71,7 @@ export namespace Rule {
         readonly glob: Fragment.Glob;
         readonly parent: Rule;
         readonly source: Rule.Source.File;
+        readonly stack: Stack;
         readonly type: Type.INCLUDE_GLOB | Type.EXCLUDE_GLOB;
     };
 
@@ -82,6 +85,7 @@ export namespace Rule {
         readonly parent: Rule;
         readonly secondaryAction: undefined | IncludeOrExclude;
         readonly source: Rule.Source.File;
+        readonly stack: Stack;
         readonly type: Type.DIRECTORY_SCOPE;
     };
 
@@ -92,6 +96,7 @@ export namespace Rule {
         readonly parent: Rule;
         readonly parentToBreak: Rule;
         readonly source: Rule.Source.File;
+        readonly stack: Stack;
         readonly type: Type.BREAK;
     };
 
@@ -101,6 +106,7 @@ export namespace Rule {
         readonly file: string;
         readonly parent: Rule | undefined;
         readonly source: Rule.Source;
+        readonly stack: Stack;
         readonly type: Type.IMPORT_FILE;
     };
 }

@@ -17,7 +17,19 @@ export function parseDirectoryScopeRule(
     assertGlobIsValid(source, globData);
     const directoryScope = createGlob(config, source, parent.directoryScope, globData);
     const glob = createGlob(config, source, directoryScope, "**");
-    return { directoryScope, children: [], glob, parent, secondaryAction, source, type: Rule.DIRECTORY_SCOPE };
+    const stack = [...parent.stack];
+    const rule: Rule.DirectoryScope = {
+        directoryScope,
+        children: [],
+        glob,
+        parent,
+        secondaryAction,
+        source,
+        stack,
+        type: Rule.DIRECTORY_SCOPE,
+    };
+    stack.push(rule);
+    return rule;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
