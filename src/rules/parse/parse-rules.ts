@@ -1,6 +1,5 @@
 import { Config } from "../../types/config.js";
 import { Rule } from "../../types/rules.js";
-import { pathsAreEqual } from "../../utils/path.js";
 import { parseRule } from "./parse-rule.js";
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -38,7 +37,7 @@ function findParent(importRule: Rule.ImportFile, rule: Rule.Source.File): Rule {
 }
 
 function isSameFile(parent: Rule, rule: Rule.Source.File) {
-    return pathsAreEqual(parent.source.type === "file" ? parent.source.file : parent.source.argv, rule.file);
+    return rule.file.absolute === (parent.source.type === "file" ? parent.source.file : parent.source.argv).absolute;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

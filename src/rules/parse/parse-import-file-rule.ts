@@ -1,5 +1,6 @@
 import { Config } from "../../types/config.js";
 import { Rule } from "../../types/rules.js";
+import { createFile } from "../helpers/create-file.js";
 import { loadFile } from "../load/load-file.js";
 import { parseRules } from "./parse-rules.js";
 
@@ -7,8 +8,9 @@ import { parseRules } from "./parse-rules.js";
 // Parse an "include path" rule
 //----------------------------------------------------------------------------------------------------------------------
 
-export function parseImportFileRule(config: Config, parent: Rule, source: Rule.Source, operator: string, file: string) {
+export function parseImportFileRule(config: Config, parent: Rule, source: Rule.Source, operator: string, data: string) {
     const stack = [...parent.stack];
+    const file = createFile(parent.source.type === "file" ? parent.source.file : undefined, data);
     const rule: Rule.ImportFile = {
         directoryScope: parent.directoryScope,
         children: [],
@@ -28,9 +30,9 @@ export function parseImportFileRule(config: Config, parent: Rule, source: Rule.S
 // Get the stringified representation
 //----------------------------------------------------------------------------------------------------------------------
 
-function getStringified(operator: string, file: string) {
+function getStringified(operator: string, file: Rule.Fragment.File) {
     return {
-        original: `${operator} ${file}`,
-        effective: `${operator} ${file}`,
+        original: `${operator} ${file.original}`,
+        effective: `${operator} ${file.resolved}`,
     };
 }

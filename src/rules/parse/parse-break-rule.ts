@@ -1,7 +1,6 @@
 import { Config } from "../../types/config.js";
 import { Rule } from "../../types/rules.js";
 import { fail } from "../../utils/fail.js";
-import { pathsAreEqual } from "../../utils/path.js";
 import { createGlob } from "../helpers/create-glob.js";
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -48,11 +47,11 @@ function getParentToBreak(parent: Rule, operator: string, source: Rule.Source.Fi
 // Extract all applicable parents that could be broken
 //----------------------------------------------------------------------------------------------------------------------
 
-function getApplicableParents(file: string, parent: Rule) {
+function getApplicableParents(file: Rule.Fragment.File, parent: Rule) {
     const applicableParents = new Array<{ currentRule: Rule; currentIndentation: number }>();
 
     for (let current: Rule | undefined = parent; current; current = current.parent) {
-        if (current.source.type === "file" && pathsAreEqual(current.source.file, file)) {
+        if (current.source.type === "file" && current.source.file.absolute === file.absolute) {
             applicableParents.push({ currentRule: current, currentIndentation: current.source.indentation });
         }
     }

@@ -8,7 +8,7 @@ import { fail } from "../../utils/fail.js";
 export function assertNoCyclicImports(importRule: Rule.ImportFile) {
     const importRules = getImportRules(importRule);
     if (wasImportedBefore(importRules, importRule.file)) {
-        fail(`Detected cyclic import of ${importRule.file}:\n\n${formatStack(importRules)}`);
+        fail(`Detected cyclic import of ${importRule.file.resolved}:\n\n${formatStack(importRules)}`);
     }
 }
 
@@ -30,8 +30,8 @@ function getImportRules(importRule: Rule.ImportFile) {
 // Check if the current file has been imported before
 //----------------------------------------------------------------------------------------------------------------------
 
-function wasImportedBefore(importRules: ReadonlyArray<Rule.ImportFile>, file: string) {
-    return importRules.slice(0, importRules.length - 1).some(importRule => importRule.file === file);
+function wasImportedBefore(importRules: ReadonlyArray<Rule.ImportFile>, file: Rule.Fragment.File) {
+    return importRules.slice(0, importRules.length - 1).some(importRule => importRule.file.absolute === file.absolute);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -43,10 +43,10 @@ function formatStack(importRules: ReadonlyArray<Rule.ImportFile>) {
         .filter(importRule => importRule.source.type === "file")
         .map(importRule => {
             if (importRule.source.type === "argv") {
-                return [importRule.source.argv];
+                return [importRule.source.argv.resolved];
             } else {
                 return [
-                    `${importRule.source.file} line ${importRule.source.lineNumber}:`,
+                    `${importRule.source.file.resolved} line ${importRule.source.lineNumber}:`,
                     `${importRule.source.line.trim()}`,
                 ];
             }

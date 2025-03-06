@@ -5,12 +5,40 @@
 export namespace Rule {
     //
     //------------------------------------------------------------------------------------------------------------------
+    // Fragments
+    //------------------------------------------------------------------------------------------------------------------
+
+    export namespace Fragment {
+        export type DirectoryScope = {
+            readonly effective: string;
+            readonly original: string;
+        };
+
+        export type File = {
+            readonly absolute: string;
+            readonly original: string;
+            readonly resolved: string;
+        };
+
+        export type Glob = {
+            readonly effective: string;
+            readonly matches: (path: string) => boolean;
+            readonly original: string;
+        };
+
+        export type Stringified = {
+            readonly effective: string;
+            readonly original: string;
+        };
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
     // Reference to where a rule was loaded from
     //------------------------------------------------------------------------------------------------------------------
 
     export namespace Source {
         export type File = {
-            readonly file: string;
+            readonly file: Fragment.File;
             readonly indentation: number;
             readonly line: string;
             readonly lineNumber: number;
@@ -19,7 +47,7 @@ export namespace Rule {
         };
 
         export type Argv = {
-            readonly argv: string;
+            readonly argv: Fragment.File;
             readonly type: "argv";
         };
     }
@@ -41,28 +69,6 @@ export namespace Rule {
     export const { DIRECTORY_SCOPE, BREAK, EXCLUDE_GLOB, IMPORT_FILE, INCLUDE_GLOB } = Type;
 
     export type IncludeOrExclude = Type.INCLUDE_GLOB | Type.EXCLUDE_GLOB;
-
-    //------------------------------------------------------------------------------------------------------------------
-    // Utility types
-    //------------------------------------------------------------------------------------------------------------------
-
-    export namespace Fragment {
-        export type DirectoryScope = {
-            readonly effective: string;
-            readonly original: string;
-        };
-
-        export type Glob = {
-            readonly effective: string;
-            readonly matches: (path: string) => boolean;
-            readonly original: string;
-        };
-
-        export type Stringified = {
-            readonly effective: string;
-            readonly original: string;
-        };
-    }
 
     export type Stack = ReadonlyArray<Rule>;
 
@@ -111,7 +117,7 @@ export namespace Rule {
     export type ImportFile = {
         readonly children: Array<Rule>;
         readonly directoryScope: Fragment.DirectoryScope | undefined;
-        readonly file: string;
+        readonly file: Fragment.File;
         readonly parent: Rule | undefined;
         readonly source: Rule.Source;
         readonly stack: Stack;

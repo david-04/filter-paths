@@ -1,5 +1,4 @@
 import { Rule } from "../../types/rules.js";
-import { pathsAreEqual } from "../../utils/path.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Filter a stack
@@ -34,12 +33,16 @@ export namespace filterStack {
     // Filter a stack by file
     //------------------------------------------------------------------------------------------------------------------
 
-    export function byFile(stack: Rule.Stack, file: string, options = { includeArgv: true as boolean } as const) {
+    export function byFile(
+        stack: Rule.Stack,
+        source: Rule.Source.File,
+        options = { includeArgv: true as boolean } as const
+    ) {
         return filterStack(stack, (rule: Rule) => {
             if (rule.source.type === "argv") {
                 return options?.includeArgv ?? true;
             } else {
-                return pathsAreEqual(rule.source.file, file);
+                return rule.source.file.absolute === source.file.absolute;
             }
         });
     }

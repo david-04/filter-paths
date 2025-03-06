@@ -1,6 +1,7 @@
 import { Config } from "../../types/config.js";
 import { Rule } from "../../types/rules.js";
 import { fail } from "../../utils/fail.js";
+import { createFile } from "../helpers/create-file.js";
 import { parseRules } from "../parse/parse-rules.js";
 import { assertIncludeExcludeConsistency } from "../validate/include-exclude-consistency.js";
 import { assertNoRuleUnderImport } from "../validate/no-rule-under-import.js";
@@ -11,8 +12,7 @@ import { loadFile } from "./load-file.js";
 //----------------------------------------------------------------------------------------------------------------------
 
 export function loadRuleset(config: Config) {
-    const rules = new Array<Rule>();
-    config.files.forEach(file => rules.push(createImportFileRule(config, file)));
+    const rules = config.files.map(file => createImportFileRule(config, createFile(undefined, file)));
     const topLevelRuleType = getTopLevelRuleType(rules);
     if (!topLevelRuleType) {
         fail("No filter rules have been defined");
@@ -26,7 +26,7 @@ export function loadRuleset(config: Config) {
 // Load the rules from one file (wrapped into a single "import file" rule)
 //----------------------------------------------------------------------------------------------------------------------
 
-function createImportFileRule(config: Config, file: string) {
+function createImportFileRule(config: Config, file: Rule.Fragment.File) {
     const stack = new Array<Rule>();
     const rule: Rule.ImportFile = {
         directoryScope: undefined,
@@ -66,9 +66,9 @@ function getTopLevelRuleType(rules: ReadonlyArray<Rule>): Rule.IncludeOrExclude 
 // Get the stringified representation
 //----------------------------------------------------------------------------------------------------------------------
 
-function getStringified(file: string) {
+function getStringified(file: Rule.Fragment.File) {
     return {
-        original: `${file}`,
-        effective: `${file}`,
+        original: `${file.original}`,
+        effective: `${file.resolved}`,
     };
 }
