@@ -57,6 +57,11 @@ export namespace Rule {
             readonly matches: (path: string) => boolean;
             readonly original: string;
         };
+
+        export type Stringified = {
+            readonly effective: string;
+            readonly original: string;
+        };
     }
 
     export type Stack = ReadonlyArray<Rule>;
@@ -72,6 +77,7 @@ export namespace Rule {
         readonly parent: Rule;
         readonly source: Rule.Source.File;
         readonly stack: Stack;
+        readonly stringified: Fragment.Stringified;
         readonly type: Type.INCLUDE_GLOB | Type.EXCLUDE_GLOB;
     };
 
@@ -86,6 +92,7 @@ export namespace Rule {
         readonly secondaryAction: undefined | IncludeOrExclude;
         readonly source: Rule.Source.File;
         readonly stack: Stack;
+        readonly stringified: Fragment.Stringified;
         readonly type: Type.DIRECTORY_SCOPE;
     };
 
@@ -97,6 +104,7 @@ export namespace Rule {
         readonly parentToBreak: Rule;
         readonly source: Rule.Source.File;
         readonly stack: Stack;
+        readonly stringified: Fragment.Stringified;
         readonly type: Type.BREAK;
     };
 
@@ -107,6 +115,7 @@ export namespace Rule {
         readonly parent: Rule | undefined;
         readonly source: Rule.Source;
         readonly stack: Stack;
+        readonly stringified: Fragment.Stringified;
         readonly type: Type.IMPORT_FILE;
     };
 }

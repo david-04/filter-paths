@@ -1,7 +1,7 @@
 import { Config } from "../../types/config.js";
 import { Rule } from "../../types/rules.js";
+import { createGlob } from "../helpers/create-glob.js";
 import { assertGlobIsValid } from "../validate/valid-glob.js";
-import { createGlob } from "./create-glob.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Parse an "directory scope" (@) rule
@@ -26,6 +26,7 @@ export function parseDirectoryScopeRule(
         secondaryAction,
         source,
         stack,
+        stringified: getStringified(globData, secondaryAction, glob),
         type: Rule.DIRECTORY_SCOPE,
     };
     stack.push(rule);
@@ -45,4 +46,20 @@ function splitData(data: string) {
         default:
             return { secondaryAction: undefined, globData: data.trim() } as const;
     }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+// Get the stringified representation
+//----------------------------------------------------------------------------------------------------------------------
+
+function getStringified(
+    globData: string,
+    secondaryAction: Rule.IncludeOrExclude | undefined,
+    glob: Rule.Fragment.Glob
+) {
+    const operator = { [Rule.INCLUDE_GLOB]: "@ +", [Rule.EXCLUDE_GLOB]: "@ -", "": "@" }[secondaryAction ?? ""];
+    return {
+        original: `${operator} ${globData}`,
+        effective: `${operator} ${glob.effective}`,
+    };
 }

@@ -55,12 +55,8 @@ function failWithInvalidNesting(
 }
 
 function getStack(rule: Rule) {
-    const stack = new Array<string>();
-    for (let parent: Rule | undefined = rule; parent; parent = parent.parent) {
-        stack.push(parent.source.type === "argv" ? parent.source.argv.trim() : parent.source.line.trim());
-    }
+    const { stack } = rule;
     if (2 < stack.length) {
-        stack.reverse();
         return stack.map((line, index) => `${"".padEnd(index * 2)}${line}`).join("\n");
     } else {
         return undefined;

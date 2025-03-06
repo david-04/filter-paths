@@ -34,7 +34,7 @@ function getRuleParser(config: Config, parent: Rule, rule: Rule.Source.File) {
             return () => parseDirectoryScopeRule(config, parent, rule, data);
         case "import":
         case "include":
-            return () => parseImportFileRule(config, parent, rule, data);
+            return () => parseImportFileRule(config, parent, rule, operator, data);
         default:
             if (BREAK_RULE_OPERATOR.test(operator)) {
                 return () => parseBreakRule(config, parent, rule, operator, data);

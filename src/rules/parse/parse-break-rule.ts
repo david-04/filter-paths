@@ -2,7 +2,7 @@ import { Config } from "../../types/config.js";
 import { Rule } from "../../types/rules.js";
 import { fail } from "../../utils/fail.js";
 import { pathsAreEqual } from "../../utils/path.js";
-import { createGlob } from "./create-glob.js";
+import { createGlob } from "../helpers/create-glob.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Parse a "break" rule
@@ -16,11 +16,12 @@ export function parseBreakRule(config: Config, parent: Rule, source: Rule.Source
     const rule: Rule.Break = {
         children: [],
         directoryScope,
-        glob: glob,
+        glob,
         parent,
         parentToBreak,
         source,
         stack,
+        stringified: getStringified(data, glob),
         type: Rule.BREAK,
     };
     stack.push(rule);
@@ -56,4 +57,15 @@ function getApplicableParents(file: string, parent: Rule) {
         }
     }
     return applicableParents;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+// Create the stringified representation
+//----------------------------------------------------------------------------------------------------------------------
+
+function getStringified(data: string, glob: Rule.Fragment.Glob) {
+    return {
+        original: `< ${data}`,
+        effective: `< ${glob.effective}`,
+    };
 }

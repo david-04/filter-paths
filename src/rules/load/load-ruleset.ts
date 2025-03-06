@@ -3,6 +3,7 @@ import { Rule } from "../../types/rules.js";
 import { fail } from "../../utils/fail.js";
 import { parseRules } from "../parse/parse-rules.js";
 import { assertIncludeExcludeConsistency } from "../validate/include-exclude-consistency.js";
+import { assertNoRuleUnderImport } from "../validate/no-rule-under-import.js";
 import { loadFile } from "./load-file.js";
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -16,6 +17,7 @@ export function loadRuleset(config: Config) {
     if (!topLevelRuleType) {
         fail("No filter rules have been defined");
     }
+    assertNoRuleUnderImport(rules);
     assertIncludeExcludeConsistency(rules, topLevelRuleType);
     return { rules, unmatchedPathAction: topLevelRuleType === Rule.EXCLUDE_GLOB ? "include" : "exclude" } as const;
 }
@@ -33,6 +35,7 @@ function createImportFileRule(config: Config, file: string) {
         parent: undefined,
         source: { type: "argv", argv: file },
         stack,
+        stringified: getStringified(file),
         type: Rule.IMPORT_FILE,
     };
     stack.push(rule);
@@ -57,4 +60,15 @@ function getTopLevelRuleType(rules: ReadonlyArray<Rule>): Rule.IncludeOrExclude 
         }
     }
     return undefined;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+// Get the stringified representation
+//----------------------------------------------------------------------------------------------------------------------
+
+function getStringified(file: string) {
+    return {
+        original: `${file}`,
+        effective: `${file}`,
+    };
 }

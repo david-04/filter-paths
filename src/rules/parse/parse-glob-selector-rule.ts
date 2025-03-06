@@ -1,6 +1,6 @@
 import { Config } from "../../types/config.js";
 import { Rule } from "../../types/rules.js";
-import { createGlob } from "./create-glob.js";
+import { createGlob } from "../helpers/create-glob.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Parse an "include glob" or "exclude glob" rule
@@ -16,7 +16,28 @@ export function parseGlobSelectorRule(
     const { directoryScope } = parent;
     const glob = createGlob(config, source, directoryScope, data);
     const stack = [...parent.stack];
-    const rule: Rule.IncludeOrExcludeGlob = { directoryScope, children: [], parent, source, stack, type, glob };
+    const rule: Rule.IncludeOrExcludeGlob = {
+        directoryScope,
+        children: [],
+        parent,
+        source,
+        stack,
+        stringified: getStringified(type, data, glob),
+        type,
+        glob,
+    };
     stack.push(rule);
     return rule;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+// Get the stringified representation
+//----------------------------------------------------------------------------------------------------------------------
+
+function getStringified(type: Rule.IncludeOrExclude, data: string, glob: Rule.Fragment.Glob) {
+    const operator = type === Rule.INCLUDE_GLOB ? "+" : "-";
+    return {
+        original: `${operator} ${data}`,
+        effective: `${operator} ${glob.effective}`,
+    };
 }
