@@ -35,7 +35,7 @@ function renderRule(rule: Rule, indent: string, showImports: boolean): ReadonlyA
     } else if (rule.type === Rule.BREAK) {
         return printBreakRule(rule, indent, showImports);
     } else {
-        rule satisfies Rule.GlobSelector;
+        rule satisfies Rule.IncludeOrExcludeGlob;
         return printGlobSelectorRule(rule, indent, showImports);
     }
 }
@@ -52,7 +52,7 @@ function renderImportRule(rule: Rule.ImportFile, indent: string, showImports: bo
 // Render an include or exclude glob pattern rule
 //----------------------------------------------------------------------------------------------------------------------
 
-function printGlobSelectorRule(rule: Rule.GlobSelector, indent: string, showImports: boolean) {
+function printGlobSelectorRule(rule: Rule.IncludeOrExcludeGlob, indent: string, showImports: boolean) {
     const operator = rule.type === Rule.INCLUDE_GLOB ? "+" : "-";
     const { effective, original } = rule.glob;
     const suffix = effective === original ? "" : ` (original: ${original})`;
@@ -101,11 +101,7 @@ function printBreakRule(rule: Rule.Break, indent: string, showImports: boolean) 
 
 function countBreakRuleLevels(rule: Rule.Break) {
     let levels = 0;
-    for (
-        let current: Rule.Parent | undefined = rule;
-        current && current !== rule.parentToBreak;
-        current = "parent" in current ? current.parent : undefined
-    ) {
+    for (let current: Rule | undefined = rule; current && current !== rule.parentToBreak; current = current.parent) {
         levels++;
     }
     return levels;

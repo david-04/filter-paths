@@ -30,7 +30,7 @@ function findParent(importRule: Rule.ImportFile, rule: RuleSource.File): Rule {
             continue;
         }
         const parentIndentation = "indentation" in parent.source ? parent.source.indentation : 0;
-        if (rule.indentation === parentIndentation && parent.parent.type !== Rule.RULESET) {
+        if (rule.indentation === parentIndentation && parent.parent) {
             return parent.parent;
         } else if (parentIndentation < rule.indentation) {
             return parent;

@@ -1,12 +1,12 @@
-import { Rule, Ruleset } from "../../types/rules.js";
+import { Rule } from "../../types/rules.js";
 import { fail } from "../../utils/fail.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Assert that "+" and "-" rules are nested correctly and consistently
 //----------------------------------------------------------------------------------------------------------------------
 
-export function validateIncludeExcludeNesting(ruleset: Ruleset, topLevelRuleType: Rule.IncludeOrExclude) {
-    ruleset.rules.forEach(rule => assertValidNesting(topLevelRuleType, rule));
+export function validateIncludeExcludeNesting(rules: ReadonlyArray<Rule>, topLevelRuleType: Rule.IncludeOrExclude) {
+    rules.forEach(rule => assertValidNesting(topLevelRuleType, rule));
 }
 //----------------------------------------------------------------------------------------------------------------------
 // Recursively verify the nesting
@@ -56,10 +56,8 @@ function failWithInvalidNesting(
 
 function getStack(rule: Rule) {
     const stack = new Array<string>();
-    for (let parent: Rule.Parent | undefined = rule; parent; parent = "parent" in parent ? parent.parent : undefined) {
-        if (parent.type !== Rule.RULESET) {
-            stack.push(parent.source.type === "argv" ? parent.source.argv.trim() : parent.source.line.trim());
-        }
+    for (let parent: Rule | undefined = rule; parent; parent = parent.parent) {
+        stack.push(parent.source.type === "argv" ? parent.source.argv.trim() : parent.source.line.trim());
     }
     if (2 < stack.length) {
         stack.reverse();

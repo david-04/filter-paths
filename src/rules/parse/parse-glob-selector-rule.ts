@@ -9,23 +9,23 @@ import { getEffectiveGlob, getGlobMatcher } from "../helpers/create-glob.js";
 
 export function parseGlobSelectorRule(
     parameters: Parameters,
-    parent: Rule.Parent,
+    parent: Rule,
     source: RuleSource.File,
     operator: string,
     data: string
-): Rule.GlobSelector {
+): Rule.IncludeOrExcludeGlob {
     if (["+", "-"].includes(operator)) {
         const atDirectory = "atDirectory" in parent ? parent.atDirectory : undefined;
         const original = data.trim();
         const effective = getEffectiveGlob(atDirectory?.effective, original);
+        const matches = getGlobMatcher(parameters, effective);
         return {
             atDirectory,
             children: [],
             parent,
             source,
             type: "+" === operator ? Rule.INCLUDE_GLOB : Rule.EXCLUDE_GLOB,
-            glob: { original, effective },
-            matches: getGlobMatcher(parameters, effective),
+            glob: { original, effective, matches },
         };
     } else {
         throw new Error(

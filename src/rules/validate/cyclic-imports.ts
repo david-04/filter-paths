@@ -17,7 +17,7 @@ export function assertNoCyclicImport(importRule: Rule.ImportFile) {
 
 function getImportRules(importRule: Rule.ImportFile) {
     const importRules = new Array<Rule.ImportFile>();
-    for (let rule: Rule.Parent | undefined = importRule; rule; rule = "parent" in rule ? rule.parent : undefined) {
+    for (let rule: Rule | undefined = importRule; rule; rule = rule.parent) {
         if (rule.type === Rule.IMPORT_FILE) {
             importRules.push(rule);
         }

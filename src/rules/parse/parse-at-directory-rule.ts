@@ -10,53 +10,57 @@ import { assertGlobIsValid } from "../validate/valid-glob.js";
 
 export function parseAtDirectoryRule(
     parameters: Parameters,
-    parent: Rule.Parent,
+    parent: Rule,
     source: RuleSource.File,
     _operator: string,
     data: string
 ): Rule.AtDirectory {
-    const { glob, secondaryAction } = getGlobAndSecondaryAction(data);
-    assertGlobIsValid(source, glob);
-    const parentGlob = "atDirectory" in parent ? parent.atDirectory?.effective : undefined;
-    const atDirectory = { original: glob, effective: getEffectiveGlob(parentGlob, glob) } as const;
+    const { effectiveData, secondaryAction } = splitData(data);
+    assertGlobIsValid(source, effectiveData);
+    const atDirectory = getAtDirectory(parent, effectiveData);
+    const glob = getGlob(parameters, atDirectory);
 
     return {
         atDirectory,
         children: [],
+        glob,
         parent,
         secondaryAction,
         source,
         type: Rule.AT_DIRECTORY,
-        ...getGlobAndMatcher(parameters, atDirectory),
+        ...getGlob(parameters, atDirectory),
     };
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-// Extract the secondary action
+// Extract the secondary action (include or exclude) from the glob
 //----------------------------------------------------------------------------------------------------------------------
 
-function getGlobAndSecondaryAction(data: string) {
+function splitData(data: string) {
     const match = /^([-+]) (.*)$/.exec(data);
     const operator = match?.[1]?.trim() ?? "";
     const glob = match?.[2]?.trim() ?? "";
     if (glob && "+" === operator) {
-        return { glob, secondaryAction: Rule.INCLUDE_GLOB } as const;
+        return { effectiveData: glob, secondaryAction: Rule.INCLUDE_GLOB } as const;
     } else if (glob && "-" === operator) {
-        return { glob, secondaryAction: Rule.EXCLUDE_GLOB } as const;
+        return { effectiveData: glob, secondaryAction: Rule.EXCLUDE_GLOB } as const;
     } else {
-        return { glob: data, secondaryAction: undefined } as const;
+        return { effectiveData: data, secondaryAction: undefined } as const;
     }
+}
+
+function getAtDirectory(parent: Rule, glob: string) {
+    const effective = parent.atDirectory?.effective ? getEffectiveGlob(parent.atDirectory?.effective, glob) : glob;
+    return { original: glob, effective };
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 // Build the "at-directory" property
 //----------------------------------------------------------------------------------------------------------------------
 
-function getGlobAndMatcher(parameters: Parameters, atDirectory: Rule.AtDirectory["atDirectory"]) {
-    const glob = {
-        effective: getEffectiveGlob(atDirectory.effective, "/**"),
-        original: getEffectiveGlob(atDirectory.original, "/**"),
-    } as const;
-    const matches = getGlobMatcher(parameters, glob.effective);
-    return { glob, matches } as const;
+function getGlob(parameters: Parameters, atDirectory: Rule.AtDirectory["atDirectory"]) {
+    const effective = getEffectiveGlob(atDirectory.effective, "/**");
+    const original = getEffectiveGlob(atDirectory.original, "/**");
+    const matches = getGlobMatcher(parameters, effective);
+    return { effective, original, matches } as const;
 }

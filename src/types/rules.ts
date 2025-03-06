@@ -16,65 +16,76 @@ export namespace Rule {
         EXCLUDE_GLOB = "exclude-glob",
         IMPORT_FILE = "import-file",
         INCLUDE_GLOB = "include-glob",
-        RULESET = "ruleset",
     }
 
-    export const { AT_DIRECTORY, BREAK, EXCLUDE_GLOB, IMPORT_FILE, INCLUDE_GLOB, RULESET } = Type;
+    export const { AT_DIRECTORY, BREAK, EXCLUDE_GLOB, IMPORT_FILE, INCLUDE_GLOB } = Type;
 
     export type IncludeOrExclude = Type.INCLUDE_GLOB | Type.EXCLUDE_GLOB;
 
     //------------------------------------------------------------------------------------------------------------------
-    // Base class
+    // Utility types
     //------------------------------------------------------------------------------------------------------------------
 
-    export type Parent = Rule | Ruleset;
-
-    export namespace Internal {
-        export type Base = {
-            readonly atDirectory:
-                | undefined
-                | {
-                      readonly original: string;
-                      readonly effective: string;
-                  };
-            readonly children: Array<Rule>;
-            readonly parent: Parent;
-            readonly source: RuleSource;
+    export namespace Fragment {
+        export type DirectoryScope = {
+            readonly original: string;
+            readonly effective: string;
         };
 
         export type Glob = {
-            readonly glob: {
-                readonly original: string;
-                readonly effective: string;
-            };
+            readonly original: string;
+            readonly effective: string;
             readonly matches: (path: string) => boolean;
         };
-
-        export type BaseGlob = Base & Glob;
     }
 
     //------------------------------------------------------------------------------------------------------------------
     // Type-specific rules
     //------------------------------------------------------------------------------------------------------------------
 
-    export type ExcludeGlob = Internal.BaseGlob & { readonly type: Type.EXCLUDE_GLOB };
-    export type IncludeGlob = Internal.BaseGlob & { readonly type: Type.INCLUDE_GLOB };
-
-    export type GlobSelector = ExcludeGlob | IncludeGlob;
-
-    export type AtDirectory = Internal.BaseGlob & {
-        readonly secondaryAction: Type.INCLUDE_GLOB | Type.EXCLUDE_GLOB | undefined;
-        readonly type: Type.AT_DIRECTORY;
-    } & {
-        readonly atDirectory: {
-            readonly original: string;
-            readonly effective: string;
-        };
+    export type IncludeOrExcludeGlob = {
+        readonly atDirectory: Fragment.DirectoryScope | undefined;
+        readonly children: Array<Rule>;
+        readonly glob: Fragment.Glob;
+        readonly parent: Rule;
+        readonly source: RuleSource.File;
+        readonly type: Type.INCLUDE_GLOB | Type.EXCLUDE_GLOB;
     };
-    export type Break = Internal.BaseGlob & { readonly type: Type.BREAK; readonly parentToBreak: Rule };
-    export type ImportFile = Internal.Base & { readonly file: string; type: Type.IMPORT_FILE };
+
+    export type IncludeGlob = IncludeOrExcludeGlob & { readonly type: Type.INCLUDE_GLOB };
+    export type ExcludeGlob = IncludeOrExcludeGlob & { readonly type: Type.EXCLUDE_GLOB };
+
+    export type AtDirectory = {
+        readonly atDirectory: Fragment.DirectoryScope;
+        readonly children: Array<Rule>;
+        readonly glob: Fragment.Glob;
+        readonly parent: Rule;
+        readonly secondaryAction: undefined | IncludeOrExclude;
+        readonly source: RuleSource.File;
+        readonly type: Type.AT_DIRECTORY;
+    };
+
+    export type Break = {
+        readonly atDirectory: Fragment.DirectoryScope | undefined;
+        readonly children: Array<Rule>;
+        readonly glob: Fragment.Glob;
+        readonly parent: Rule;
+        readonly parentToBreak: Rule;
+        readonly source: RuleSource.File;
+        readonly type: Type.BREAK;
+    };
+
+    export type ImportFile = {
+        readonly atDirectory: Fragment.DirectoryScope | undefined;
+        readonly children: Array<Rule>;
+        readonly file: string;
+        readonly parent: Rule | undefined;
+        readonly source: RuleSource;
+        readonly type: Type.IMPORT_FILE;
+    };
 }
-export type Rule = Rule.AtDirectory | Rule.Break | Rule.GlobSelector | Rule.ImportFile;
+
+export type Rule = Rule.AtDirectory | Rule.Break | Rule.IncludeOrExcludeGlob | Rule.ImportFile;
 
 //------------------------------------------------------------------------------------------------------------------
 // The whole rule set
@@ -82,5 +93,4 @@ export type Rule = Rule.AtDirectory | Rule.Break | Rule.GlobSelector | Rule.Impo
 
 export type Ruleset = {
     readonly rules: Array<Rule>;
-    readonly type: Rule.Type.RULESET;
 };

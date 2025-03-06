@@ -10,7 +10,7 @@ import { parseRules } from "./parse-rules.js";
 
 export function parseImportFileRule(
     parameters: Parameters,
-    parent: Rule.Parent,
+    parent: Rule,
     source: RuleSource,
     _operator: string,
     data: string

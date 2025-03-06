@@ -11,7 +11,7 @@ import { getEffectiveGlob, getGlobMatcher } from "../helpers/create-glob.js";
 
 export function parseBreakRule(
     parameters: Parameters,
-    parent: Rule.Parent,
+    parent: Rule,
     source: RuleSource.File,
     operator: string,
     data: string
@@ -19,6 +19,7 @@ export function parseBreakRule(
     const atDirectory = "atDirectory" in parent ? parent.atDirectory : undefined;
     const original = data.trim();
     const effective = getEffectiveGlob(atDirectory?.effective, original);
+    const matches = getGlobMatcher(parameters, effective);
     return {
         atDirectory,
         children: [],
@@ -26,8 +27,7 @@ export function parseBreakRule(
         parentToBreak: getParentToBreak(parent, operator, source),
         source,
         type: Rule.BREAK,
-        glob: { original, effective },
-        matches: getGlobMatcher(parameters, effective),
+        glob: { original, effective, matches },
     };
 }
 
@@ -35,7 +35,7 @@ export function parseBreakRule(
 // Find the parent rule to break
 //----------------------------------------------------------------------------------------------------------------------
 
-function getParentToBreak(parent: Rule.Parent, operator: string, source: RuleSource.File) {
+function getParentToBreak(parent: Rule, operator: string, source: RuleSource.File) {
     const targetIndentation = source.indentation - operator.length + 1;
     for (const { currentRule, currentIndentation } of getApplicableParents(source.file, parent)) {
         if (currentIndentation === targetIndentation) {
@@ -51,19 +51,11 @@ function getParentToBreak(parent: Rule.Parent, operator: string, source: RuleSou
 // Extract all applicable parents that could be broken
 //----------------------------------------------------------------------------------------------------------------------
 
-function getApplicableParents(file: string, parent: Rule.Parent) {
+function getApplicableParents(file: string, parent: Rule) {
     const applicableParents = new Array<{ currentRule: Rule; currentIndentation: number }>();
 
-    for (
-        let current: Rule.Parent | undefined = parent;
-        current;
-        current = current.type === Rule.RULESET ? undefined : current.parent
-    ) {
-        if (
-            current.type !== Rule.RULESET &&
-            current.source.type === "file" &&
-            pathsAreEqual(current.source.file, file)
-        ) {
+    for (let current: Rule | undefined = parent; current; current = current.parent) {
+        if (current.source.type === "file" && pathsAreEqual(current.source.file, file)) {
             applicableParents.push({ currentRule: current, currentIndentation: current.source.indentation });
         }
     }
