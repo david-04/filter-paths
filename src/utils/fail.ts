@@ -1,5 +1,5 @@
 import { exit } from "node:process";
-import { RuleSource } from "../types/rule-source.js";
+import { Rule } from "../types/rules.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Error with a readable message (that does not require printing a stack trace)
@@ -11,9 +11,9 @@ export class DescriptiveError extends Error {}
 // Throw a DescriptiveError
 //----------------------------------------------------------------------------------------------------------------------
 
-export function fail(source: RuleSource, message: string): never;
+export function fail(source: Rule.Source, message: string): never;
 export function fail(message: string, cause?: unknown): never;
-export function fail(sourceOrMessage: RuleSource | string, messageOrCause: unknown): never {
+export function fail(sourceOrMessage: Rule.Source | string, messageOrCause: unknown): never {
     if ("string" === typeof sourceOrMessage) {
         throw new DescriptiveError(sourceOrMessage, { cause: messageOrCause });
     } else if (sourceOrMessage.type === "file") {

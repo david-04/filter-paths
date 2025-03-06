@@ -1,6 +1,5 @@
 import { existsSync, readFileSync, statSync } from "node:fs";
 import { dirname } from "node:path";
-import { RuleSource } from "../../types/rule-source.js";
 import { Rule } from "../../types/rules.js";
 import { fail } from "../../utils/fail.js";
 import { resolvePath } from "../../utils/path.js";
@@ -22,7 +21,7 @@ export function loadFile(parent: Rule.ImportFile, file: string) {
 // Verify that the file exists
 //----------------------------------------------------------------------------------------------------------------------
 
-function assertFileExists(file: string, source: RuleSource) {
+function assertFileExists(file: string, source: Rule.Source) {
     const includedIn = source.type === "file" ? ` (included in ${source.file} at line ${source.lineNumber})` : "";
     if (!existsSync(file)) {
         fail(`File ${file}${includedIn} does not exist`);
@@ -35,21 +34,21 @@ function assertFileExists(file: string, source: RuleSource) {
 // Parse a single file
 //----------------------------------------------------------------------------------------------------------------------
 
-function loadLines(parent: RuleSource, file: string) {
+function loadLines(parent: Rule.Source, file: string) {
     return readFileSync(file)
         .toString()
         .split(/\r?\n/)
         .map((line, index) => ({ file, line, lineNumber: index + 1 }))
         .filter(item => !/^\s*(#.*)?$/.test(item.line))
-        .map((item): RuleSource.File => ({ ...item, indentation: -1, parent, type: "file" }))
-        .map((item): RuleSource.File => ({ ...item, indentation: getIndentation(item) }));
+        .map((item): Rule.Source.File => ({ ...item, indentation: -1, parent, type: "file" }))
+        .map((item): Rule.Source.File => ({ ...item, indentation: getIndentation(item) }));
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 // Calculate the indentation
 //----------------------------------------------------------------------------------------------------------------------
 
-function getIndentation(rule: RuleSource.File) {
+function getIndentation(rule: Rule.Source.File) {
     const leadingWhitespace = rule.line.replace(/[^\s].*$/, "");
     const leadingArrows = (/^[^\sa-z\d]*</i.exec(rule.line.trim())?.[0] ?? "").replace(/<$/, "");
     if (0 <= leadingWhitespace.indexOf("\t")) {

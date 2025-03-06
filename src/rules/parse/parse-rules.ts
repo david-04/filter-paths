@@ -1,5 +1,4 @@
 import { Config } from "../../types/config.js";
-import { RuleSource } from "../../types/rule-source.js";
 import { Rule } from "../../types/rules.js";
 import { fail } from "../../utils/fail.js";
 import { pathsAreEqual } from "../../utils/path.js";
@@ -9,7 +8,7 @@ import { parseRule } from "./parse-rule.js";
 // Parse all rules
 //----------------------------------------------------------------------------------------------------------------------
 
-export function parseRules(config: Config, importRule: Rule.ImportFile, rules: ReadonlyArray<RuleSource.File>) {
+export function parseRules(config: Config, importRule: Rule.ImportFile, rules: ReadonlyArray<Rule.Source.File>) {
     for (const rule of rules) {
         const parent = findParent(importRule, rule);
         if (parent.type === Rule.IMPORT_FILE && parent !== importRule) {
@@ -24,7 +23,7 @@ export function parseRules(config: Config, importRule: Rule.ImportFile, rules: R
 // Find the parent rule to attach the child to
 //----------------------------------------------------------------------------------------------------------------------
 
-function findParent(importRule: Rule.ImportFile, rule: RuleSource.File): Rule {
+function findParent(importRule: Rule.ImportFile, rule: Rule.Source.File): Rule {
     for (const parent of flattenToLastChild(importRule.children).reverse()) {
         if (!isSameFile(parent, rule)) {
             continue;
@@ -39,7 +38,7 @@ function findParent(importRule: Rule.ImportFile, rule: RuleSource.File): Rule {
     return importRule;
 }
 
-function isSameFile(parent: Rule, rule: RuleSource.File) {
+function isSameFile(parent: Rule, rule: Rule.Source.File) {
     return pathsAreEqual(parent.source.type === "file" ? parent.source.file : parent.source.argv, rule.file);
 }
 

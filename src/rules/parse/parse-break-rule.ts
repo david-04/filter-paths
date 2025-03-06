@@ -1,5 +1,4 @@
 import { Config } from "../../types/config.js";
-import { RuleSource } from "../../types/rule-source.js";
 import { Rule } from "../../types/rules.js";
 import { fail } from "../../utils/fail.js";
 import { pathsAreEqual } from "../../utils/path.js";
@@ -12,7 +11,7 @@ import { getEffectiveGlob, getGlobMatcher } from "../helpers/create-glob.js";
 export function parseBreakRule(
     config: Config,
     parent: Rule,
-    source: RuleSource.File,
+    source: Rule.Source.File,
     operator: string,
     data: string
 ): Rule.Break {
@@ -35,7 +34,7 @@ export function parseBreakRule(
 // Find the parent rule to break
 //----------------------------------------------------------------------------------------------------------------------
 
-function getParentToBreak(parent: Rule, operator: string, source: RuleSource.File) {
+function getParentToBreak(parent: Rule, operator: string, source: Rule.Source.File) {
     const targetIndentation = source.indentation - operator.length + 1;
     for (const { currentRule, currentIndentation } of getApplicableParents(source.file, parent)) {
         if (currentIndentation === targetIndentation) {

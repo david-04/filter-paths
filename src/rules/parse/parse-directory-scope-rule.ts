@@ -1,5 +1,4 @@
 import { Config } from "../../types/config.js";
-import { RuleSource } from "../../types/rule-source.js";
 import { Rule } from "../../types/rules.js";
 import { getEffectiveGlob, getGlobMatcher } from "../helpers/create-glob.js";
 import { assertGlobIsValid } from "../validate/valid-glob.js";
@@ -11,7 +10,7 @@ import { assertGlobIsValid } from "../validate/valid-glob.js";
 export function parseDirectoryScopeRule(
     config: Config,
     parent: Rule,
-    source: RuleSource.File,
+    source: Rule.Source.File,
     data: string
 ): Rule.DirectoryScope {
     const { effectiveData, secondaryAction } = splitData(data);

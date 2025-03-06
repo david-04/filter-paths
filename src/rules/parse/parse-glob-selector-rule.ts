@@ -1,5 +1,4 @@
 import { Config } from "../../types/config.js";
-import { RuleSource } from "../../types/rule-source.js";
 import { Rule } from "../../types/rules.js";
 import { getEffectiveGlob, getGlobMatcher } from "../helpers/create-glob.js";
 
@@ -10,7 +9,7 @@ import { getEffectiveGlob, getGlobMatcher } from "../helpers/create-glob.js";
 export function parseGlobSelectorRule(
     config: Config,
     parent: Rule,
-    source: RuleSource.File,
+    source: Rule.Source.File,
     type: Rule.IncludeOrExclude,
     data: string
 ): Rule.IncludeOrExcludeGlob {

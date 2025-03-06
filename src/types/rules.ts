@@ -1,11 +1,31 @@
-import { RuleSource } from "./rule-source.js";
-
 //----------------------------------------------------------------------------------------------------------------------
-// Parsed rules
+// Filter rules
 //----------------------------------------------------------------------------------------------------------------------
 
 export namespace Rule {
     //
+    //------------------------------------------------------------------------------------------------------------------
+    // Reference to where a rule was loaded from
+    //------------------------------------------------------------------------------------------------------------------
+
+    export namespace Source {
+        export type File = {
+            readonly file: string;
+            readonly indentation: number;
+            readonly line: string;
+            readonly lineNumber: number;
+            readonly parent: Source | undefined;
+            readonly type: "file";
+        };
+
+        export type Argv = {
+            readonly argv: string;
+            readonly type: "argv";
+        };
+    }
+
+    export type Source = Source.File | Source.Argv;
+
     //------------------------------------------------------------------------------------------------------------------
     // Types
     //------------------------------------------------------------------------------------------------------------------
@@ -48,7 +68,7 @@ export namespace Rule {
         readonly children: Array<Rule>;
         readonly glob: Fragment.Glob;
         readonly parent: Rule;
-        readonly source: RuleSource.File;
+        readonly source: Rule.Source.File;
         readonly type: Type.INCLUDE_GLOB | Type.EXCLUDE_GLOB;
     };
 
@@ -61,7 +81,7 @@ export namespace Rule {
         readonly glob: Fragment.Glob;
         readonly parent: Rule;
         readonly secondaryAction: undefined | IncludeOrExclude;
-        readonly source: RuleSource.File;
+        readonly source: Rule.Source.File;
         readonly type: Type.DIRECTORY_SCOPE;
     };
 
@@ -71,7 +91,7 @@ export namespace Rule {
         readonly glob: Fragment.Glob;
         readonly parent: Rule;
         readonly parentToBreak: Rule;
-        readonly source: RuleSource.File;
+        readonly source: Rule.Source.File;
         readonly type: Type.BREAK;
     };
 
@@ -80,7 +100,7 @@ export namespace Rule {
         readonly children: Array<Rule>;
         readonly file: string;
         readonly parent: Rule | undefined;
-        readonly source: RuleSource;
+        readonly source: Rule.Source;
         readonly type: Type.IMPORT_FILE;
     };
 }

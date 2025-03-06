@@ -1,5 +1,4 @@
 import { Config } from "../../types/config.js";
-import { RuleSource } from "../../types/rule-source.js";
 import { Rule } from "../../types/rules.js";
 import { fail } from "../../utils/fail.js";
 import { parseBreakRule } from "./parse-break-rule.js";
@@ -13,7 +12,7 @@ const BREAK_RULE_OPERATOR = /^[^\sa-z\d/]*<(\s|$)/;
 // Dispatch a single rule into the matching parser
 //----------------------------------------------------------------------------------------------------------------------
 
-export function parseRule(config: Config, parent: Rule, source: RuleSource.File) {
+export function parseRule(config: Config, parent: Rule, source: Rule.Source.File) {
     const parse = getRuleParser(config, parent, source);
     const rule = parse();
     parent.children.push(rule);
@@ -24,7 +23,7 @@ export function parseRule(config: Config, parent: Rule, source: RuleSource.File)
 // Get the parser for a specific operator
 //----------------------------------------------------------------------------------------------------------------------
 
-function getRuleParser(config: Config, parent: Rule, rule: RuleSource.File) {
+function getRuleParser(config: Config, parent: Rule, rule: Rule.Source.File) {
     const { operator, data } = splitOperatorAndData(rule);
     switch (operator) {
         case "+":
@@ -48,7 +47,7 @@ function getRuleParser(config: Config, parent: Rule, rule: RuleSource.File) {
 // Split a line into the operator and the data
 //----------------------------------------------------------------------------------------------------------------------
 
-function splitOperatorAndData(rule: RuleSource.File) {
+function splitOperatorAndData(rule: Rule.Source.File) {
     const line = normalizeTrimmedLine(rule.line.trim());
     const match = /\s/.exec(line);
     return match
