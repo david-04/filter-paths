@@ -3,7 +3,7 @@ import { dirname } from "node:path";
 import { Rule } from "../../types/rules.js";
 import { fail } from "../../utils/fail.js";
 import { resolvePath } from "../../utils/path.js";
-import { assertNoCyclicImport } from "../validate/no-cyclic-imports.js";
+import { assertNoCyclicImports } from "../validate/no-cyclic-imports.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Load and parse given file
@@ -13,7 +13,7 @@ export function loadFile(parent: Rule.ImportFile, file: string) {
     const resolvedFile =
         parent.source.type === "file" ? resolvePath(dirname(parent.source.file), file) : resolvePath(file);
     assertFileExists(resolvedFile, parent.source);
-    assertNoCyclicImport(parent);
+    assertNoCyclicImports(parent);
     return loadLines(parent.source, resolvedFile);
 }
 

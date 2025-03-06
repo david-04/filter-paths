@@ -2,7 +2,7 @@ import { Config } from "../../types/config.js";
 import { Rule } from "../../types/rules.js";
 import { fail } from "../../utils/fail.js";
 import { pathsAreEqual } from "../../utils/path.js";
-import { getEffectiveGlob, getGlobMatcher } from "../helpers/create-glob.js";
+import { createGlob } from "./create-glob.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Parse a "break" rule
@@ -15,19 +15,10 @@ export function parseBreakRule(
     operator: string,
     data: string
 ): Rule.Break {
-    const directoryScope = "directoryScope" in parent ? parent.directoryScope : undefined;
-    const original = data.trim();
-    const effective = getEffectiveGlob(directoryScope?.effective, original);
-    const matches = getGlobMatcher(config, effective);
-    return {
-        directoryScope,
-        children: [],
-        parent,
-        parentToBreak: getParentToBreak(parent, operator, source),
-        source,
-        type: Rule.BREAK,
-        glob: { original, effective, matches },
-    };
+    const { directoryScope } = parent;
+    const glob = createGlob(config, source, directoryScope, data);
+    const parentToBreak = getParentToBreak(parent, operator, source);
+    return { children: [], directoryScope, glob: glob, parent, parentToBreak, source, type: Rule.BREAK };
 }
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -5,7 +5,7 @@ import { fail } from "../../utils/fail.js";
 // Assert that "+" and "-" rules are nested correctly and consistently
 //----------------------------------------------------------------------------------------------------------------------
 
-export function validateIncludeExcludeNesting(rules: ReadonlyArray<Rule>, topLevelRuleType: Rule.IncludeOrExclude) {
+export function assertIncludeExcludeConsistency(rules: ReadonlyArray<Rule>, topLevelRuleType: Rule.IncludeOrExclude) {
     rules.forEach(rule => assertValidNesting(topLevelRuleType, rule));
 }
 //----------------------------------------------------------------------------------------------------------------------

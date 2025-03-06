@@ -1,6 +1,6 @@
 import { Config } from "../../types/config.js";
 import { Rule } from "../../types/rules.js";
-import { getEffectiveGlob, getGlobMatcher } from "../helpers/create-glob.js";
+import { createGlob } from "./create-glob.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Parse an "include glob" or "exclude glob" rule
@@ -13,16 +13,7 @@ export function parseGlobSelectorRule(
     type: Rule.IncludeOrExclude,
     data: string
 ): Rule.IncludeOrExcludeGlob {
-    const directoryScope = "directoryScope" in parent ? parent.directoryScope : undefined;
-    const original = data.trim();
-    const effective = getEffectiveGlob(directoryScope?.effective, original);
-    const matches = getGlobMatcher(config, effective);
-    return {
-        directoryScope,
-        children: [],
-        parent,
-        source,
-        type,
-        glob: { original, effective, matches },
-    };
+    const { directoryScope } = parent;
+    const glob = createGlob(config, source, directoryScope, data);
+    return { directoryScope, children: [], parent, source, type, glob };
 }

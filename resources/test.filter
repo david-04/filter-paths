@@ -12,9 +12,9 @@
   - /h
 + /i
   - /j
-    + abc
-       - x
+    + /abc
+       - /x
   |<<<< /xyz
-    + xyz
+    + /xyz
 
   # comment

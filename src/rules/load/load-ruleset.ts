@@ -2,7 +2,7 @@ import { Config } from "../../types/config.js";
 import { Rule } from "../../types/rules.js";
 import { fail } from "../../utils/fail.js";
 import { parseRules } from "../parse/parse-rules.js";
-import { validateIncludeExcludeNesting } from "../validate/validate-include-exclude-nesting.js";
+import { assertIncludeExcludeConsistency } from "../validate/include-exclude-consistency.js";
 import { loadFile } from "./load-file.js";
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -16,7 +16,7 @@ export function loadRuleset(config: Config) {
     if (!topLevelRuleType) {
         fail("No filter rules have been defined");
     }
-    validateIncludeExcludeNesting(rules, topLevelRuleType);
+    assertIncludeExcludeConsistency(rules, topLevelRuleType);
     return { rules, unmatchedPathAction: topLevelRuleType === Rule.EXCLUDE_GLOB ? "include" : "exclude" } as const;
 }
 

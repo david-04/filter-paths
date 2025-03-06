@@ -48,14 +48,14 @@ export namespace Rule {
 
     export namespace Fragment {
         export type DirectoryScope = {
-            readonly original: string;
             readonly effective: string;
+            readonly original: string;
         };
 
         export type Glob = {
-            readonly original: string;
             readonly effective: string;
             readonly matches: (path: string) => boolean;
+            readonly original: string;
         };
     }
 
@@ -64,8 +64,8 @@ export namespace Rule {
     //------------------------------------------------------------------------------------------------------------------
 
     export type IncludeOrExcludeGlob = {
-        readonly directoryScope: Fragment.DirectoryScope | undefined;
         readonly children: Array<Rule>;
+        readonly directoryScope: Fragment.DirectoryScope | undefined;
         readonly glob: Fragment.Glob;
         readonly parent: Rule;
         readonly source: Rule.Source.File;
@@ -76,8 +76,8 @@ export namespace Rule {
     export type ExcludeGlob = IncludeOrExcludeGlob & { readonly type: Type.EXCLUDE_GLOB };
 
     export type DirectoryScope = {
-        readonly directoryScope: Fragment.DirectoryScope;
         readonly children: Array<Rule>;
+        readonly directoryScope: Fragment.DirectoryScope;
         readonly glob: Fragment.Glob;
         readonly parent: Rule;
         readonly secondaryAction: undefined | IncludeOrExclude;
@@ -86,8 +86,8 @@ export namespace Rule {
     };
 
     export type Break = {
-        readonly directoryScope: Fragment.DirectoryScope | undefined;
         readonly children: Array<Rule>;
+        readonly directoryScope: Fragment.DirectoryScope | undefined;
         readonly glob: Fragment.Glob;
         readonly parent: Rule;
         readonly parentToBreak: Rule;
@@ -96,8 +96,8 @@ export namespace Rule {
     };
 
     export type ImportFile = {
-        readonly directoryScope: Fragment.DirectoryScope | undefined;
         readonly children: Array<Rule>;
+        readonly directoryScope: Fragment.DirectoryScope | undefined;
         readonly file: string;
         readonly parent: Rule | undefined;
         readonly source: Rule.Source;
