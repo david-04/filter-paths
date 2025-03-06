@@ -12,7 +12,6 @@ export function parseDirectoryScopeRule(
     config: Config,
     parent: Rule,
     source: RuleSource.File,
-    _operator: string,
     data: string
 ): Rule.DirectoryScope {
     const { effectiveData, secondaryAction } = splitData(data);

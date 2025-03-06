@@ -8,7 +8,7 @@ import { parseRules } from "./parse-rules.js";
 // Parse an "include path" rule
 //----------------------------------------------------------------------------------------------------------------------
 
-export function parseImportFileRule(config: Config, parent: Rule, source: RuleSource, _operator: string, data: string) {
+export function parseImportFileRule(config: Config, parent: Rule, source: RuleSource, data: string) {
     const file = data.trim();
     const rule: Rule.ImportFile = {
         directoryScope: "directoryScope" in parent ? parent.directoryScope : undefined,

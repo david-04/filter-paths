@@ -4,7 +4,7 @@ import { RuleSource } from "../../types/rule-source.js";
 import { Rule } from "../../types/rules.js";
 import { fail } from "../../utils/fail.js";
 import { resolvePath } from "../../utils/path.js";
-import { assertNoCyclicImport } from "../validate/cyclic-imports.js";
+import { assertNoCyclicImport } from "../validate/no-cyclic-imports.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Load and parse given file

@@ -4,6 +4,7 @@ import { fail } from "../../utils/fail.js";
 //----------------------------------------------------------------------------------------------------------------------
 // Verify that files don't include one another recursively
 //----------------------------------------------------------------------------------------------------------------------
+
 export function assertNoCyclicImport(importRule: Rule.ImportFile) {
     const importRules = getImportRules(importRule);
     if (wasImportedBefore(importRules, importRule.file)) {
