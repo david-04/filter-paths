@@ -1,5 +1,5 @@
 import { Rule } from "../../types/rules.js";
-import { isArgv, isBreak } from "./rule-type-utils.js";
+import { isArgv, isGoto } from "./rule-type-utils.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Filter a stack
@@ -10,32 +10,33 @@ export function filterStack(stack: Rule.Stack, ...filters: ReadonlyArray<(rule: 
     for (const filter of filters) {
         filtered = filtered.map(rule => ({ ...rule, shouldDelete: rule.shouldDelete || !filter(rule.rule) }));
     }
-    return restoreParentsToBreak(filtered)
-        .filter(({ shouldDelete, rule }) => !shouldDelete || isParentToBreak(rule, stack))
+    return restoreParentsWithDependentGotoRules(filtered)
+        .filter(({ shouldDelete, rule }) => !shouldDelete || hasDependentGotoRules(rule, stack))
         .map(({ rule }) => rule);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-// Restore all "parents-to-break" whose children have not been deleted
+// Restore all "rule-to-bypass" rules whose "goto" children have NOT been deleted
 //----------------------------------------------------------------------------------------------------------------------
 
-export function restoreParentsToBreak(stack: ReadonlyArray<{ shouldDelete: boolean; rule: Rule }>) {
+export function restoreParentsWithDependentGotoRules(stack: ReadonlyArray<{ shouldDelete: boolean; rule: Rule }>) {
     const reversed = stack.slice().reverse();
     const rules = reversed.map(item => item.rule);
     for (const item of reversed) {
-        item.shouldDelete = item.shouldDelete && !isParentToBreak(item.rule, rules);
+        item.shouldDelete = item.shouldDelete && !hasDependentGotoRules(item.rule, rules);
     }
     return reversed.slice().reverse();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-// Verify if the given rule is the "parent to break"-reference of a "break" rule within the stack
+// Check if the given rule has dependent "goto" rules in the stack
 //----------------------------------------------------------------------------------------------------------------------
 
-function isParentToBreak(rule: Rule, stack: Rule.Stack) {
+function hasDependentGotoRules(rule: Rule, stack: Rule.Stack) {
+    // TODO: Ignore children that are marked for deletion
     return stack
-        .filter(isBreak)
-        .map(rule => rule.parentToBreak)
+        .filter(isGoto)
+        .map(rule => rule.ruleToSkip)
         .includes(rule);
 }
 

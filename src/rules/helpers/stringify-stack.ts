@@ -1,32 +1,47 @@
 import { Rule } from "../../types/rules.js";
-import { isBreak } from "./rule-type-utils.js";
-
-const INDENT = 2;
+import { isGoto } from "./rule-type-utils.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Stringify a rule stack
 //----------------------------------------------------------------------------------------------------------------------
 
-export function stringifyStack(
+export function stringifyStack(stack: Rule.Stack, stringify: (rule: Rule) => string | ReadonlyArray<string>) {
+    return stack.flatMap((rule, index) => stringifyRule(stack, rule, index, stringify)).join("\n");
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+// Stringify a rule within a stack
+//----------------------------------------------------------------------------------------------------------------------
+
+function stringifyRule(
     stack: Rule.Stack,
-    stringify: (rule: Rule, indent: string) => string | ReadonlyArray<string>
+    rule: Rule,
+    index: number,
+    stringify: (rule: Rule) => string | ReadonlyArray<string>
 ) {
-    return stack.flatMap((rule, index) => stringify(rule, getIndent(stack, index, rule, INDENT))).join("\n");
+    const indent = getIndent(stack, index, rule);
+    const lineOrLines = stringify(rule);
+    const lines: ReadonlyArray<string> = Array.isArray(lineOrLines) ? lineOrLines : [lineOrLines];
+    return lines.map(line => `${indent}${line}`);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 // Calculate the indent
 //----------------------------------------------------------------------------------------------------------------------
 
-function getIndent(stack: Rule.Stack, index: number, rule: Rule, stepWidth: number) {
-    if (isBreak(rule)) {
-        const parentToBreakIndex = stack.findIndex(current => current === rule.parentToBreak);
-        if (0 <= parentToBreakIndex) {
-            const indicatorWidth = stepWidth * (index - parentToBreakIndex);
-            return ["".padEnd(2 * stepWidth - indicatorWidth), "|", "".padEnd(indicatorWidth - 1, "<")].join("");
-        }
+function getIndent(stack: Rule.Stack, index: number, rule: Rule) {
+    const indentWidth = 2;
+    const gotoArrow = isGoto(rule) ? getGotoRuleArrow(stack, indentWidth, index, rule) : "";
+    return "".padEnd(index * indentWidth - gotoArrow.length) + gotoArrow;
+}
+
+function getGotoRuleArrow(stack: Rule.Stack, indentWidth: number, index: number, rule: Rule.Goto) {
+    const parentToSkip = stack.findIndex(current => current === rule.ruleToSkip);
+    if (0 <= parentToSkip) {
+        const indicatorWidth = indentWidth * (index - parentToSkip);
+        return ["|", "".padEnd(indicatorWidth - 1, "<")].join("");
     }
-    return "".padEnd(index * stepWidth);
+    return "";
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -39,7 +54,7 @@ export namespace stringifyStack {
     //------------------------------------------------------------------------------------------------------------------
 
     export function asOriginal(stack: Rule.Stack) {
-        return stringifyStack(stack, (rule, indent) => `${indent}${rule.stringified.original}`);
+        return stringifyStack(stack, ({ stringified }) => concat(stringified.operator, stringified.original));
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -47,6 +62,14 @@ export namespace stringifyStack {
     //------------------------------------------------------------------------------------------------------------------
 
     export function asEffective(stack: Rule.Stack) {
-        return stringifyStack(stack, (rule, indent) => `${indent}${rule.stringified.effective}`);
+        return stringifyStack(stack, ({ stringified }) => concat(stringified.operator, stringified.effective));
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
+    // Concatenate non-empty values
+    //------------------------------------------------------------------------------------------------------------------
+
+    function concat(...values: ReadonlyArray<string>) {
+        return values.filter(value => value).join(" ");
     }
 }

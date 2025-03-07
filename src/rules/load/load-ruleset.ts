@@ -5,6 +5,7 @@ import { createFileDescriptor } from "../helpers/create-file-descriptor.js";
 import { invert, isDirectoryScope, isIncludeOrExcludeGlob } from "../helpers/rule-type-utils.js";
 import { parseImportFileRule } from "../parse/parse-import-file-rule.js";
 import { assertIncludeExcludeConsistency } from "../validate/include-exclude-consistency.js";
+import { assertNoRuleUnderGoto } from "../validate/no-rule-under-goto.js";
 import { assertNoRuleUnderImport } from "../validate/no-rule-under-import.js";
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -47,5 +48,6 @@ function getFirstFilterType(rules: ReadonlyArray<Rule>): Rule.Type.IncludeOrExcl
 
 function validateRuleset(ruleset: Ruleset) {
     assertNoRuleUnderImport(ruleset.rules);
+    assertNoRuleUnderGoto(ruleset.rules);
     assertIncludeExcludeConsistency(ruleset);
 }

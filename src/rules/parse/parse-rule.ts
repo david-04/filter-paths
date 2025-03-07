@@ -1,12 +1,12 @@
 import { Config } from "../../types/config.js";
 import { Rule } from "../../types/rules.js";
 import { fail } from "../../utils/fail.js";
-import { parseBreakRule } from "./parse-break-rule.js";
 import { parseDirectoryScopeRule } from "./parse-directory-scope-rule.js";
 import { parseGlobSelectorRule } from "./parse-glob-selector-rule.js";
+import { parseGotoRule } from "./parse-goto-rule.js";
 import { parseImportFileRule } from "./parse-import-file-rule.js";
 
-const BREAK_RULE_OPERATOR = /^[^\sa-z\d/]*<(\s|$)/;
+const GOTO_RULE_OPERATOR = /^[^\sa-z\d/]*<(\s|$)/;
 
 //----------------------------------------------------------------------------------------------------------------------
 // Dispatch a single rule into the matching parser
@@ -36,8 +36,8 @@ function getRuleParser(config: Config, parent: Rule, rule: Rule.Source.File) {
         case "include":
             return () => parseImportFileRule.fromFile(config, parent, rule, operator, data);
         default:
-            if (BREAK_RULE_OPERATOR.test(operator)) {
-                return () => parseBreakRule(config, parent, rule, operator, data);
+            if (GOTO_RULE_OPERATOR.test(operator)) {
+                return () => parseGotoRule(config, parent, rule, operator, data);
             }
     }
     return fail(rule, `Invalid operator: ${operator} (expected +, -, @, <, import or include)`);
@@ -60,7 +60,7 @@ function splitOperatorAndData(rule: Rule.Source.File) {
 //----------------------------------------------------------------------------------------------------------------------
 
 function normalizeTrimmedLine(line: string) {
-    if (BREAK_RULE_OPERATOR.exec(line)) {
+    if (GOTO_RULE_OPERATOR.exec(line)) {
         return line;
     } else {
         return line

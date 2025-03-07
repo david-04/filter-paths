@@ -62,13 +62,13 @@ export namespace Rule {
 
     export enum Type {
         DIRECTORY_SCOPE = "directory-scope",
-        BREAK = "break",
+        GOTO = "goto",
         EXCLUDE_GLOB = "exclude-glob",
-        IMPORT_FILE = "import-file",
+        IMPORT_FILE = "import-glob",
         INCLUDE_GLOB = "include-glob",
     }
 
-    export const { DIRECTORY_SCOPE, BREAK, EXCLUDE_GLOB, IMPORT_FILE, INCLUDE_GLOB } = Type;
+    export const { DIRECTORY_SCOPE, GOTO, EXCLUDE_GLOB, IMPORT_FILE, INCLUDE_GLOB } = Type;
 
     export namespace Type {
         export type IncludeOrExclude = Type.INCLUDE_GLOB | Type.EXCLUDE_GLOB;
@@ -106,16 +106,16 @@ export namespace Rule {
         readonly type: Type.DIRECTORY_SCOPE;
     };
 
-    export type Break = {
+    export type Goto = {
         readonly children: Array<Rule>;
         readonly directoryScope: Fragment.DirectoryScope | undefined;
         readonly glob: Fragment.Glob;
         readonly parent: Rule;
-        readonly parentToBreak: Rule;
+        readonly ruleToSkip: Rule;
         readonly source: Rule.Source.File;
         readonly stack: Stack;
         readonly stringified: Fragment.Stringified;
-        readonly type: Type.BREAK;
+        readonly type: Type.GOTO;
     };
 
     export type ImportFile = {
@@ -130,7 +130,7 @@ export namespace Rule {
     };
 }
 
-export type Rule = Rule.DirectoryScope | Rule.Break | Rule.IncludeOrExclude | Rule.ImportFile;
+export type Rule = Rule.DirectoryScope | Rule.Goto | Rule.IncludeOrExclude | Rule.ImportFile;
 
 //------------------------------------------------------------------------------------------------------------------
 // The whole rule set

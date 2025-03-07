@@ -1,66 +1,55 @@
 import { Rule, Ruleset } from "../../types/rules.js";
 import { fail } from "../../utils/fail.js";
-import { isDirectoryScope, isIncludeOrExcludeGlob } from "../helpers/rule-type-utils.js";
+import { forEachRuleRecursive } from "../helpers/for-each-rule-recursive.js";
+import { invert, isDirectoryScope, isIncludeOrExcludeGlob } from "../helpers/rule-type-utils.js";
+import { stringifyStack } from "../helpers/stringify-stack.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Assert that "+" and "-" rules are nested correctly and consistently
 //----------------------------------------------------------------------------------------------------------------------
 
 export function assertIncludeExcludeConsistency(ruleset: Ruleset) {
-    ruleset.rules.forEach(rule => assertValidNesting(invert(ruleset.unmatchedPathAction), rule));
+    forEachRuleRecursive(ruleset.rules, rule => assertRuleIsValid(rule, ruleset.unmatchedPathAction));
 }
+
 //----------------------------------------------------------------------------------------------------------------------
-// Recursively verify the nesting
+// Verify that the given rule is valid
 //----------------------------------------------------------------------------------------------------------------------
 
-function assertValidNesting(expectedMode: Rule.Type.IncludeOrExclude, rule: Rule) {
-    if (isIncludeOrExcludeGlob(rule)) {
-        if (expectedMode !== rule.type) {
-            failWithInvalidNesting(rule, expectedMode);
-        } else {
-            rule.children.forEach(rule => assertValidNesting(invert(expectedMode), rule));
+function assertRuleIsValid(rule: Rule, unmatchedPathAction: Rule.Type.IncludeOrExclude) {
+    const childType = getType(rule);
+    if (childType) {
+        const parentType = getParentType(rule, unmatchedPathAction);
+        if (parentType && childType !== invert(parentType)) {
+            const message =
+                parentType === Rule.Type.INCLUDE_GLOB
+                    ? "Expected an exclude rule (-) but found an include rule (+)"
+                    : "Expected an include rule (+) but found an exclude rule (-)";
+            const stack = stringifyStack.asOriginal(rule.stack);
+            fail(rule.source, [message, "", stack].join("\n"));
         }
-    } else if (isDirectoryScope(rule) && rule.secondaryAction) {
-        if (expectedMode !== rule.secondaryAction) {
-            failWithInvalidNesting(rule, expectedMode);
-        } else {
-            rule.children.forEach(rule => assertValidNesting(invert(expectedMode), rule));
-        }
-    } else {
-        rule.children.forEach(rule => assertValidNesting(expectedMode, rule));
     }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-// Invert the filter mode
+// Get the type of a rule
 //----------------------------------------------------------------------------------------------------------------------
 
-function invert(filter: Rule.Type.IncludeOrExclude) {
-    return filter === Rule.EXCLUDE_GLOB ? Rule.INCLUDE_GLOB : Rule.EXCLUDE_GLOB;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-// Fail when encountering invalid nesting
-//----------------------------------------------------------------------------------------------------------------------
-
-function failWithInvalidNesting(
-    rule: Rule.DirectoryScope | Rule.IncludeGlob | Rule.ExcludeGlob,
-    expectedMode: Rule.Type.IncludeOrExclude
-) {
-    const expected =
-        expectedMode === Rule.INCLUDE_GLOB
-            ? "Expected include rule (+) but found an exclude rule (-) instead"
-            : "Expected exclude rule (-) but found an include rule (+) instead";
-    const stack = getStack(rule);
-    fail(rule.source, stack ? `${expected}:\n\n${stack}` : expected);
-}
-
-function getStack(rule: Rule) {
-    const { stack } = rule;
-    if (2 < stack.length) {
-        // TODO: line is an object (not a string)
-        return stack.map((line, index) => `${"".padEnd(index * 2)}${line}`).join("\n");
+function getType(rule: Rule): Rule.Type.IncludeOrExclude | undefined {
+    if (isIncludeOrExcludeGlob(rule)) {
+        return rule.type;
+    } else if (isDirectoryScope(rule)) {
+        return rule.secondaryAction;
     } else {
         return undefined;
     }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+// Get the type of the first including or excluding parent rule
+//----------------------------------------------------------------------------------------------------------------------
+
+function getParentType(rule: Rule, unmatchedPathAction: Rule.Type.IncludeOrExclude) {
+    const parentType = rule.stack.map(getType).reverse().slice(1);
+    return parentType.filter(type => type)[0] ?? unmatchedPathAction;
 }

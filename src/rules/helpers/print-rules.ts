@@ -1,5 +1,5 @@
 import { Rule, Ruleset } from "../../types/rules.js";
-import { isBreak, isDirectoryScope, isImportFile, isIncludeGlob } from "./rule-type-utils.js";
+import { isDirectoryScope, isGoto, isImportFile, isIncludeGlob } from "./rule-type-utils.js";
 
 const INDENT = "  ";
 
@@ -30,8 +30,8 @@ function renderRule(rule: Rule, indent: string, showImports: boolean): ReadonlyA
         return renderImportRule(rule, indent, showImports);
     } else if (isDirectoryScope(rule)) {
         return printDirectoryScopeRule(rule, indent, showImports);
-    } else if (isBreak(rule)) {
-        return printBreakRule(rule, indent, showImports);
+    } else if (isGoto(rule)) {
+        return printGotoRule(rule, indent, showImports);
     } else {
         rule satisfies Rule.IncludeOrExclude;
         return printGlobSelectorRule(rule, indent, showImports);
@@ -83,11 +83,11 @@ function getDirectoryScopeSecondaryOperator(rule: Rule.DirectoryScope) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-// Render a break rule
+// Render a "goto" rule
 //----------------------------------------------------------------------------------------------------------------------
 
-function printBreakRule(rule: Rule.Break, indent: string, showImports: boolean) {
-    const levels = countBreakRuleLevels(rule);
+function printGotoRule(rule: Rule.Goto, indent: string, showImports: boolean) {
+    const levels = countGotoRuleLevels(rule);
     const patchedIndent = `${indent.substring(0, indent.length - INDENT.length * levels)}|`.padEnd(
         indent.length + 2,
         "<"
@@ -97,9 +97,9 @@ function printBreakRule(rule: Rule.Break, indent: string, showImports: boolean) 
     return [`${patchedIndent}< ${effective}${suffix}`, ...renderChildren(rule, `${indent}${INDENT}`, showImports)];
 }
 
-function countBreakRuleLevels(rule: Rule.Break) {
+function countGotoRuleLevels(rule: Rule.Goto) {
     let levels = 0;
-    for (let current: Rule | undefined = rule; current && current !== rule.parentToBreak; current = current.parent) {
+    for (let current: Rule | undefined = rule; current && current !== rule.ruleToSkip; current = current.parent) {
         levels++;
     }
     return levels;

@@ -5,34 +5,34 @@ import { createGlob } from "../helpers/create-glob.js";
 import { isArgv } from "../helpers/rule-type-utils.js";
 
 //----------------------------------------------------------------------------------------------------------------------
-// Parse a "break" rule
+// Parse a "goto" rule
 //----------------------------------------------------------------------------------------------------------------------
 
-export function parseBreakRule(config: Config, parent: Rule, source: Rule.Source.File, operator: string, data: string) {
+export function parseGotoRule(config: Config, parent: Rule, source: Rule.Source.File, operator: string, data: string) {
     const { directoryScope } = parent;
     const glob = createGlob(config, source, directoryScope, data);
-    const parentToBreak = getParentToBreak(parent, operator, source);
+    const ruleToSkip = getParentToSkip(parent, operator, source);
     const stack = [...parent.stack];
-    const rule: Rule.Break = {
+    const rule: Rule.Goto = {
         children: [],
         directoryScope,
         glob,
         parent,
-        parentToBreak,
+        ruleToSkip,
         source,
         stack,
         stringified: getStringified(data, glob),
-        type: Rule.BREAK,
+        type: Rule.GOTO,
     };
     stack.push(rule);
     return rule;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-// Find the parent rule to break
+// Find the parent rule to skip
 //----------------------------------------------------------------------------------------------------------------------
 
-function getParentToBreak(parent: Rule, operator: string, source: Rule.Source.File) {
+function getParentToSkip(parent: Rule, operator: string, source: Rule.Source.File) {
     const targetIndentation = source.indentation - operator.length + 1;
     for (const { currentRule, currentIndentation } of getApplicableParents(source.file, parent)) {
         if (currentIndentation === targetIndentation) {

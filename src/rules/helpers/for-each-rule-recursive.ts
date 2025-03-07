@@ -7,6 +7,6 @@ import { Rule } from "../../types/rules.js";
 export function forEachRuleRecursive(rules: ReadonlyArray<Rule>, callback: (rule: Rule) => void) {
     rules.forEach(rule => {
         callback(rule);
-        rule.children.forEach(child => forEachRuleRecursive(child.children, callback));
+        forEachRuleRecursive(rule.children, callback);
     });
 }

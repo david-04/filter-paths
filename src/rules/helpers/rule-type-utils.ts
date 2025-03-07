@@ -37,11 +37,11 @@ export function isDirectoryScope(rule: Rule): rule is Rule.DirectoryScope {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-// Check if a rule is a "break" rule
+// Check if a rule is a "goto" rule
 //----------------------------------------------------------------------------------------------------------------------
 
-export function isBreak(rule: Rule): rule is Rule.Break {
-    return rule.type === Rule.BREAK;
+export function isGoto(rule: Rule): rule is Rule.Goto {
+    return rule.type === Rule.GOTO;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
