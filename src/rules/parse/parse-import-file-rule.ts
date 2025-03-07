@@ -6,18 +6,17 @@ import { loadFile } from "../load/load-file.js";
 import { parseRules } from "./parse-rules.js";
 
 //----------------------------------------------------------------------------------------------------------------------
-// Parse an "include path" rule
+// Parse an "import file" rule
 //----------------------------------------------------------------------------------------------------------------------
 
-export function parseImportFileRule(config: Config, parent: Rule, source: Rule.Source, operator: string, data: string) {
-    const stack = [...parent.stack];
-    const file = createFileDescriptor(comesFromFile(parent.source) ? parent.source.file : undefined, data);
+export function parseImportFileRule({ config, file, operator, parent, source }: parseImportFileRule.Args) {
+    const stack = [...(parent?.stack ?? [])];
     const rule: Rule.ImportFile = {
-        directoryScope: parent.directoryScope,
+        directoryScope: parent?.directoryScope,
         children: [],
-        file,
-        parent,
-        source,
+        file: file,
+        parent: parent,
+        source: source,
         stack,
         stringified: getStringified(operator, file),
         type: Rule.IMPORT_FILE,
@@ -28,10 +27,48 @@ export function parseImportFileRule(config: Config, parent: Rule, source: Rule.S
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+// API
+//----------------------------------------------------------------------------------------------------------------------
+
+export namespace parseImportFileRule {
+    //
+    //------------------------------------------------------------------------------------------------------------------
+    // Rule parser arguments
+    //------------------------------------------------------------------------------------------------------------------
+
+    export type Args = {
+        readonly config: Config;
+        readonly file: Rule.Fragment.File;
+        readonly operator?: string;
+        readonly parent?: Rule;
+        readonly source: Rule.Source;
+    };
+
+    //------------------------------------------------------------------------------------------------------------------
+    // Parse an "import file" rule from an explicit "import/input" statement in a file
+    //------------------------------------------------------------------------------------------------------------------
+
+    export function fromFile(config: Config, parent: Rule, source: Rule.Source, operator: string, data: string) {
+        const file = createFileDescriptor(comesFromFile(parent.source) ? parent.source.file : undefined, data);
+        return parseImportFileRule({ config, file, parent, operator, source });
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
+    // Parse an "import file" rule from a file specified in the command line
+    //------------------------------------------------------------------------------------------------------------------
+
+    export function fromArgv(config: Config, file: Rule.Fragment.File) {
+        const source = { type: "argv", argv: file } as const;
+        return parseImportFileRule({ config, file, source });
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 // Get the stringified representation
 //----------------------------------------------------------------------------------------------------------------------
 
-function getStringified(operator: string, file: Rule.Fragment.File) {
+function getStringified(operator: string | undefined, file: Rule.Fragment.File) {
+    operator = operator ? `${operator} ` : "";
     return {
         original: `${operator} ${file.original}`,
         effective: `${operator} ${file.resolved}`,

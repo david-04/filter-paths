@@ -3,17 +3,16 @@ import { Rule } from "../../types/rules.js";
 import { fail } from "../../utils/fail.js";
 import { createFileDescriptor } from "../helpers/create-file-descriptor.js";
 import { isDirectoryScope, isExcludeGlob, isIncludeOrExcludeGlob } from "../helpers/rule-type-guards.js";
-import { parseRules } from "../parse/parse-rules.js";
+import { parseImportFileRule } from "../parse/parse-import-file-rule.js";
 import { assertIncludeExcludeConsistency } from "../validate/include-exclude-consistency.js";
 import { assertNoRuleUnderImport } from "../validate/no-rule-under-import.js";
-import { loadFile } from "./load-file.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Load the whole ruleset
 //----------------------------------------------------------------------------------------------------------------------
 
 export function loadRuleset(config: Config) {
-    const rules = config.files.map(file => createImportFileRule(config, createFileDescriptor(undefined, file)));
+    const rules = config.files.map(file => parseImportFileRule.fromArgv(config, createFileDescriptor(undefined, file)));
     const topLevelRuleType = getTopLevelRuleType(rules);
     if (!topLevelRuleType) {
         fail("No filter rules have been defined");
@@ -21,27 +20,6 @@ export function loadRuleset(config: Config) {
     assertNoRuleUnderImport(rules);
     assertIncludeExcludeConsistency(rules, topLevelRuleType);
     return { rules, unmatchedPathAction: isExcludeGlob(topLevelRuleType) ? "include" : "exclude" } as const;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-// Load the rules from one file (wrapped into a single "import file" rule)
-//----------------------------------------------------------------------------------------------------------------------
-
-function createImportFileRule(config: Config, file: Rule.Fragment.File) {
-    const stack = new Array<Rule>();
-    const rule: Rule.ImportFile = {
-        directoryScope: undefined,
-        children: [],
-        file,
-        parent: undefined,
-        source: { type: "argv", argv: file },
-        stack,
-        stringified: getStringified(file),
-        type: Rule.IMPORT_FILE,
-    };
-    stack.push(rule);
-    parseRules(config, rule, loadFile(rule, file));
-    return rule;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -61,15 +39,4 @@ function getTopLevelRuleType(rules: ReadonlyArray<Rule>): Rule.IncludeOrExclude 
         }
     }
     return undefined;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-// Get the stringified representation
-//----------------------------------------------------------------------------------------------------------------------
-
-function getStringified(file: Rule.Fragment.File) {
-    return {
-        original: `${file.original}`,
-        effective: `${file.resolved}`,
-    };
 }
