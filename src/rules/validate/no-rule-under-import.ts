@@ -15,12 +15,15 @@ export function assertNoRuleUnderImport(rules: ReadonlyArray<Rule>) {
             const stack = filterStack.byFile(rule.stack, rule.source.file, { includeArgv: false });
             const [_, parent] = stack.slice().reverse();
             if (parent && isImportFile(parent)) {
+                const stack = filterStack.byFile(rule.stack, rule.source.file, { includeArgv: false });
                 const message = [
-                    `Rules must not be nested under an ${parent.stringified.operator} rule:`,
+                    `Invalid nesting in ${rule.source.file.resolved} at line ${rule.source.lineNumber}:`,
                     "",
                     stringifyStack.asOriginalWithLineNumbers(stack),
+                    "",
+                    `An "${rule.parent.stringified.operator}" rule can't have nested children.`,
                 ];
-                fail(rule.source, message.join("\n"));
+                fail(message.join("\n"));
             }
         }
     });

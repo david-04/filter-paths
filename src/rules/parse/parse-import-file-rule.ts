@@ -3,7 +3,7 @@ import { Config } from "../../types/config.js";
 import { Rule } from "../../types/rules.js";
 import { fail } from "../../utils/fail.js";
 import { createFileDescriptor } from "../helpers/create-file-descriptor.js";
-import { isArgv } from "../helpers/rule-type-utils.js";
+import { isFile } from "../helpers/rule-type-utils.js";
 import { assertFileExists } from "../validate/file-exists.js";
 import { assertNoCyclicImports } from "../validate/no-cyclic-imports.js";
 import { parseRules } from "./parse-rules.js";
@@ -54,7 +54,7 @@ export namespace parseImportFileRule {
     //------------------------------------------------------------------------------------------------------------------
 
     export function fromFile(config: Config, parent: Rule, source: Rule.Source, operator: string, data: string) {
-        const file = createFileDescriptor(!isArgv(parent.source) ? parent.source.file : undefined, data);
+        const file = createFileDescriptor(isFile(parent.source) ? parent.source.file : undefined, data);
         return parseImportFileRule({ config, file, parent, operator, source });
     }
 

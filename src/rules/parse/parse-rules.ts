@@ -1,6 +1,6 @@
 import { Config } from "../../types/config.js";
 import { Rule } from "../../types/rules.js";
-import { isArgv } from "../helpers/rule-type-utils.js";
+import { isFile } from "../helpers/rule-type-utils.js";
 import { parseRule } from "./parse-rule.js";
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -34,7 +34,7 @@ function findParent(importRule: Rule.ImportFile, rule: Rule.Source.File): Rule {
 }
 
 function isSameFile(parent: Rule, rule: Rule.Source.File) {
-    return rule.file.equals(!isArgv(parent.source) ? parent.source.file : parent.source.argv);
+    return rule.file.equals(isFile(parent.source) ? parent.source.file : parent.source.argv);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

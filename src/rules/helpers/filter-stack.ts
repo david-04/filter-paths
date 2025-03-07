@@ -32,12 +32,8 @@ export namespace filterStack {
     //------------------------------------------------------------------------------------------------------------------
 
     export function byFile(stack: Rule.Stack, file: Rule.Fragment.File, options: { readonly includeArgv: boolean }) {
-        return filterStack(stack, (rule: Rule) => {
-            if (isArgv(rule.source)) {
-                return options?.includeArgv;
-            } else {
-                return rule.source.file.equals(file);
-            }
-        });
+        return filterStack(stack, (rule: Rule) =>
+            isArgv(rule.source) ? options.includeArgv : rule.source.file.equals(file)
+        );
     }
 }

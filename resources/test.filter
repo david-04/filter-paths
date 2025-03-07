@@ -1,6 +1,7 @@
 + **{a,b}
   - /b
     include test2.filter
+    + **
     + /c
     @ /home/david/
       + /d/**
@@ -9,12 +10,13 @@
     + /e
       - /f
   - /g
-  - /h
+    + /h
+    + /i
 + /i
   - /j
     + /abc
        - /x
-   <<<<< /xyz
+    <<<< /xyz
        - /xxx
 
   # comment

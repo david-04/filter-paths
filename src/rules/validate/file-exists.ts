@@ -8,7 +8,7 @@ import { isArgv } from "../helpers/rule-type-utils.js";
 //----------------------------------------------------------------------------------------------------------------------
 
 export function assertFileExists(source: Rule.Source, { resolved }: Rule.Fragment.File) {
-    const includedIn = isArgv(source) ? "" : ` (included in ${source.file.resolved} at line ${source.lineNumber})`;
+    const includedIn = isArgv(source) ? "" : ` (referenced in ${source.file.resolved} at line ${source.lineNumber})`;
     if (!existsSync(resolved)) {
         fail(`File ${resolved}${includedIn} does not exist`);
     } else if (!statSync(resolved).isFile()) {

@@ -1,5 +1,5 @@
 import { Rule } from "../../types/rules.js";
-import { isArgv, isGoto } from "./rule-type-utils.js";
+import { isFile, isGoto } from "./rule-type-utils.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Stringify a rule stack
@@ -74,7 +74,7 @@ export namespace stringifyStack {
     //------------------------------------------------------------------------------------------------------------------
 
     export function asOriginalWithLineNumbers(stack: Rule.Stack) {
-        const rules = stack.map(rule => rule.source).filter((rule): rule is Rule.Source.File => !isArgv(rule));
+        const rules = stack.map(rule => rule.source).filter(isFile);
         const maxLineNumber = rules[stack.length - 1]?.lineNumber ?? 0;
         const maxLineNumberLength = `${maxLineNumber}`.length;
         return rules

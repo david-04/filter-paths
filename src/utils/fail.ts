@@ -1,5 +1,5 @@
 import { exit } from "node:process";
-import { isArgv } from "../rules/helpers/rule-type-utils.js";
+import { isFile } from "../rules/helpers/rule-type-utils.js";
 import { Rule } from "../types/rules.js";
 
 const MAX_MESSAGE_LENGTH = 120;
@@ -19,7 +19,7 @@ export function fail(message: string, cause?: unknown): never;
 export function fail(sourceOrMessage: Rule.Source | string, messageOrCause: unknown): never {
     if ("string" === typeof sourceOrMessage) {
         throw new DescriptiveError(sourceOrMessage, { cause: messageOrCause });
-    } else if (!isArgv(sourceOrMessage)) {
+    } else if (isFile(sourceOrMessage)) {
         const { file, line, lineNumber } = sourceOrMessage;
         const intro = `Invalid rule in ${file.resolved} at line ${lineNumber}:`;
         const quote = line.trim();

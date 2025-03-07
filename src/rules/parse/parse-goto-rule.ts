@@ -3,7 +3,7 @@ import { Rule } from "../../types/rules.js";
 import { fail } from "../../utils/fail.js";
 import { createGlob } from "../helpers/create-glob.js";
 import { filterStack } from "../helpers/filter-stack.js";
-import { isArgv } from "../helpers/rule-type-utils.js";
+import { isFile } from "../helpers/rule-type-utils.js";
 import { stringifyStack } from "../helpers/stringify-stack.js";
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -65,7 +65,7 @@ function getRuleToSkip(rule: Rule.Goto, operator: string, source: Rule.Source.Fi
 function getApplicableParents(file: Rule.Fragment.File, parent: Rule) {
     const applicableParents = new Array<{ currentRule: Rule; currentIndentation: number }>();
     for (let current: Rule | undefined = parent; current; current = current.parent) {
-        if (!isArgv(current.source) && current.source.file.equals(file)) {
+        if (isFile(current.source) && current.source.file.equals(file)) {
             applicableParents.push({ currentRule: current, currentIndentation: current.source.indentation });
         }
     }
