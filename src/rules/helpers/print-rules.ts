@@ -1,4 +1,5 @@
 import { Rule, Ruleset } from "../../types/rules.js";
+import { isBreak, isDirectoryScope, isImportFile, isIncludeGlob } from "./rule-type-guards.js";
 
 const INDENT = "  ";
 
@@ -17,10 +18,7 @@ export function printRules(ruleset: Ruleset) {
 //----------------------------------------------------------------------------------------------------------------------
 
 function countImportRules(rule: Rule): number {
-    return rule.children.reduce(
-        (total, child) => total + countImportRules(child),
-        rule.type === Rule.IMPORT_FILE ? 1 : 0
-    );
+    return rule.children.reduce((total, child) => total + countImportRules(child), isImportFile(rule) ? 1 : 0);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -28,11 +26,11 @@ function countImportRules(rule: Rule): number {
 //----------------------------------------------------------------------------------------------------------------------
 
 function renderRule(rule: Rule, indent: string, showImports: boolean): ReadonlyArray<string> {
-    if (rule.type === Rule.IMPORT_FILE) {
+    if (isImportFile(rule)) {
         return renderImportRule(rule, indent, showImports);
-    } else if (rule.type === Rule.DIRECTORY_SCOPE) {
+    } else if (isDirectoryScope(rule)) {
         return printDirectoryScopeRule(rule, indent, showImports);
-    } else if (rule.type === Rule.BREAK) {
+    } else if (isBreak(rule)) {
         return printBreakRule(rule, indent, showImports);
     } else {
         rule satisfies Rule.IncludeOrExcludeGlob;
@@ -53,7 +51,7 @@ function renderImportRule(rule: Rule.ImportFile, indent: string, showImports: bo
 //----------------------------------------------------------------------------------------------------------------------
 
 function printGlobSelectorRule(rule: Rule.IncludeOrExcludeGlob, indent: string, showImports: boolean) {
-    const operator = rule.type === Rule.INCLUDE_GLOB ? "+" : "-";
+    const operator = isIncludeGlob(rule) ? "+" : "-";
     const { effective, original } = rule.glob;
     const suffix = effective === original ? "" : ` (original: ${original})`;
     return [`${indent}${operator} ${effective}${suffix}`, ...renderChildren(rule, `${indent}${INDENT}`, showImports)];

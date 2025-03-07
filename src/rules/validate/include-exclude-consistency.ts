@@ -1,5 +1,6 @@
 import { Rule } from "../../types/rules.js";
 import { fail } from "../../utils/fail.js";
+import { isDirectoryScope, isIncludeOrExcludeGlob } from "../helpers/rule-type-guards.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Assert that "+" and "-" rules are nested correctly and consistently
@@ -13,13 +14,13 @@ export function assertIncludeExcludeConsistency(rules: ReadonlyArray<Rule>, topL
 //----------------------------------------------------------------------------------------------------------------------
 
 function assertValidNesting(expectedMode: Rule.IncludeOrExclude, rule: Rule) {
-    if (rule.type === Rule.INCLUDE_GLOB || rule.type === Rule.EXCLUDE_GLOB) {
+    if (isIncludeOrExcludeGlob(rule)) {
         if (expectedMode !== rule.type) {
             failWithInvalidNesting(rule, expectedMode);
         } else {
             rule.children.forEach(rule => assertValidNesting(invert(expectedMode), rule));
         }
-    } else if (rule.type === Rule.DIRECTORY_SCOPE && rule.secondaryAction) {
+    } else if (isDirectoryScope(rule) && rule.secondaryAction) {
         if (expectedMode !== rule.secondaryAction) {
             failWithInvalidNesting(rule, expectedMode);
         } else {

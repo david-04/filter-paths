@@ -2,6 +2,7 @@ import { Config } from "../../types/config.js";
 import { Rule } from "../../types/rules.js";
 import { fail } from "../../utils/fail.js";
 import { createFileDescriptor } from "../helpers/create-file-descriptor.js";
+import { isDirectoryScope, isExcludeGlob, isIncludeOrExcludeGlob } from "../helpers/rule-type-guards.js";
 import { parseRules } from "../parse/parse-rules.js";
 import { assertIncludeExcludeConsistency } from "../validate/include-exclude-consistency.js";
 import { assertNoRuleUnderImport } from "../validate/no-rule-under-import.js";
@@ -19,7 +20,7 @@ export function loadRuleset(config: Config) {
     }
     assertNoRuleUnderImport(rules);
     assertIncludeExcludeConsistency(rules, topLevelRuleType);
-    return { rules, unmatchedPathAction: topLevelRuleType === Rule.EXCLUDE_GLOB ? "include" : "exclude" } as const;
+    return { rules, unmatchedPathAction: isExcludeGlob(topLevelRuleType) ? "include" : "exclude" } as const;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -49,9 +50,9 @@ function createImportFileRule(config: Config, file: Rule.Fragment.File) {
 
 function getTopLevelRuleType(rules: ReadonlyArray<Rule>): Rule.IncludeOrExclude | undefined {
     for (const rule of rules) {
-        if (rule.type === Rule.EXCLUDE_GLOB || rule.type === Rule.INCLUDE_GLOB) {
+        if (isIncludeOrExcludeGlob(rule)) {
             return rule.type;
-        } else if (rule.type === Rule.DIRECTORY_SCOPE && rule.secondaryAction) {
+        } else if (isDirectoryScope(rule) && rule.secondaryAction) {
             return rule.secondaryAction;
         }
         const ruleType = getTopLevelRuleType(rule.children);

@@ -1,4 +1,5 @@
 import { Rule } from "../../types/rules.js";
+import { isBreak } from "./rule-type-guards.js";
 
 const INDENT = 2;
 
@@ -18,7 +19,7 @@ export function stringifyStack(
 //----------------------------------------------------------------------------------------------------------------------
 
 function getIndent(stack: Rule.Stack, index: number, rule: Rule, stepWidth: number) {
-    if (rule.type === Rule.BREAK) {
+    if (isBreak(rule)) {
         const parentToBreakIndex = stack.findIndex(current => current === rule.parentToBreak);
         if (0 <= parentToBreakIndex) {
             const indicatorWidth = stepWidth * (index - parentToBreakIndex);

@@ -1,4 +1,5 @@
 import { Rule } from "../../types/rules.js";
+import { comesFromArgv, isBreak } from "./rule-type-guards.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Filter a stack
@@ -18,7 +19,7 @@ export function filterStack(stack: Rule.Stack, ...filters: ReadonlyArray<(rule: 
 
 function isParent(rule: Rule, stack: Rule.Stack) {
     return stack
-        .filter(rule => rule.type === Rule.BREAK)
+        .filter(isBreak)
         .map(rule => rule.parentToBreak)
         .includes(rule);
 }
@@ -39,7 +40,7 @@ export namespace filterStack {
         options = { includeArgv: true as boolean } as const
     ) {
         return filterStack(stack, (rule: Rule) => {
-            if (rule.source.type === "argv") {
+            if (comesFromArgv(rule.source)) {
                 return options?.includeArgv ?? true;
             } else {
                 return rule.source.file.equals(source.file);

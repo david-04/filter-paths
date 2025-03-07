@@ -1,6 +1,7 @@
 import { Config } from "../../types/config.js";
 import { Rule } from "../../types/rules.js";
 import { createFileDescriptor } from "../helpers/create-file-descriptor.js";
+import { comesFromFile } from "../helpers/rule-type-guards.js";
 import { loadFile } from "../load/load-file.js";
 import { parseRules } from "./parse-rules.js";
 
@@ -10,7 +11,7 @@ import { parseRules } from "./parse-rules.js";
 
 export function parseImportFileRule(config: Config, parent: Rule, source: Rule.Source, operator: string, data: string) {
     const stack = [...parent.stack];
-    const file = createFileDescriptor(parent.source.type === "file" ? parent.source.file : undefined, data);
+    const file = createFileDescriptor(comesFromFile(parent.source) ? parent.source.file : undefined, data);
     const rule: Rule.ImportFile = {
         directoryScope: parent.directoryScope,
         children: [],

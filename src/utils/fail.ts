@@ -1,4 +1,5 @@
 import { exit } from "node:process";
+import { comesFromFile } from "../rules/helpers/rule-type-guards.js";
 import { Rule } from "../types/rules.js";
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -16,9 +17,11 @@ export function fail(message: string, cause?: unknown): never;
 export function fail(sourceOrMessage: Rule.Source | string, messageOrCause: unknown): never {
     if ("string" === typeof sourceOrMessage) {
         throw new DescriptiveError(sourceOrMessage, { cause: messageOrCause });
-    } else if (sourceOrMessage.type === "file") {
+    } else if (comesFromFile(sourceOrMessage)) {
         const { file, line, lineNumber } = sourceOrMessage;
-        throw new DescriptiveError(`Invalid rule in ${file} at line ${lineNumber}:\n${line.trim()}\n${messageOrCause}`);
+        throw new DescriptiveError(
+            `Invalid rule in ${file.resolved} at line ${lineNumber}:\n${line.trim()}\n${messageOrCause}`
+        );
     } else {
         throw new DescriptiveError(`${messageOrCause}`);
     }

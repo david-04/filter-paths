@@ -1,5 +1,6 @@
 import { Rule } from "../../types/rules.js";
 import { fail } from "../../utils/fail.js";
+import { comesFromArgv, comesFromFile, isImportFile } from "../helpers/rule-type-guards.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Verify that files don't include one another recursively
@@ -19,7 +20,7 @@ export function assertNoCyclicImports(importRule: Rule.ImportFile) {
 function getImportRules(importRule: Rule.ImportFile) {
     const importRules = new Array<Rule.ImportFile>();
     for (let rule: Rule | undefined = importRule; rule; rule = rule.parent) {
-        if (rule.type === Rule.IMPORT_FILE) {
+        if (isImportFile(rule)) {
             importRules.push(rule);
         }
     }
@@ -40,9 +41,9 @@ function wasImportedBefore(importRules: ReadonlyArray<Rule.ImportFile>, file: Ru
 
 function formatStack(importRules: ReadonlyArray<Rule.ImportFile>) {
     return importRules
-        .filter(importRule => importRule.source.type === "file")
+        .filter(importRule => comesFromFile(importRule.source))
         .map(importRule => {
-            if (importRule.source.type === "argv") {
+            if (comesFromArgv(importRule.source)) {
                 return [importRule.source.argv.resolved];
             } else {
                 return [
