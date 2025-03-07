@@ -6,38 +6,19 @@ import { isArgv, isGoto } from "./rule-type-utils.js";
 //----------------------------------------------------------------------------------------------------------------------
 
 export function filterStack(stack: Rule.Stack, ...filters: ReadonlyArray<(rule: Rule) => unknown>) {
-    let filtered = stack.map(rule => ({ shouldDelete: false, rule }));
-    for (const filter of filters) {
-        filtered = filtered.map(rule => ({ ...rule, shouldDelete: rule.shouldDelete || !filter(rule.rule) }));
-    }
-    return restoreParentsWithDependentGotoRules(filtered)
-        .filter(({ shouldDelete, rule }) => !shouldDelete || hasDependentGotoRules(rule, stack))
-        .map(({ rule }) => rule);
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-// Restore all "rule-to-bypass" rules whose "goto" children have NOT been deleted
-//----------------------------------------------------------------------------------------------------------------------
-
-export function restoreParentsWithDependentGotoRules(stack: ReadonlyArray<{ shouldDelete: boolean; rule: Rule }>) {
-    const reversed = stack.slice().reverse();
-    const rules = reversed.map(item => item.rule);
+    const reversed = stack.map(rule => ({ deleted: false, rule })).reverse();
     for (const item of reversed) {
-        item.shouldDelete = item.shouldDelete && !hasDependentGotoRules(item.rule, rules);
+        const hasDependentChildren = reversed
+            .filter(other => !other.deleted)
+            .map(other => other.rule)
+            .filter(isGoto)
+            .some(rule => rule.ruleToSkip === item.rule);
+        item.deleted = filters.some(filter => filter(item.rule)) && !hasDependentChildren;
     }
-    return reversed.slice().reverse();
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-// Check if the given rule has dependent "goto" rules in the stack
-//----------------------------------------------------------------------------------------------------------------------
-
-function hasDependentGotoRules(rule: Rule, stack: Rule.Stack) {
-    // TODO: Ignore children that are marked for deletion
-    return stack
-        .filter(isGoto)
-        .map(rule => rule.ruleToSkip)
-        .includes(rule);
+    return reversed
+        .filter(item => !item.deleted)
+        .map(item => item.rule)
+        .reverse();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
