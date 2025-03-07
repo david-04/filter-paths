@@ -1,116 +1,67 @@
 import { Rule, Ruleset } from "../../types/rules.js";
-import { isDirectoryScope, isGoto, isImportFile, isIncludeGlob } from "./rule-type-utils.js";
-
-const INDENT = "  ";
-
-// TODO: Use Rule.stringified
+import { isGoto } from "./rule-type-utils.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Print the rule set
 //----------------------------------------------------------------------------------------------------------------------
 
 export function printRuleset(ruleset: Ruleset) {
-    const importRules = ruleset.rules.reduce((total, rule) => total + countImportRules(rule), 0);
-    const lines = ruleset.rules.flatMap(rule => renderRule(rule, "", 1 < importRules));
-    console.log(lines.join("\n"));
-}
+    const [first, second] = ruleset.rules;
+    const skipOuterImportRules = !second;
+    const rules = flattenRules(first && skipOuterImportRules ? first.children : ruleset.rules);
 
-//----------------------------------------------------------------------------------------------------------------------
-// Recursively count the number of import rules
-//----------------------------------------------------------------------------------------------------------------------
-
-function countImportRules(rule: Rule): number {
-    return rule.children.reduce((total, child) => total + countImportRules(child), isImportFile(rule) ? 1 : 0);
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-// Recursively print a rule
-//----------------------------------------------------------------------------------------------------------------------
-
-function renderRule(rule: Rule, indent: string, showImports: boolean): ReadonlyArray<string> {
-    if (isImportFile(rule)) {
-        return renderImportRule(rule, indent, showImports);
-    } else if (isDirectoryScope(rule)) {
-        return printDirectoryScopeRule(rule, indent, showImports);
-    } else if (isGoto(rule)) {
-        return printGotoRule(rule, indent, showImports);
-    } else {
-        rule satisfies Rule.IncludeOrExclude;
-        return printGlobSelectorRule(rule, indent, showImports);
+    for (const rule of rules) {
+        const indent = getIndent(rule, skipOuterImportRules);
+        const command = [rule.stringified.operator, rule.stringified.effective].filter(item => item).join(" ");
+        console.log(`${indent}${command}`);
     }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-// Render an import rule
+// Copy all nested rules into one flat array
 //----------------------------------------------------------------------------------------------------------------------
 
-function renderImportRule(rule: Rule.ImportFile, indent: string, showImports: boolean) {
-    return renderChildren(rule, indent, showImports);
+function flattenRules(rules: ReadonlyArray<Rule>): ReadonlyArray<Rule> {
+    return rules.reduce((array, rule) => [...array, rule, ...flattenRules(rule.children)], new Array<Rule>());
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-// Render an include or exclude glob pattern rule
+// Get the indentation string
 //----------------------------------------------------------------------------------------------------------------------
 
-function printGlobSelectorRule(rule: Rule.IncludeOrExclude, indent: string, showImports: boolean) {
-    const operator = isIncludeGlob(rule) ? "+" : "-";
-    const { effective, original } = rule.glob;
-    const suffix = effective === original ? "" : ` (original: ${original})`;
-    return [`${indent}${operator} ${effective}${suffix}`, ...renderChildren(rule, `${indent}${INDENT}`, showImports)];
+function getIndent(rule: Rule, skipOutermostRule: boolean) {
+    const INDENT = 2;
+    const gotoArrow = isGoto(rule) ? getGotoArrow(rule, INDENT) : "";
+    const width = countParents(rule, skipOutermostRule) * INDENT;
+    const indent = new Array(width - gotoArrow.length).fill(" ").join("");
+    return `${indent}${gotoArrow}`;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-// Render a directory scope rule
+// Count the number of parents
 //----------------------------------------------------------------------------------------------------------------------
 
-function printDirectoryScopeRule(rule: Rule.DirectoryScope, indent: string, showImports: boolean) {
-    const { effective, original } = rule.directoryScope;
-    const suffix = effective === original ? "" : ` (original: ${original})`;
-    const secondaryOperator = getDirectoryScopeSecondaryOperator(rule);
-    const extraIndent = secondaryOperator.replace(/./g, " ");
-    return [
-        `${indent}@ ${secondaryOperator}${effective}${suffix}`,
-        ...renderChildren(rule, `${indent}${INDENT}${extraIndent}`, showImports),
-    ];
+function countParents(rule: Rule, skipOutermostRule: boolean) {
+    return countStepsToParent(rule, undefined) - (skipOutermostRule ? 1 : 0);
 }
 
-function getDirectoryScopeSecondaryOperator(rule: Rule.DirectoryScope) {
-    if (rule.secondaryAction === Rule.INCLUDE_GLOB) {
-        return "+ ";
-    } else if (rule.secondaryAction === Rule.EXCLUDE_GLOB) {
-        return "- ";
-    } else {
-        return "";
+//----------------------------------------------------------------------------------------------------------------------
+// Assemble the "arrow" to prepend to a "goto" rule
+//----------------------------------------------------------------------------------------------------------------------
+
+function getGotoArrow(rule: Rule.Goto, indent: number) {
+    const width = countStepsToParent(rule, rule.ruleToSkip) * indent;
+    return "|" + new Array(width - 1).fill("<").join("");
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+// Count the number of steps from a rule to a specific parent or the top-most parent
+//----------------------------------------------------------------------------------------------------------------------
+
+function countStepsToParent(source: Rule, target: Rule | undefined) {
+    let steps = 0;
+    for (let parent: Rule | undefined = source; parent && parent !== target; parent = parent.parent) {
+        steps++;
     }
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-// Render a "goto" rule
-//----------------------------------------------------------------------------------------------------------------------
-
-function printGotoRule(rule: Rule.Goto, indent: string, showImports: boolean) {
-    const levels = countGotoRuleLevels(rule);
-    const patchedIndent = `${indent.substring(0, indent.length - INDENT.length * levels)}|`.padEnd(
-        indent.length + 2,
-        "<"
-    );
-    const { effective, original } = rule.glob;
-    const suffix = effective === original ? "" : ` (original: ${original})`;
-    return [`${patchedIndent}< ${effective}${suffix}`, ...renderChildren(rule, `${indent}${INDENT}`, showImports)];
-}
-
-function countGotoRuleLevels(rule: Rule.Goto) {
-    let levels = 0;
-    for (let current: Rule | undefined = rule; current && current !== rule.ruleToSkip; current = current.parent) {
-        levels++;
-    }
-    return levels;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-// Render the children of a rule
-//----------------------------------------------------------------------------------------------------------------------
-
-function renderChildren(rule: Rule, indent: string, showImports: boolean) {
-    return rule.children.flatMap(child => renderRule(child, `${indent}`, showImports));
+    return steps - (target ? 0 : 1);
 }
