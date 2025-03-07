@@ -1,7 +1,7 @@
-import picomatch from "picomatch";
 import { Config } from "../../types/config.js";
 import { Rule } from "../../types/rules.js";
 import { assertGlobIsValid } from "../validate/valid-glob.js";
+import { createGlobMatcher } from "./create-glob-matcher.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Create a glob with a matcher
@@ -16,7 +16,7 @@ export function createGlob(
     const original = assembleGlob(directoryScope?.original, glob);
     const effective = assembleGlob(directoryScope?.effective, glob);
     [glob, original, effective].forEach(glob => assertGlobIsValid(source, glob));
-    const matches = picomatch(effective, { nocase: !config.caseSensitive });
+    const matches = createGlobMatcher(config, source, effective);
     return { original, effective, matches };
 }
 
