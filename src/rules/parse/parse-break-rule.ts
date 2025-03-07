@@ -51,7 +51,7 @@ function getApplicableParents(file: Rule.Fragment.File, parent: Rule) {
     const applicableParents = new Array<{ currentRule: Rule; currentIndentation: number }>();
 
     for (let current: Rule | undefined = parent; current; current = current.parent) {
-        if (current.source.type === "file" && current.source.file.absolute === file.absolute) {
+        if (current.source.type === "file" && current.source.file.equals(file)) {
             applicableParents.push({ currentRule: current, currentIndentation: current.source.indentation });
         }
     }

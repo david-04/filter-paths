@@ -37,7 +37,7 @@ function findParent(importRule: Rule.ImportFile, rule: Rule.Source.File): Rule {
 }
 
 function isSameFile(parent: Rule, rule: Rule.Source.File) {
-    return rule.file.absolute === (parent.source.type === "file" ? parent.source.file : parent.source.argv).absolute;
+    return rule.file.equals(parent.source.type === "file" ? parent.source.file : parent.source.argv);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

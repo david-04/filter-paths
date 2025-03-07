@@ -8,7 +8,7 @@ export function assertNoRuleUnderImport(rules: ReadonlyArray<Rule>) {
     for (const rule of rules.flatMap(flattenRule)) {
         if (rule.type !== Rule.IMPORT_FILE) {
             const parentFile = rule.parent.source.type === "file" ? rule.parent.source.file : rule.parent.source.argv;
-            if (parentFile.absolute !== rule.source.file.absolute) {
+            if (parentFile.equals(rule.source.file)) {
                 // TODO: Restore this functionality after revising the path handling
                 //const stack = filterStack.byFile(rule.stack, rule.source.file, { includeArgv: true });
                 //const stringified = stringifyStack.asOriginal(stack);

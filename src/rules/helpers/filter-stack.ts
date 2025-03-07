@@ -42,7 +42,7 @@ export namespace filterStack {
             if (rule.source.type === "argv") {
                 return options?.includeArgv ?? true;
             } else {
-                return rule.source.file.absolute === source.file.absolute;
+                return rule.source.file.equals(source.file);
             }
         });
     }

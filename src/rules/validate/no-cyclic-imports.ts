@@ -31,7 +31,7 @@ function getImportRules(importRule: Rule.ImportFile) {
 //----------------------------------------------------------------------------------------------------------------------
 
 function wasImportedBefore(importRules: ReadonlyArray<Rule.ImportFile>, file: Rule.Fragment.File) {
-    return importRules.slice(0, importRules.length - 1).some(importRule => importRule.file.absolute === file.absolute);
+    return importRules.slice(0, importRules.length - 1).some(importRule => importRule.file.equals(file));
 }
 
 //----------------------------------------------------------------------------------------------------------------------

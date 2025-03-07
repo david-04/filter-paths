@@ -6,16 +6,16 @@ import { expandEnvironmentVariables } from "../../utils/environment-variables.js
 // Create a file descriptor
 //----------------------------------------------------------------------------------------------------------------------
 
-export function createFile(parent: Rule.Fragment.File | undefined, file: string): Rule.Fragment.File {
+export function createFileDescriptor(parent: Rule.Fragment.File | undefined, file: string): Rule.Fragment.File {
     const original = file.trim();
     const resolved = normalizePath(expandEnvironmentVariables(original, "everywhere"));
     if (isAbsolute(resolved) || !parent) {
         const absolute = normalizePath(resolve(resolved));
-        return { absolute, original, resolved };
+        return { absolute, equals: createEqualsFunction(absolute), original, resolved };
     } else {
         const concatenated = normalizePath(join(parent.resolved, "..", resolved));
         const absolute = normalizePath(resolve(concatenated));
-        return { absolute, original, resolved: concatenated };
+        return { absolute, equals: createEqualsFunction(absolute), original, resolved: concatenated };
     }
 }
 
@@ -23,6 +23,17 @@ export function createFile(parent: Rule.Fragment.File | undefined, file: string)
 // Normalize a path
 //----------------------------------------------------------------------------------------------------------------------
 
-export function normalizePath(path: string) {
+function normalizePath(path: string) {
     return normalize(path).trim().replaceAll("\\", "/");
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+// Create the equals function
+//----------------------------------------------------------------------------------------------------------------------
+
+function createEqualsFunction(absolutePath: string) {
+    return (fileOrRuleSource: Rule.Fragment.File | Rule.Source.File) => {
+        const file = "type" in fileOrRuleSource ? fileOrRuleSource.file : fileOrRuleSource;
+        return file.absolute === absolutePath;
+    };
 }

@@ -16,6 +16,7 @@ export namespace Rule {
 
         export type File = {
             readonly absolute: string;
+            readonly equals: (file: File | Rule.Source.File) => boolean;
             readonly original: string;
             readonly resolved: string;
         };

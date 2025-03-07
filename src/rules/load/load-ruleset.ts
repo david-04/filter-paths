@@ -1,7 +1,7 @@
 import { Config } from "../../types/config.js";
 import { Rule } from "../../types/rules.js";
 import { fail } from "../../utils/fail.js";
-import { createFile } from "../helpers/create-file.js";
+import { createFileDescriptor } from "../helpers/create-file-descriptor.js";
 import { parseRules } from "../parse/parse-rules.js";
 import { assertIncludeExcludeConsistency } from "../validate/include-exclude-consistency.js";
 import { assertNoRuleUnderImport } from "../validate/no-rule-under-import.js";
@@ -12,7 +12,7 @@ import { loadFile } from "./load-file.js";
 //----------------------------------------------------------------------------------------------------------------------
 
 export function loadRuleset(config: Config) {
-    const rules = config.files.map(file => createImportFileRule(config, createFile(undefined, file)));
+    const rules = config.files.map(file => createImportFileRule(config, createFileDescriptor(undefined, file)));
     const topLevelRuleType = getTopLevelRuleType(rules);
     if (!topLevelRuleType) {
         fail("No filter rules have been defined");
