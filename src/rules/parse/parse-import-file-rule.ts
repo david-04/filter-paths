@@ -17,13 +17,15 @@ export function parseImportFileRule({ config, file, operator, parent, source }: 
     const rule: Rule.ImportFile = {
         directoryScope: parent?.directoryScope,
         children: [],
-        file: file,
-        parent: parent,
-        source: source,
+        file,
+        parent,
+        source,
         stack,
         stringified: getStringified(operator, file),
         type: Rule.IMPORT_FILE,
     };
+    assertFileExists(source, file);
+    assertNoCyclicImports(rule);
     stack.push(rule);
     parseRules(config, rule, loadFile(rule, file));
     return rule;
@@ -83,8 +85,6 @@ function getStringified(operator: string | undefined, file: Rule.Fragment.File) 
 //----------------------------------------------------------------------------------------------------------------------
 
 function loadFile(parent: Rule.ImportFile, file: Rule.Fragment.File): ReadonlyArray<Rule.Source.File> {
-    assertFileExists(parent.source, file);
-    assertNoCyclicImports(parent);
     return loadLines(parent.source, file)
         .map((line, index) => ({ file, line, lineNumber: index + 1 }))
         .filter(item => !/^\s*(#.*)?$/.test(item.line))

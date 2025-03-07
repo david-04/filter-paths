@@ -13,6 +13,7 @@ import { assertNoRuleUnderImport } from "../validate/no-rule-under-import.js";
 
 export function loadRuleset(config: Config) {
     const rules = config.files.map(file => parseImportFileRule.fromArgv(config, createFileDescriptor(undefined, file)));
+
     const topLevelRuleType = getTopLevelRuleType(rules);
     if (!topLevelRuleType) {
         fail("No filter rules have been defined");

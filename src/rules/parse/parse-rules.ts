@@ -1,6 +1,6 @@
 import { Config } from "../../types/config.js";
 import { Rule } from "../../types/rules.js";
-import { comesFromFile, isImportFile } from "../helpers/rule-type-guards.js";
+import { comesFromFile } from "../helpers/rule-type-guards.js";
 import { parseRule } from "./parse-rule.js";
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -10,10 +10,6 @@ import { parseRule } from "./parse-rule.js";
 export function parseRules(config: Config, importRule: Rule.ImportFile, rules: ReadonlyArray<Rule.Source.File>) {
     for (const rule of rules) {
         const parent = findParent(importRule, rule);
-        if (isImportFile(parent) && parent !== importRule) {
-            //console.log({ parent: parent.source, rule });
-            //fail(rule, 'Rules must not be nested under "import" rules');
-        }
         parseRule(config, parent, rule);
     }
 }

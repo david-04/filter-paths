@@ -2,6 +2,8 @@ import { exit } from "node:process";
 import { comesFromFile } from "../rules/helpers/rule-type-guards.js";
 import { Rule } from "../types/rules.js";
 
+const MAX_MESSAGE_LENGTH = 120;
+
 //----------------------------------------------------------------------------------------------------------------------
 // Error with a readable message (that does not require printing a stack trace)
 //----------------------------------------------------------------------------------------------------------------------
@@ -19,9 +21,14 @@ export function fail(sourceOrMessage: Rule.Source | string, messageOrCause: unkn
         throw new DescriptiveError(sourceOrMessage, { cause: messageOrCause });
     } else if (comesFromFile(sourceOrMessage)) {
         const { file, line, lineNumber } = sourceOrMessage;
-        throw new DescriptiveError(
-            `Invalid rule in ${file.resolved} at line ${lineNumber}:\n${line.trim()}\n${messageOrCause}`
-        );
+        const intro = `Invalid rule in ${file.resolved} at line ${lineNumber}:`;
+        const quote = line.trim();
+        const outro = `${messageOrCause}`;
+        const maxSeparatorWidth = Math.max(intro.length, quote.length, outro.length);
+        const terminalWidth = isNaN(process.stdout.columns) ? MAX_MESSAGE_LENGTH : process.stdout.columns;
+        const separatorWidth = Math.min(maxSeparatorWidth, Math.max(MAX_MESSAGE_LENGTH, terminalWidth));
+        const separator = new Array<string>(separatorWidth).fill("-").join("");
+        throw new DescriptiveError([intro, "", separator, quote, separator, "", outro].join("\n"));
     } else {
         throw new DescriptiveError(`${messageOrCause}`);
     }

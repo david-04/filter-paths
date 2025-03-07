@@ -1,7 +1,8 @@
+import picomatch from "picomatch";
 import { Config } from "../../types/config.js";
 import { Rule } from "../../types/rules.js";
+import { fail } from "../../utils/fail.js";
 import { assertGlobIsValid } from "../validate/valid-glob.js";
-import { createGlobMatcher } from "./create-glob-matcher.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Create a glob with a matcher
@@ -41,4 +42,21 @@ function assembleGlob(parent: string | undefined, child: string) {
 
 function normalizeGlob(glob: string) {
     return glob.replace(/\/+/g, "/").replace(/\/$/, "");
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+// Create a matcher
+//----------------------------------------------------------------------------------------------------------------------
+
+function createGlobMatcher(config: Config, source: Rule.Source.File, glob: string) {
+    try {
+        return picomatch(glob, {
+            dot: true, // match file and directory names that start with a dot
+            nocase: !config.caseSensitive, // case-sensitive or -insensitive comparison
+            nonegate: true, // disallow negated globs that start with "!"
+            strictBrackets: true, // throw an error if brackets, braces, or parens are imbalanced
+        });
+    } catch (error) {
+        return fail(source, `Invalid glob pattern: ${glob}\n${error}`);
+    }
 }
