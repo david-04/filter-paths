@@ -1,7 +1,7 @@
 import { existsSync, statSync } from "node:fs";
 import { Rule } from "../../types/rules.js";
 import { fail } from "../../utils/fail.js";
-import { isArgv } from "../helpers/rule-type-guards.js";
+import { isArgv } from "../helpers/rule-type-utils.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Verify that the file exists

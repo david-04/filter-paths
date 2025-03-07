@@ -4,7 +4,7 @@ import { Rule } from "../../types/rules.js";
 // Check if a rule is an "include or exclude glob" rule
 //----------------------------------------------------------------------------------------------------------------------
 
-export function isIncludeOrExcludeGlob(rule: Rule): rule is Rule.IncludeOrExcludeGlob {
+export function isIncludeOrExcludeGlob(rule: Rule): rule is Rule.IncludeOrExclude {
     return [isIncludeGlob, isExcludeGlob].some(matches => matches(rule));
 }
 
@@ -58,4 +58,15 @@ export function isImportFile(rule: Rule): rule is Rule.ImportFile {
 
 export function isArgv(rule: Rule.Source): rule is Rule.Source.Argv {
     return rule.type === "argv";
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+// Flip between "include" and "exclude"
+//----------------------------------------------------------------------------------------------------------------------
+
+export function invert(include: Rule.Type.INCLUDE_GLOB): Rule.Type.EXCLUDE_GLOB;
+export function invert(exclude: Rule.Type.EXCLUDE_GLOB): Rule.Type.INCLUDE_GLOB;
+export function invert(exclude: Rule.Type.IncludeOrExclude): Rule.Type.IncludeOrExclude;
+export function invert(type: Rule.Type.IncludeOrExclude): Rule.Type.IncludeOrExclude {
+    return type === Rule.INCLUDE_GLOB ? Rule.EXCLUDE_GLOB : Rule.INCLUDE_GLOB;
 }

@@ -28,6 +28,7 @@ export namespace Rule {
         };
 
         export type Stringified = {
+            readonly operator: string;
             readonly effective: string;
             readonly original: string;
         };
@@ -69,7 +70,9 @@ export namespace Rule {
 
     export const { DIRECTORY_SCOPE, BREAK, EXCLUDE_GLOB, IMPORT_FILE, INCLUDE_GLOB } = Type;
 
-    export type IncludeOrExclude = Type.INCLUDE_GLOB | Type.EXCLUDE_GLOB;
+    export namespace Type {
+        export type IncludeOrExclude = Type.INCLUDE_GLOB | Type.EXCLUDE_GLOB;
+    }
 
     export type Stack = ReadonlyArray<Rule>;
 
@@ -77,7 +80,7 @@ export namespace Rule {
     // Type-specific rules
     //------------------------------------------------------------------------------------------------------------------
 
-    export type IncludeOrExcludeGlob = {
+    export type IncludeOrExclude = {
         readonly children: Array<Rule>;
         readonly directoryScope: Fragment.DirectoryScope | undefined;
         readonly glob: Fragment.Glob;
@@ -88,15 +91,15 @@ export namespace Rule {
         readonly type: Type.INCLUDE_GLOB | Type.EXCLUDE_GLOB;
     };
 
-    export type IncludeGlob = IncludeOrExcludeGlob & { readonly type: Type.INCLUDE_GLOB };
-    export type ExcludeGlob = IncludeOrExcludeGlob & { readonly type: Type.EXCLUDE_GLOB };
+    export type IncludeGlob = IncludeOrExclude & { readonly type: Type.INCLUDE_GLOB };
+    export type ExcludeGlob = IncludeOrExclude & { readonly type: Type.EXCLUDE_GLOB };
 
     export type DirectoryScope = {
         readonly children: Array<Rule>;
         readonly directoryScope: Fragment.DirectoryScope;
         readonly glob: Fragment.Glob;
         readonly parent: Rule;
-        readonly secondaryAction: undefined | IncludeOrExclude;
+        readonly secondaryAction: undefined | Type.IncludeOrExclude;
         readonly source: Rule.Source.File;
         readonly stack: Stack;
         readonly stringified: Fragment.Stringified;
@@ -127,7 +130,7 @@ export namespace Rule {
     };
 }
 
-export type Rule = Rule.DirectoryScope | Rule.Break | Rule.IncludeOrExcludeGlob | Rule.ImportFile;
+export type Rule = Rule.DirectoryScope | Rule.Break | Rule.IncludeOrExclude | Rule.ImportFile;
 
 //------------------------------------------------------------------------------------------------------------------
 // The whole rule set
@@ -135,4 +138,5 @@ export type Rule = Rule.DirectoryScope | Rule.Break | Rule.IncludeOrExcludeGlob 
 
 export type Ruleset = {
     readonly rules: Array<Rule>;
+    readonly unmatchedPathAction: Rule.Type.IncludeOrExclude;
 };

@@ -1,19 +1,19 @@
-import { Rule } from "../../types/rules.js";
+import { Rule, Ruleset } from "../../types/rules.js";
 import { fail } from "../../utils/fail.js";
-import { isDirectoryScope, isIncludeOrExcludeGlob } from "../helpers/rule-type-guards.js";
+import { isDirectoryScope, isIncludeOrExcludeGlob } from "../helpers/rule-type-utils.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Assert that "+" and "-" rules are nested correctly and consistently
 //----------------------------------------------------------------------------------------------------------------------
 
-export function assertIncludeExcludeConsistency(rules: ReadonlyArray<Rule>, topLevelRuleType: Rule.IncludeOrExclude) {
-    rules.forEach(rule => assertValidNesting(topLevelRuleType, rule));
+export function assertIncludeExcludeConsistency(ruleset: Ruleset) {
+    ruleset.rules.forEach(rule => assertValidNesting(invert(ruleset.unmatchedPathAction), rule));
 }
 //----------------------------------------------------------------------------------------------------------------------
 // Recursively verify the nesting
 //----------------------------------------------------------------------------------------------------------------------
 
-function assertValidNesting(expectedMode: Rule.IncludeOrExclude, rule: Rule) {
+function assertValidNesting(expectedMode: Rule.Type.IncludeOrExclude, rule: Rule) {
     if (isIncludeOrExcludeGlob(rule)) {
         if (expectedMode !== rule.type) {
             failWithInvalidNesting(rule, expectedMode);
@@ -35,7 +35,7 @@ function assertValidNesting(expectedMode: Rule.IncludeOrExclude, rule: Rule) {
 // Invert the filter mode
 //----------------------------------------------------------------------------------------------------------------------
 
-function invert(filter: Rule.IncludeOrExclude) {
+function invert(filter: Rule.Type.IncludeOrExclude) {
     return filter === Rule.EXCLUDE_GLOB ? Rule.INCLUDE_GLOB : Rule.EXCLUDE_GLOB;
 }
 
@@ -45,7 +45,7 @@ function invert(filter: Rule.IncludeOrExclude) {
 
 function failWithInvalidNesting(
     rule: Rule.DirectoryScope | Rule.IncludeGlob | Rule.ExcludeGlob,
-    expectedMode: Rule.IncludeOrExclude
+    expectedMode: Rule.Type.IncludeOrExclude
 ) {
     const expected =
         expectedMode === Rule.INCLUDE_GLOB
@@ -58,6 +58,7 @@ function failWithInvalidNesting(
 function getStack(rule: Rule) {
     const { stack } = rule;
     if (2 < stack.length) {
+        // TODO: line is an object (not a string)
         return stack.map((line, index) => `${"".padEnd(index * 2)}${line}`).join("\n");
     } else {
         return undefined;

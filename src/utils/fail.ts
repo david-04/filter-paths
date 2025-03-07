@@ -1,5 +1,5 @@
 import { exit } from "node:process";
-import { isArgv } from "../rules/helpers/rule-type-guards.js";
+import { isArgv } from "../rules/helpers/rule-type-utils.js";
 import { Rule } from "../types/rules.js";
 
 const MAX_MESSAGE_LENGTH = 120;

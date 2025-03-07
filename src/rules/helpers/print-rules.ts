@@ -1,5 +1,5 @@
 import { Rule, Ruleset } from "../../types/rules.js";
-import { isBreak, isDirectoryScope, isImportFile, isIncludeGlob } from "./rule-type-guards.js";
+import { isBreak, isDirectoryScope, isImportFile, isIncludeGlob } from "./rule-type-utils.js";
 
 const INDENT = "  ";
 
@@ -33,7 +33,7 @@ function renderRule(rule: Rule, indent: string, showImports: boolean): ReadonlyA
     } else if (isBreak(rule)) {
         return printBreakRule(rule, indent, showImports);
     } else {
-        rule satisfies Rule.IncludeOrExcludeGlob;
+        rule satisfies Rule.IncludeOrExclude;
         return printGlobSelectorRule(rule, indent, showImports);
     }
 }
@@ -50,7 +50,7 @@ function renderImportRule(rule: Rule.ImportFile, indent: string, showImports: bo
 // Render an include or exclude glob pattern rule
 //----------------------------------------------------------------------------------------------------------------------
 
-function printGlobSelectorRule(rule: Rule.IncludeOrExcludeGlob, indent: string, showImports: boolean) {
+function printGlobSelectorRule(rule: Rule.IncludeOrExclude, indent: string, showImports: boolean) {
     const operator = isIncludeGlob(rule) ? "+" : "-";
     const { effective, original } = rule.glob;
     const suffix = effective === original ? "" : ` (original: ${original})`;

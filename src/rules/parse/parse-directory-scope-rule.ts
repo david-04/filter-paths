@@ -53,13 +53,13 @@ function splitData(data: string) {
 //----------------------------------------------------------------------------------------------------------------------
 
 function getStringified(
-    globData: string,
-    secondaryAction: Rule.IncludeOrExclude | undefined,
+    original: string,
+    secondaryAction: Rule.Type.IncludeOrExclude | undefined,
     glob: Rule.Fragment.Glob
-) {
-    const operator = { [Rule.INCLUDE_GLOB]: "@ +", [Rule.EXCLUDE_GLOB]: "@ -", "": "@" }[secondaryAction ?? ""];
+): Rule.Fragment.Stringified {
     return {
-        original: `${operator} ${globData}`,
-        effective: `${operator} ${glob.effective}`,
+        operator: { [Rule.INCLUDE_GLOB]: "@ +", [Rule.EXCLUDE_GLOB]: "@ -", "": "@" }[secondaryAction ?? ""],
+        original,
+        effective: glob.effective,
     };
 }

@@ -1,6 +1,6 @@
 import { Config } from "../../types/config.js";
 import { Rule } from "../../types/rules.js";
-import { isArgv } from "../helpers/rule-type-guards.js";
+import { isArgv } from "../helpers/rule-type-utils.js";
 import { parseRule } from "./parse-rule.js";
 
 //----------------------------------------------------------------------------------------------------------------------

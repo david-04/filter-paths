@@ -1,5 +1,5 @@
 import { Rule } from "../../types/rules.js";
-import { isBreak } from "./rule-type-guards.js";
+import { isBreak } from "./rule-type-utils.js";
 
 const INDENT = 2;
 

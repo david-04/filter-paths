@@ -3,7 +3,7 @@ import { Config } from "../../types/config.js";
 import { Rule } from "../../types/rules.js";
 import { fail } from "../../utils/fail.js";
 import { createFileDescriptor } from "../helpers/create-file-descriptor.js";
-import { isArgv } from "../helpers/rule-type-guards.js";
+import { isArgv } from "../helpers/rule-type-utils.js";
 import { assertFileExists } from "../validate/file-exists.js";
 import { assertNoCyclicImports } from "../validate/no-cyclic-imports.js";
 import { parseRules } from "./parse-rules.js";
@@ -72,11 +72,11 @@ export namespace parseImportFileRule {
 // Get the stringified representation
 //----------------------------------------------------------------------------------------------------------------------
 
-function getStringified(operator: string | undefined, file: Rule.Fragment.File) {
-    operator = operator ? `${operator} ` : "";
+function getStringified(operator: string | undefined, file: Rule.Fragment.File): Rule.Fragment.Stringified {
     return {
-        original: `${operator} ${file.original}`,
-        effective: `${operator} ${file.resolved}`,
+        operator: operator ? `${operator}` : "",
+        original: file.original,
+        effective: file.resolved,
     };
 }
 

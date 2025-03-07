@@ -1,6 +1,6 @@
 import { Rule } from "../../types/rules.js";
 import { fail } from "../../utils/fail.js";
-import { isArgv, isImportFile } from "../helpers/rule-type-guards.js";
+import { isArgv, isImportFile } from "../helpers/rule-type-utils.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Verify that files don't include one another recursively

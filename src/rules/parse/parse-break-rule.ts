@@ -2,7 +2,7 @@ import { Config } from "../../types/config.js";
 import { Rule } from "../../types/rules.js";
 import { fail } from "../../utils/fail.js";
 import { createGlob } from "../helpers/create-glob.js";
-import { isArgv } from "../helpers/rule-type-guards.js";
+import { isArgv } from "../helpers/rule-type-utils.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Parse a "break" rule
@@ -63,9 +63,10 @@ function getApplicableParents(file: Rule.Fragment.File, parent: Rule) {
 // Create the stringified representation
 //----------------------------------------------------------------------------------------------------------------------
 
-function getStringified(data: string, glob: Rule.Fragment.Glob) {
+function getStringified(original: string, glob: Rule.Fragment.Glob): Rule.Fragment.Stringified {
     return {
-        original: `< ${data}`,
-        effective: `< ${glob.effective}`,
+        operator: "<",
+        original,
+        effective: glob.effective,
     };
 }
