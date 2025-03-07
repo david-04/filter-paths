@@ -3,11 +3,13 @@ import { isDirectoryScope, isGoto, isImportFile, isIncludeGlob } from "./rule-ty
 
 const INDENT = "  ";
 
+// TODO: Use Rule.stringified
+
 //----------------------------------------------------------------------------------------------------------------------
 // Print the rule set
 //----------------------------------------------------------------------------------------------------------------------
 
-export function printRules(ruleset: Ruleset) {
+export function printRuleset(ruleset: Ruleset) {
     const importRules = ruleset.rules.reduce((total, rule) => total + countImportRules(rule), 0);
     const lines = ruleset.rules.flatMap(rule => renderRule(rule, "", 1 < importRules));
     console.log(lines.join("\n"));

@@ -10,12 +10,9 @@ export function createFileDescriptor(parent: Rule.Fragment.File | undefined, fil
     const original = file.trim();
     const resolved = normalizePath(expandEnvironmentVariables(original, "everywhere"));
     if (isAbsolute(resolved) || !parent) {
-        const absolute = normalizePath(resolve(resolved));
-        return { absolute, equals: createEqualsFunction(absolute), original, resolved };
+        return assembleFileDescriptor({ original, resolved });
     } else {
-        const concatenated = normalizePath(join(parent.resolved, "..", resolved));
-        const absolute = normalizePath(resolve(concatenated));
-        return { absolute, equals: createEqualsFunction(absolute), original, resolved: concatenated };
+        return assembleFileDescriptor({ original, resolved: normalizePath(join(parent.resolved, "..", resolved)) });
     }
 }
 
@@ -28,12 +25,14 @@ function normalizePath(path: string) {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-// Create the equals function
+// Assemble the file descriptor
 //----------------------------------------------------------------------------------------------------------------------
 
-function createEqualsFunction(absolutePath: string) {
-    return (fileOrRuleSource: Rule.Fragment.File | Rule.Source.File) => {
+function assembleFileDescriptor({ original, resolved }: Record<"original" | "resolved", string>): Rule.Fragment.File {
+    const absolute = normalizePath(resolve(resolved));
+    const equals = (fileOrRuleSource: Rule.Fragment.File | Rule.Source.File) => {
         const file = "type" in fileOrRuleSource ? fileOrRuleSource.file : fileOrRuleSource;
-        return file.absolute === absolutePath;
+        return file.absolute === absolute;
     };
+    return { absolute, equals, original, resolved };
 }

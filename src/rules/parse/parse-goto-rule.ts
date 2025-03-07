@@ -2,29 +2,37 @@ import { Config } from "../../types/config.js";
 import { Rule } from "../../types/rules.js";
 import { fail } from "../../utils/fail.js";
 import { createGlob } from "../helpers/create-glob.js";
+import { filterStack } from "../helpers/filter-stack.js";
 import { isArgv } from "../helpers/rule-type-utils.js";
+import { stringifyStack } from "../helpers/stringify-stack.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Parse a "goto" rule
 //----------------------------------------------------------------------------------------------------------------------
 
-export function parseGotoRule(config: Config, parent: Rule, source: Rule.Source.File, operator: string, data: string) {
+export function parseGotoRule(
+    config: Config,
+    parent: Rule,
+    source: Rule.Source.File,
+    operator: string,
+    data: string
+): Rule.Goto {
     const { directoryScope } = parent;
     const glob = createGlob(config, source, directoryScope, data);
-    const ruleToSkip = getParentToSkip(parent, operator, source);
     const stack = [...parent.stack];
-    const rule: Rule.Goto = {
+    const rule = {
         children: [],
         directoryScope,
         glob,
         parent,
-        ruleToSkip,
+        ruleToSkip: parent,
         source,
         stack,
-        stringified: getStringified(data, glob),
+        stringified: toStringified(data, glob),
         type: Rule.GOTO,
-    };
+    } satisfies Rule.Goto;
     stack.push(rule);
+    rule.ruleToSkip = getRuleToSkip(rule, operator, source);
     return rule;
 }
 
@@ -32,16 +40,22 @@ export function parseGotoRule(config: Config, parent: Rule, source: Rule.Source.
 // Find the parent rule to skip
 //----------------------------------------------------------------------------------------------------------------------
 
-function getParentToSkip(parent: Rule, operator: string, source: Rule.Source.File) {
+function getRuleToSkip(rule: Rule.Goto, operator: string, source: Rule.Source.File) {
     const targetIndentation = source.indentation - operator.length + 1;
-    for (const { currentRule, currentIndentation } of getApplicableParents(source.file, parent)) {
+    for (const { currentRule, currentIndentation } of getApplicableParents(source.file, rule.parent)) {
         if (currentIndentation === targetIndentation) {
             return currentRule;
         } else if (currentIndentation < targetIndentation) {
             break;
         }
     }
-    return fail(source, "Unable to find the parent rule/level to jump to (invalid alignment)");
+    const stack = filterStack.byFile(rule.stack, rule.source.file, { includeArgv: false });
+    const message = [
+        'The "goto-arrow" does not properly align with a parent rules',
+        "",
+        stringifyStack.asOriginalWithLineNumbers(stack),
+    ];
+    return fail(source, message.join("\n"));
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -50,7 +64,6 @@ function getParentToSkip(parent: Rule, operator: string, source: Rule.Source.Fil
 
 function getApplicableParents(file: Rule.Fragment.File, parent: Rule) {
     const applicableParents = new Array<{ currentRule: Rule; currentIndentation: number }>();
-
     for (let current: Rule | undefined = parent; current; current = current.parent) {
         if (!isArgv(current.source) && current.source.file.equals(file)) {
             applicableParents.push({ currentRule: current, currentIndentation: current.source.indentation });
@@ -63,7 +76,7 @@ function getApplicableParents(file: Rule.Fragment.File, parent: Rule) {
 // Create the stringified representation
 //----------------------------------------------------------------------------------------------------------------------
 
-function getStringified(original: string, glob: Rule.Fragment.Glob): Rule.Fragment.Stringified {
+function toStringified(original: string, glob: Rule.Fragment.Glob): Rule.Fragment.Stringified {
     return {
         operator: "<",
         original,

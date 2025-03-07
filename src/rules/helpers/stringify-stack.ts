@@ -1,5 +1,5 @@
 import { Rule } from "../../types/rules.js";
-import { isGoto } from "./rule-type-utils.js";
+import { isArgv, isGoto } from "./rule-type-utils.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Stringify a rule stack
@@ -35,10 +35,14 @@ function getIndent(stack: Rule.Stack, index: number, rule: Rule) {
     return "".padEnd(index * indentWidth - gotoArrow.length) + gotoArrow;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+// Get the arrow (|<<<<<) to prepend in front of "goto" rules
+//----------------------------------------------------------------------------------------------------------------------
+
 function getGotoRuleArrow(stack: Rule.Stack, indentWidth: number, index: number, rule: Rule.Goto) {
-    const parentToSkip = stack.findIndex(current => current === rule.ruleToSkip);
-    if (0 <= parentToSkip) {
-        const indicatorWidth = indentWidth * (index - parentToSkip);
+    const ruleToSkip = stack.findIndex(current => current === rule.ruleToSkip);
+    if (0 <= ruleToSkip) {
+        const indicatorWidth = indentWidth * (index - ruleToSkip);
         return ["|", "".padEnd(indicatorWidth - 1, "<")].join("");
     }
     return "";
@@ -49,6 +53,14 @@ function getGotoRuleArrow(stack: Rule.Stack, indentWidth: number, index: number,
 //----------------------------------------------------------------------------------------------------------------------
 
 export namespace stringifyStack {
+    //
+    //------------------------------------------------------------------------------------------------------------------
+    // Show the effective globs after expansion
+    //------------------------------------------------------------------------------------------------------------------
+
+    export function asEffective(stack: Rule.Stack) {
+        return stringifyStack(stack, ({ stringified }) => concat(stringified.operator, stringified.effective));
+    }
     //------------------------------------------------------------------------------------------------------------------
     // Show the globs as they are defined in the source file
     //------------------------------------------------------------------------------------------------------------------
@@ -58,11 +70,19 @@ export namespace stringifyStack {
     }
 
     //------------------------------------------------------------------------------------------------------------------
-    // Show the effective globs after expansion
+    // Show the globs as they are defined in the source file and include line numbers
     //------------------------------------------------------------------------------------------------------------------
 
-    export function asEffective(stack: Rule.Stack) {
-        return stringifyStack(stack, ({ stringified }) => concat(stringified.operator, stringified.effective));
+    export function asOriginalWithLineNumbers(stack: Rule.Stack) {
+        const rules = stack.map(rule => rule.source).filter((rule): rule is Rule.Source.File => !isArgv(rule));
+        const maxLineNumber = rules[stack.length - 1]?.lineNumber ?? 0;
+        const maxLineNumberLength = `${maxLineNumber}`.length;
+        return rules
+            .map(rule => {
+                const lineNumber = `${rule.lineNumber}`.padStart(maxLineNumberLength);
+                return `${lineNumber}: ${rule.line}`;
+            })
+            .join("\n");
     }
 
     //------------------------------------------------------------------------------------------------------------------

@@ -23,7 +23,7 @@ export function parseGlobSelectorRule(
         parent,
         source,
         stack,
-        stringified: getStringified(type, data, glob),
+        stringified: toStringified(type, data, glob),
         type,
         glob,
     };
@@ -35,7 +35,7 @@ export function parseGlobSelectorRule(
 // Get the stringified representation
 //----------------------------------------------------------------------------------------------------------------------
 
-function getStringified(
+function toStringified(
     type: Rule.Type.IncludeOrExclude,
     data: string,
     glob: Rule.Fragment.Glob

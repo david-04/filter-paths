@@ -13,7 +13,7 @@ export function filterStack(stack: Rule.Stack, ...filters: ReadonlyArray<(rule: 
             .map(other => other.rule)
             .filter(isGoto)
             .some(rule => rule.ruleToSkip === item.rule);
-        item.deleted = filters.some(filter => filter(item.rule)) && !hasDependentChildren;
+        item.deleted = !filters.some(filter => filter(item.rule)) && !hasDependentChildren;
     }
     return reversed
         .filter(item => !item.deleted)
@@ -31,14 +31,10 @@ export namespace filterStack {
     // Filter a stack by file
     //------------------------------------------------------------------------------------------------------------------
 
-    export function byFile(
-        stack: Rule.Stack,
-        file: Rule.Fragment.File,
-        options = { includeArgv: true as boolean } as const
-    ) {
+    export function byFile(stack: Rule.Stack, file: Rule.Fragment.File, options: { readonly includeArgv: boolean }) {
         return filterStack(stack, (rule: Rule) => {
             if (isArgv(rule.source)) {
-                return options?.includeArgv ?? true;
+                return options?.includeArgv;
             } else {
                 return rule.source.file.equals(file);
             }
