@@ -1,5 +1,5 @@
 import { Rule } from "../../types/rules.js";
-import { comesFromArgv, isBreak } from "./rule-type-guards.js";
+import { isArgv, isBreak } from "./rule-type-guards.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Filter a stack
@@ -40,7 +40,7 @@ export namespace filterStack {
         options = { includeArgv: true as boolean } as const
     ) {
         return filterStack(stack, (rule: Rule) => {
-            if (comesFromArgv(rule.source)) {
+            if (isArgv(rule.source)) {
                 return options?.includeArgv ?? true;
             } else {
                 return rule.source.file.equals(source.file);

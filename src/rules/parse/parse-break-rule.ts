@@ -2,7 +2,7 @@ import { Config } from "../../types/config.js";
 import { Rule } from "../../types/rules.js";
 import { fail } from "../../utils/fail.js";
 import { createGlob } from "../helpers/create-glob.js";
-import { comesFromFile } from "../helpers/rule-type-guards.js";
+import { isArgv } from "../helpers/rule-type-guards.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Parse a "break" rule
@@ -52,7 +52,7 @@ function getApplicableParents(file: Rule.Fragment.File, parent: Rule) {
     const applicableParents = new Array<{ currentRule: Rule; currentIndentation: number }>();
 
     for (let current: Rule | undefined = parent; current; current = current.parent) {
-        if (comesFromFile(current.source) && current.source.file.equals(file)) {
+        if (!isArgv(current.source) && current.source.file.equals(file)) {
             applicableParents.push({ currentRule: current, currentIndentation: current.source.indentation });
         }
     }

@@ -1,5 +1,5 @@
 import { Rule } from "../../types/rules.js";
-import { comesFromFile } from "../helpers/rule-type-guards.js";
+import { isArgv } from "../helpers/rule-type-guards.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Assert that no rule is under an "import" rule
@@ -8,7 +8,7 @@ import { comesFromFile } from "../helpers/rule-type-guards.js";
 export function assertNoRuleUnderImport(rules: ReadonlyArray<Rule>) {
     for (const rule of rules.flatMap(flattenRule)) {
         if (rule.type !== Rule.IMPORT_FILE) {
-            const parentFile = comesFromFile(rule.parent.source) ? rule.parent.source.file : rule.parent.source.argv;
+            const parentFile = isArgv(rule.parent.source) ? rule.parent.source.argv : rule.parent.source.file;
             if (parentFile.equals(rule.source.file)) {
                 // TODO: Restore this functionality after revising the path handling
                 //const stack = filterStack.byFile(rule.stack, rule.source.file, { includeArgv: true });

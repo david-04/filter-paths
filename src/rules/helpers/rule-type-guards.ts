@@ -56,14 +56,6 @@ export function isImportFile(rule: Rule): rule is Rule.ImportFile {
 // Check if the rule represents a command-line parameter
 //----------------------------------------------------------------------------------------------------------------------
 
-export function comesFromArgv(rule: Rule.Source): rule is Rule.Source.Argv {
+export function isArgv(rule: Rule.Source): rule is Rule.Source.Argv {
     return rule.type === "argv";
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-// Check if the rule was read from a file
-//----------------------------------------------------------------------------------------------------------------------
-
-export function comesFromFile(rule: Rule.Source): rule is Rule.Source.File {
-    return rule.type === "file";
 }
