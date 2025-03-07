@@ -1,4 +1,5 @@
 import { Rule, Ruleset } from "../../types/rules.js";
+import { stringifyGotoRuleArrow } from "./goto-rule-operator.js";
 import { isGoto } from "./rule-type-utils.js";
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -50,8 +51,8 @@ function countParents(rule: Rule, skipOutermostRule: boolean) {
 //----------------------------------------------------------------------------------------------------------------------
 
 function getGotoArrow(rule: Rule.Goto, indent: number) {
-    const width = countStepsToParent(rule, rule.ruleToSkip) * indent;
-    return "|" + new Array(width - 1).fill("<").join("");
+    const steps = countStepsToParent(rule, rule.ruleToSkip);
+    return stringifyGotoRuleArrow(steps * indent - 1);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

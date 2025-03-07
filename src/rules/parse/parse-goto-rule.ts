@@ -51,11 +51,13 @@ function getRuleToSkip(rule: Rule.Goto, operator: string, source: Rule.Source.Fi
     }
     const stack = filterStack.byFile(rule.stack, rule.source.file, { includeArgv: false });
     const message = [
-        'The "goto-arrow" does not properly align with a parent rules',
+        `Invalid indentation in ${rule.source.file.resolved} at line ${rule.source.lineNumber}:`,
         "",
         stringifyStack.asOriginalWithLineNumbers(stack),
+        "",
+        `The left-hand side "goto" indicator must align precisely with one of the parent rules.`,
     ];
-    return fail(source, message.join("\n"));
+    return fail(message.join("\n"));
 }
 
 //----------------------------------------------------------------------------------------------------------------------

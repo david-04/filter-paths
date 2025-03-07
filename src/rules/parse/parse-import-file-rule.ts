@@ -7,6 +7,7 @@ import { isFile } from "../helpers/rule-type-utils.js";
 import { assertFileExists } from "../validate/file-exists.js";
 import { assertNoCyclicImports } from "../validate/no-cyclic-imports.js";
 import { parseRules } from "./parse-rules.js";
+import { getGotoRuleOperator } from "../helpers/goto-rule-operator.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Parse an "import file" rule
@@ -110,9 +111,9 @@ function loadLines(source: Rule.Source, file: Rule.Fragment.File) {
 
 function getIndentation(rule: Rule.Source.File) {
     const leadingWhitespace = rule.line.replace(/[^\s].*$/, "");
-    const leadingArrows = (/^[^\sa-z\d]*</i.exec(rule.line.trim())?.[0] ?? "").replace(/<$/, "");
     if (0 <= leadingWhitespace.indexOf("\t")) {
         fail(rule, "The line contains leading tabs. Rules must be indented with spaces only.");
     }
-    return leadingWhitespace.length + leadingArrows.length;
+    const gotoOperatorLength = getGotoRuleOperator(rule.line.trim())?.length ?? 0;
+    return leadingWhitespace.length + Math.max(0, gotoOperatorLength - 1);
 }

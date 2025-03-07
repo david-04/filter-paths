@@ -16,7 +16,7 @@
   - /j
     + /abc
        - /x
-  <<<<<< /xyz
+  |    < /xyz
        - /xxx
 
   # comment

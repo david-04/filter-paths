@@ -1,4 +1,5 @@
 import { Rule } from "../../types/rules.js";
+import { stringifyGotoRuleArrow } from "./goto-rule-operator.js";
 import { isFile, isGoto } from "./rule-type-utils.js";
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -43,7 +44,7 @@ function getGotoRuleArrow(stack: Rule.Stack, indentWidth: number, index: number,
     const ruleToSkip = stack.findIndex(current => current === rule.ruleToSkip);
     if (0 <= ruleToSkip) {
         const indicatorWidth = indentWidth * (index - ruleToSkip);
-        return ["|", "".padEnd(indicatorWidth - 1, "<")].join("");
+        return stringifyGotoRuleArrow(indicatorWidth);
     }
     return "";
 }
