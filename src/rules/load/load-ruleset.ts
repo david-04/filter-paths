@@ -1,8 +1,9 @@
 import { Config } from "../../types/config.js";
-import { Rule, Ruleset } from "../../types/rules.js";
+import { Result } from "../../types/result.js";
+import { Rule, Rules, Ruleset } from "../../types/rules.js";
 import { fail } from "../../utils/fail.js";
 import { createFileDescriptor } from "../helpers/create-file-descriptor.js";
-import { invert, isDirectoryScope, isIncludeOrExcludeGlob } from "../helpers/rule-type-utils.js";
+import { isDirectoryScope, isExclude, isIncludeOrExcludeGlob } from "../helpers/rule-type-utils.js";
 import { parseImportFileRule } from "../parse/parse-import-file-rule.js";
 import { assertConsistentSiblingIndentation } from "../validate/consistent-sibling-indentation.js";
 import { assertIncludeExcludeConsistency } from "../validate/include-exclude-consistency.js";
@@ -19,7 +20,8 @@ export function loadRuleset(config: Config): Ruleset {
     if (!firstFilterType) {
         fail("No filter rules (that include or exclude globs) have been defined");
     }
-    const ruleset: Ruleset = { rules, unmatchedPathAction: invert(firstFilterType) };
+    const result: Result.Final = { matched: isExclude(firstFilterType), type: Result.FINAL };
+    const ruleset: Ruleset = { rules, unmatchedPathResult: result };
     validateRuleset(ruleset);
     return ruleset;
 }
@@ -28,19 +30,24 @@ export function loadRuleset(config: Config): Ruleset {
 // Find the first rule that includes or excludes globs
 //----------------------------------------------------------------------------------------------------------------------
 
-function getFirstFilterType(rules: ReadonlyArray<Rule>): Rule.Type.IncludeOrExclude | undefined {
+function getFirstFilterType(rules: Rules): Rule.Type.IncludeOrExclude | undefined {
     for (const rule of rules) {
-        if (isIncludeOrExcludeGlob(rule)) {
-            return rule.type;
-        } else if (isDirectoryScope(rule) && rule.secondaryAction) {
-            return rule.secondaryAction;
-        }
-        const ruleType = getFirstFilterType(rule.children);
-        if (ruleType) {
-            return ruleType;
+        const type = tryGetIncludeOrExcludeType(rule) ?? getFirstFilterType(rule.children);
+        if (type) {
+            return type;
         }
     }
     return undefined;
+}
+
+function tryGetIncludeOrExcludeType(rule: Rule) {
+    if (isIncludeOrExcludeGlob(rule)) {
+        return rule.type;
+    } else if (isDirectoryScope(rule) && rule.secondaryAction) {
+        return rule.secondaryAction;
+    } else {
+        return undefined;
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

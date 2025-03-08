@@ -1,5 +1,5 @@
 import { Config } from "../../types/config.js";
-import { Rule } from "../../types/rules.js";
+import { Rule, Rules } from "../../types/rules.js";
 import { isFile } from "../helpers/rule-type-utils.js";
 import { parseRule } from "./parse-rule.js";
 
@@ -41,7 +41,7 @@ function isSameFile(parent: Rule, rule: Rule.Source.File) {
 // Copy the array and, for the last top-level element, append the whole change chain to the last child
 //----------------------------------------------------------------------------------------------------------------------
 
-function flattenToLastChild(rules: ReadonlyArray<Rule>) {
+function flattenToLastChild(rules: Rules) {
     const flattened = [...rules];
     for (let lastChild = getLastChild(flattened); lastChild; lastChild = getLastChild(flattened)) {
         flattened.push(lastChild);
@@ -49,7 +49,7 @@ function flattenToLastChild(rules: ReadonlyArray<Rule>) {
     return flattened;
 }
 
-function getLastChild(rules: ReadonlyArray<Rule>) {
+function getLastChild(rules: Rules) {
     const children = rules[rules.length - 1]?.children ?? [];
     return children[children.length - 1];
 }

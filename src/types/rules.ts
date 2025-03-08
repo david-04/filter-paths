@@ -1,3 +1,5 @@
+import { Result } from "./result.js";
+
 //----------------------------------------------------------------------------------------------------------------------
 // Filter rules
 //----------------------------------------------------------------------------------------------------------------------
@@ -80,7 +82,7 @@ export namespace Rule {
     // Type-specific rules
     //------------------------------------------------------------------------------------------------------------------
 
-    export type IncludeOrExclude = {
+    export type IncludeOrExcludeGlob = {
         readonly children: Array<Rule>;
         readonly directoryScope: Fragment.DirectoryScope | undefined;
         readonly glob: Fragment.Glob;
@@ -91,8 +93,8 @@ export namespace Rule {
         readonly type: Type.INCLUDE_GLOB | Type.EXCLUDE_GLOB;
     };
 
-    export type IncludeGlob = IncludeOrExclude & { readonly type: Type.INCLUDE_GLOB };
-    export type ExcludeGlob = IncludeOrExclude & { readonly type: Type.EXCLUDE_GLOB };
+    export type IncludeGlob = IncludeOrExcludeGlob & { readonly type: Type.INCLUDE_GLOB };
+    export type ExcludeGlob = IncludeOrExcludeGlob & { readonly type: Type.EXCLUDE_GLOB };
 
     export type DirectoryScope = {
         readonly children: Array<Rule>;
@@ -130,7 +132,8 @@ export namespace Rule {
     };
 }
 
-export type Rule = Rule.DirectoryScope | Rule.Goto | Rule.IncludeOrExclude | Rule.ImportFile;
+export type Rule = Rule.DirectoryScope | Rule.Goto | Rule.IncludeOrExcludeGlob | Rule.ImportFile;
+export type Rules = ReadonlyArray<Rule>;
 
 //------------------------------------------------------------------------------------------------------------------
 // The whole rule set
@@ -138,5 +141,5 @@ export type Rule = Rule.DirectoryScope | Rule.Goto | Rule.IncludeOrExclude | Rul
 
 export type Ruleset = {
     readonly rules: Array<Rule>;
-    readonly unmatchedPathAction: Rule.Type.IncludeOrExclude;
+    readonly unmatchedPathResult: Result.Final;
 };

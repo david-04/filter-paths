@@ -1,31 +1,44 @@
+import { Result } from "../../types/result.js";
 import { Rule } from "../../types/rules.js";
 
 //----------------------------------------------------------------------------------------------------------------------
-// Check if a rule is an "include or exclude glob" rule
+// Check if a rule type is "include glob"
 //----------------------------------------------------------------------------------------------------------------------
 
-export function isIncludeOrExcludeGlob(rule: Rule): rule is Rule.IncludeOrExclude {
-    return [isIncludeGlob, isExcludeGlob].some(matches => matches(rule));
+export function isInclude(ruleType: Rule.Type): ruleType is Rule.Type.INCLUDE_GLOB {
+    return ruleType === Rule.INCLUDE_GLOB;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 // Check if a rule is an "include glob" rule
 //----------------------------------------------------------------------------------------------------------------------
 
-export function isIncludeGlob(ruleType: Rule.Type): ruleType is Rule.Type.INCLUDE_GLOB;
-export function isIncludeGlob(rule: Rule): rule is Rule.IncludeGlob;
-export function isIncludeGlob(ruleOrType: Rule | Rule.Type): boolean {
-    return ("object" === typeof ruleOrType ? ruleOrType.type : ruleOrType) === Rule.INCLUDE_GLOB;
+export function isIncludeGlob(rule: Rule): rule is Rule.IncludeGlob {
+    return rule.type === Rule.INCLUDE_GLOB;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+// Check if a rule is an "include glob" or "exclude glob" rule
+//----------------------------------------------------------------------------------------------------------------------
+
+export function isIncludeOrExcludeGlob(rule: Rule): rule is Rule.IncludeOrExcludeGlob {
+    return [isIncludeGlob, isExcludeGlob].some(matches => matches(rule));
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+// Check if a rule type is "exclude glob"
+//----------------------------------------------------------------------------------------------------------------------
+
+export function isExclude(ruleType: Rule.Type): ruleType is Rule.Type.EXCLUDE_GLOB {
+    return ruleType === Rule.EXCLUDE_GLOB;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 // Check if a rule is an "exclude glob" rule
 //----------------------------------------------------------------------------------------------------------------------
 
-export function isExcludeGlob(ruleType: Rule.Type): ruleType is Rule.Type.EXCLUDE_GLOB;
-export function isExcludeGlob(rule: Rule): rule is Rule.ExcludeGlob;
-export function isExcludeGlob(ruleOrType: Rule | Rule.Type): boolean {
-    return ("object" === typeof ruleOrType ? ruleOrType.type : ruleOrType) === Rule.EXCLUDE_GLOB;
+export function isExcludeGlob(rule: Rule): rule is Rule.ExcludeGlob {
+    return rule.type === Rule.EXCLUDE_GLOB;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -37,11 +50,21 @@ export function isDirectoryScope(rule: Rule): rule is Rule.DirectoryScope {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-// Check if a rule is a "goto" rule
+// Check if a result is "final"
 //----------------------------------------------------------------------------------------------------------------------
 
-export function isGoto(rule: Rule): rule is Rule.Goto {
-    return rule.type === Rule.GOTO;
+export function isFinal(result: Result | undefined): result is Result.Final {
+    return result?.type === Result.FINAL;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+// Check if a rule or a result is a "goto"
+//----------------------------------------------------------------------------------------------------------------------
+
+export function isGoto<T extends Rule | Result>(
+    ruleOrResult: T
+): ruleOrResult is Exclude<T, Exclude<T, Rule.Goto | Result.Goto>> {
+    return ruleOrResult && [Rule.GOTO, Result.GOTO].includes(ruleOrResult.type);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

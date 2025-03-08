@@ -1,4 +1,4 @@
-import { Rule, Ruleset } from "../../types/rules.js";
+import { Rule, Rules, Ruleset } from "../../types/rules.js";
 import { stringifyGotoRuleArrow } from "./goto-rule-operator.js";
 import { isGoto } from "./rule-type-utils.js";
 
@@ -10,7 +10,6 @@ export function printRuleset(ruleset: Ruleset) {
     const [first, second] = ruleset.rules;
     const skipOuterImportRules = !second;
     const rules = flattenRules(first && skipOuterImportRules ? first.children : ruleset.rules);
-
     for (const rule of rules) {
         const indent = getIndent(rule, skipOuterImportRules);
         const { original, operator } = rule.stringified;
@@ -23,7 +22,7 @@ export function printRuleset(ruleset: Ruleset) {
 // Copy all nested rules into one flat array
 //----------------------------------------------------------------------------------------------------------------------
 
-function flattenRules(rules: ReadonlyArray<Rule>): ReadonlyArray<Rule> {
+function flattenRules(rules: Rules): Rules {
     return rules.reduce((array, rule) => [...array, rule, ...flattenRules(rule.children)], new Array<Rule>());
 }
 

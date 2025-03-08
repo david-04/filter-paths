@@ -78,12 +78,12 @@ export namespace stringifyStack {
         const rules = stack.map(rule => rule.source).filter(isFile);
         const maxLineNumber = rules[stack.length - 1]?.lineNumber ?? 0;
         const maxLineNumberLength = `${maxLineNumber}`.length;
-        return rules
-            .map(rule => {
-                const lineNumber = `${rule.lineNumber}`.padStart(maxLineNumberLength);
-                return `${lineNumber}: ${rule.line}`;
-            })
-            .join("\n");
+        const lines = rules.map(rule => {
+            const lineNumber = `${rule.lineNumber}`.padStart(maxLineNumberLength);
+            return `${lineNumber}: ${rule.line}`;
+        });
+
+        return lines.join("\n");
     }
 
     //------------------------------------------------------------------------------------------------------------------

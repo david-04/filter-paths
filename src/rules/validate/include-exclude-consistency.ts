@@ -9,7 +9,8 @@ import { stringifyStack } from "../helpers/stringify-stack.js";
 //----------------------------------------------------------------------------------------------------------------------
 
 export function assertIncludeExcludeConsistency(ruleset: Ruleset) {
-    forEachRuleRecursive(ruleset.rules, rule => assertRuleIsValid(rule, ruleset.unmatchedPathAction));
+    const unmatchedPathAction = ruleset.unmatchedPathResult.matched ? Rule.Type.INCLUDE_GLOB : Rule.Type.EXCLUDE_GLOB;
+    forEachRuleRecursive(ruleset.rules, rule => assertRuleIsValid(rule, unmatchedPathAction));
 }
 
 //----------------------------------------------------------------------------------------------------------------------

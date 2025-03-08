@@ -3,9 +3,9 @@ import { Rule } from "../../types/rules.js";
 import { fail } from "../../utils/fail.js";
 import { getGotoRuleOperator } from "../helpers/goto-rule-operator.js";
 import { parseDirectoryScopeRule } from "./parse-directory-scope-rule.js";
-import { parseGlobSelectorRule } from "./parse-glob-selector-rule.js";
 import { parseGotoRule } from "./parse-goto-rule.js";
 import { parseImportFileRule } from "./parse-import-file-rule.js";
+import { parseIncludeOrExcludeGlobRule } from "./parse-include-or-exclude-glob-rule.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Dispatch a single rule into the matching parser
@@ -29,9 +29,9 @@ function getRuleParser(config: Config, parent: Rule, rule: Rule.Source.File) {
     }
     switch (operator) {
         case "+":
-            return () => parseGlobSelectorRule(config, parent, rule, Rule.INCLUDE_GLOB, data);
+            return () => parseIncludeOrExcludeGlobRule(config, parent, rule, Rule.INCLUDE_GLOB, data);
         case "-":
-            return () => parseGlobSelectorRule(config, parent, rule, Rule.EXCLUDE_GLOB, data);
+            return () => parseIncludeOrExcludeGlobRule(config, parent, rule, Rule.EXCLUDE_GLOB, data);
         case "@":
             return () => parseDirectoryScopeRule(config, parent, rule, data);
         case "import":

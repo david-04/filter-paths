@@ -1,4 +1,4 @@
-import { Rule } from "../../types/rules.js";
+import { Rules } from "../../types/rules.js";
 import { fail } from "../../utils/fail.js";
 import { filterStack } from "../helpers/filter-stack.js";
 import { forEachRuleRecursive } from "../helpers/for-each-rule-recursive.js";
@@ -9,7 +9,7 @@ import { stringifyStack } from "../helpers/stringify-stack.js";
 // Assert that no rule is nested under an "import" rule
 //----------------------------------------------------------------------------------------------------------------------
 
-export function assertNoRuleUnderImport(rules: ReadonlyArray<Rule>) {
+export function assertNoRuleUnderImport(rules: Rules) {
     forEachRuleRecursive(rules, rule => {
         if (!isImportFile(rule)) {
             const stack = filterStack.byFile(rule.stack, rule.source.file, { includeArgv: false });
