@@ -14,7 +14,7 @@ export function createGlob(
     directoryScope: Rule.Fragment.DirectoryScope | undefined,
     glob: string
 ) {
-    const original = assembleGlob(directoryScope?.original, glob);
+    const original = assembleGlob(undefined, glob);
     const effective = assembleGlob(directoryScope?.effective, glob);
     [glob, original, effective].forEach(glob => assertGlobIsValid(source, glob));
     const matches = createGlobMatcher(config, source, effective);
@@ -26,22 +26,12 @@ export function createGlob(
 //----------------------------------------------------------------------------------------------------------------------
 
 function assembleGlob(parent: string | undefined, child: string) {
-    const normalizedParent = parent ? normalizeGlob(parent) : "";
-    const normalizedChild = normalizeGlob(child);
-    if (normalizedParent) {
-        const separator = normalizedChild.startsWith("/") ? "" : "/";
-        return normalizeGlob([parent, separator, normalizedChild].join(""));
+    if (parent) {
+        const separator = child.startsWith("/") || parent.endsWith("/") ? "" : "/";
+        return [parent, separator, child].join("");
     } else {
-        return normalizedChild;
+        return child;
     }
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-// Normalize a glob
-//----------------------------------------------------------------------------------------------------------------------
-
-function normalizeGlob(glob: string) {
-    return glob.replace(/\/+/g, "/").replace(/\/$/, "");
 }
 
 //----------------------------------------------------------------------------------------------------------------------

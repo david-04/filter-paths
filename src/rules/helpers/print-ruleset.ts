@@ -13,7 +13,8 @@ export function printRuleset(ruleset: Ruleset) {
 
     for (const rule of rules) {
         const indent = getIndent(rule, skipOuterImportRules);
-        const command = [rule.stringified.operator, rule.stringified.effective].filter(item => item).join(" ");
+        const { original, operator } = rule.stringified;
+        const command = [operator, original].filter(item => item).join(" ");
         console.log(`${indent}${command}`);
     }
 }

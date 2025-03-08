@@ -38,9 +38,9 @@ export function fail(sourceOrMessage: Rule.Source | string, messageOrCause: unkn
 // Run code with an error handler
 //----------------------------------------------------------------------------------------------------------------------
 
-export function withErrorHandler(callback: () => void) {
+export async function withErrorHandler(callback: () => void | Promise<void>) {
     try {
-        callback();
+        await callback();
     } catch (error) {
         if (error instanceof DescriptiveError) {
             const message = error.message.replace(/^[a-z]*error:\s*/i, "");
