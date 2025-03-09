@@ -1,5 +1,3 @@
-import { Result } from "./result.js";
-
 //----------------------------------------------------------------------------------------------------------------------
 // Filter rules
 //----------------------------------------------------------------------------------------------------------------------
@@ -141,5 +139,5 @@ export type Rules = ReadonlyArray<Rule>;
 
 export type Ruleset = {
     readonly rules: Array<Rule>;
-    readonly unmatchedPathResult: Result.Final;
+    readonly unmatchedPathAction: Rule.Type.IncludeOrExclude;
 };

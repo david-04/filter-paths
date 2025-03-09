@@ -15,5 +15,5 @@ export function applyGlob(
 ): Result {
     const matched = glob.matches(path) === !!isInclude(includeOrExclude);
     onRuleApplied(rule, { matched });
-    return { matched, type: Result.FINAL };
+    return { matchedPath: matched, type: Result.FINAL };
 }

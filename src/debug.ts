@@ -1,2 +1,2 @@
-process.argv = ["", "", "resources/test.filter"];
+process.argv = ["", "", "--version", ""];
 await import("./filter-paths.js");

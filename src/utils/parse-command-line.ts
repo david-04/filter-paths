@@ -18,8 +18,10 @@ Usage: ${APP_NAME} [OPTIONS] [--] [FILTER_RULE_FILES...]
 [OPTIONS]
 
   -c | --case-sensitive ................ match case-sensitive (default: case-insensitive)
+  -d | --debug ......................... print which rules were evaluated for each path
   -p | --print-rules ................... print the rules after before processing any input
   -h | --help .......................... display this help screen
+  -t | --test .......................... alias for --debug
   -v | --version ....................... display version information
 
 `.trim();
@@ -29,8 +31,7 @@ Usage: ${APP_NAME} [OPTIONS] [--] [FILTER_RULE_FILES...]
 //----------------------------------------------------------------------------------------------------------------------
 
 export function parseCommandLine(args: ReadonlyArray<string>): Config {
-    handleHelpOption(args);
-    handleVersionOption(args);
+    handleHelpAndVersionOptions(args);
     const config = parseArgs(args);
     validateConfig(config);
     return config;
@@ -40,20 +41,11 @@ export function parseCommandLine(args: ReadonlyArray<string>): Config {
 // Handle --help
 //----------------------------------------------------------------------------------------------------------------------
 
-function handleHelpOption(args: ReadonlyArray<string>) {
-    if (args.some(argument => ["-h", "--help"].includes(argument))) {
-        console.log(USAGE);
-        exit(0);
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-// Handle --version
-//----------------------------------------------------------------------------------------------------------------------
-
-function handleVersionOption(args: ReadonlyArray<string>) {
-    if (args.some(argument => ["-v", "--version"].includes(argument))) {
-        console.log(VERSION);
+function handleHelpAndVersionOptions(args: ReadonlyArray<string>) {
+    const has = (...options: ReadonlyArray<string>) => options.some(option => args.includes(option));
+    const output = [...(has("-v", "--version") ? [VERSION] : []), ...(has("-h", "--help") ? [USAGE] : [])].join("\n\n");
+    if (output) {
+        console.log(output);
         exit(0);
     }
 }
@@ -63,7 +55,13 @@ function handleVersionOption(args: ReadonlyArray<string>) {
 //----------------------------------------------------------------------------------------------------------------------
 
 function parseArgs(args: ReadonlyArray<string>): Config {
-    const config = { caseSensitive: false, files: new Array<string>(), normalizePaths: true, printRules: false };
+    const config = {
+        caseSensitive: false,
+        debug: false,
+        files: new Array<string>(),
+        normalizePaths: true,
+        printRules: false,
+    };
     let acceptOptions = true;
 
     for (const arg of args.map(arg => arg.trim()).filter(arg => arg)) {
@@ -73,10 +71,12 @@ function parseArgs(args: ReadonlyArray<string>): Config {
             acceptOptions = false;
         } else if (["-c", "--case-sensitive"].includes(arg)) {
             config.caseSensitive = true;
+        } else if (["-d", "--debug"].includes(arg)) {
+            config.debug = true;
         } else if (["-p", "--print-rules"].includes(arg)) {
             config.printRules = true;
         } else if (arg.startsWith("-")) {
-            fail(`Unknown option: ${arg}. Try ${APP_NAME} --help`);
+            fail(`Unknown command-line option: ${arg}. Try ${APP_NAME} --help`);
         } else {
             config.files.push(arg);
         }
@@ -90,7 +90,7 @@ function parseArgs(args: ReadonlyArray<string>): Config {
 //----------------------------------------------------------------------------------------------------------------------
 
 function validateConfig(config: Config) {
-    if (config.files.length === 0) {
-        fail(`No filter rule files have been specified. Try ${APP_NAME} --help`);
+    if (config.files.length === 0 && !config.debug) {
+        fail(`Invalid arguments. No filter rules files have been specified. Try ${APP_NAME} --help`);
     }
 }

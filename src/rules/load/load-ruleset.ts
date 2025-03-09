@@ -1,9 +1,8 @@
 import { Config } from "../../types/config.js";
-import { Result } from "../../types/result.js";
 import { Rule, Rules, Ruleset } from "../../types/rules.js";
 import { fail } from "../../utils/fail.js";
 import { createFileDescriptor } from "../helpers/create-file-descriptor.js";
-import { isDirectoryScope, isExclude, isIncludeOrExcludeGlob } from "../helpers/rule-type-utils.js";
+import { invert, isDirectoryScope, isIncludeOrExcludeGlob } from "../helpers/rule-type-utils.js";
 import { parseImportFileRule } from "../parse/parse-import-file-rule.js";
 import { assertConsistentSiblingIndentation } from "../validate/consistent-sibling-indentation.js";
 import { assertIncludeExcludeConsistency } from "../validate/include-exclude-consistency.js";
@@ -15,13 +14,15 @@ import { assertNoRuleUnderImport } from "../validate/no-rule-under-import.js";
 //----------------------------------------------------------------------------------------------------------------------
 
 export function loadRuleset(config: Config): Ruleset {
+    if (0 === config.files.length) {
+        return { rules: [], unmatchedPathAction: Rule.INCLUDE_GLOB };
+    }
     const rules = config.files.map(file => parseImportFileRule.fromArgv(config, createFileDescriptor(undefined, file)));
     const firstFilterType = getFirstFilterType(rules);
     if (!firstFilterType) {
         fail("No filter rules (that include or exclude globs) have been defined");
     }
-    const result: Result.Final = { matched: isExclude(firstFilterType), type: Result.FINAL };
-    const ruleset: Ruleset = { rules, unmatchedPathResult: result };
+    const ruleset: Ruleset = { rules, unmatchedPathAction: invert(firstFilterType) };
     validateRuleset(ruleset);
     return ruleset;
 }
