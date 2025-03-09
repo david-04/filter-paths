@@ -1,6 +1,8 @@
 import { EvaluatedRule, OnGlobEvaluated, Result } from "../../types/result.js";
 import { Rule, Rules, Ruleset } from "../../types/rules.js";
+import { normalizePath } from "../helpers/normalize-path.js";
 import { isDirectoryScope, isFinal, isGoto, isImportFile, isInclude } from "../helpers/rule-type-utils.js";
+import { stringifyAuditTrail } from "../helpers/stringify-audit-trail.js";
 import { applyDirectoryScopeRule } from "./apply-directory-scope-rule.js";
 import { applyGotoRule } from "./apply-goto-rule.js";
 import { applyImportFileRule } from "./apply-import-file-rule.js";
@@ -12,11 +14,9 @@ import { applyIncludeOrExcludeGlobRule } from "./apply-include-or-exclude-glob-r
 
 export function applyRuleset(ruleset: Ruleset, path: string, onGlobEvaluated: OnGlobEvaluated) {
     const result = applyRules(ruleset.rules, path, onGlobEvaluated);
-    if (isFinal(result)) {
-        return { includePath: result.matchedPath, isDefaultFallback: false };
-    } else {
-        return { includePath: isInclude(ruleset.unmatchedPathAction), isDefaultFallback: true };
-    }
+    return isFinal(result)
+        ? { includePath: result.matchedPath, isDefaultFallback: false }
+        : { includePath: isInclude(ruleset.unmatchedPathAction), isDefaultFallback: true };
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -29,10 +29,20 @@ export namespace applyRuleset {
     // Apply the ruleset while auditing the evaluated rules
     //------------------------------------------------------------------------------------------------------------------
 
-    export function withAuditTrail(ruleset: Ruleset, path: string) {
-        const evaluatedRules = new Map<Rule, EvaluatedRule>();
-        const result = applyRuleset(ruleset, path, rule => evaluatedRules.set(rule, { rule, matched: false }));
-        return { evaluatedRules, ...result } as const;
+    export function withAuditTrail(
+        ruleset: Ruleset,
+        path: string,
+        options: { readonly printOriginalPath: boolean; useColor: boolean }
+    ) {
+        const normalized = normalizePath(path);
+        const evaluated = new Map<Rule, EvaluatedRule>();
+        const result = applyRuleset(ruleset, normalized, (rule, result) => evaluated.set(rule, { rule, ...result }));
+        return [
+            ...(options.printOriginalPath ? [`Path to evaluate: ${path}`] : []),
+            `Normalized path:  ${normalized}`,
+            "",
+            ...stringifyAuditTrail(ruleset, evaluated, result, options.useColor),
+        ];
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -40,7 +50,7 @@ export namespace applyRuleset {
     //------------------------------------------------------------------------------------------------------------------
 
     export function withoutAuditTrail(ruleset: Ruleset, path: string) {
-        return applyRuleset(ruleset, path, () => {});
+        return { ...applyRuleset(ruleset, normalizePath(path), () => {}), normalizePath } as const;
     }
 }
 
