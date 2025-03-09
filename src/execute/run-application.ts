@@ -1,5 +1,6 @@
 import { isatty } from "node:tty";
 import { applyRuleset } from "../rules/apply/apply-rules.js";
+import { createGlobMatcher } from "../rules/helpers/create-glob.js";
 import { printRuleset } from "../rules/helpers/print-ruleset.js";
 import { Config } from "../types/config.js";
 import { Ruleset } from "../types/rules.js";
@@ -92,41 +93,84 @@ namespace runDebug {
     // Run in interactive debug mode without a ruleset
     //------------------------------------------------------------------------------------------------------------------
 
-    export async function interactiveWithoutRuleset(_config: Config) {
-        fail("Interactive mode without a ruleset is not implemented yet (TODO)");
+    export async function interactiveWithoutRuleset(config: Config) {
+        let glob = await promptGlob(config, "");
+        let path = await prompt("Path:", "");
+        let isFirst = true;
+        while (true) {
+            const normalized = normalizePath(path);
+            const result = glob.matches(normalized) ? "🟩 matches" : "🟥 does not match";
+            process.stderr.write(`Result: ${result}\n\n${DIVIDER}\n\n`);
+            if (isFirst) {
+                process.stderr.write(`Press return to re-use the previous input\n\n`);
+                isFirst = false;
+            }
+            glob = await promptGlob(config, glob.glob);
+            path = await prompt("Path:", path);
+        }
     }
 
-    //------------------------------------------------------------------------------------------------------------------
-    // Apply the ruleset and stringify the result
-    //------------------------------------------------------------------------------------------------------------------
-
-    function applyRulesetAndPrintResult(
-        ruleset: Ruleset,
-        path: string,
-        options: { readonly includeOriginalPath: boolean }
-    ) {
-        const normalized = normalizePath(path);
-        const result = applyRuleset.withAuditTrail(ruleset, normalized);
-        const output = [
-            ...(options.includeOriginalPath ? [`Path to evaluate: ${path}`] : []),
-            `Normalized path:  ${normalized}`,
-            "",
-            ...stringifyAuditTrail(ruleset, result),
-        ];
-        process.stderr.write(`${output.join("\n")}\n`);
+    async function promptGlob(config: Config, previous: string) {
+        while (true) {
+            const current = await prompt("Glob:", previous);
+            if (current.trim()) {
+                try {
+                    return { glob: current, matches: createGlobMatcher(config, current) };
+                } catch (error) {
+                    process.stderr.write(`\n\nError:  ${error}\n\n`);
+                    console.log(error);
+                    console.error("");
+                }
+            }
+        }
     }
 
-    //------------------------------------------------------------------------------------------------------------------
-    // Stringify the audit trail of evaluated rules
-    //------------------------------------------------------------------------------------------------------------------
-
-    function stringifyAuditTrail(_ruleset: Ruleset, result: ReturnType<typeof applyRuleset.withAuditTrail>) {
-        const auditTrail = ["TODO: Stringify the audit trail"];
-        const conclusion = [
-            "=> Result:",
-            result.includePath ? "🟩 The path was included" : "🟥 The path was excluded",
-            result.isDefaultFallback ? " by default (because no rule matched)" : "",
-        ];
-        return [...auditTrail, "", conclusion.filter(text => text).join(" ")];
+    async function prompt(question: string, previousAnswer: string) {
+        const ask = () => stdin.readLine(question.padEnd(8));
+        for (let answer = await ask(); undefined !== answer; answer = await ask()) {
+            if (answer.trim().length) {
+                return answer.trim();
+            }
+            process.stderr.write(`\x1b[F`);
+            if (previousAnswer.length) {
+                process.stderr.write(`${question.padEnd(8)}${previousAnswer}\n`);
+                return previousAnswer;
+            }
+        }
+        return "";
     }
+}
+
+//------------------------------------------------------------------------------------------------------------------
+// Apply the ruleset and stringify the result
+//------------------------------------------------------------------------------------------------------------------
+
+function applyRulesetAndPrintResult(
+    ruleset: Ruleset,
+    path: string,
+    options: { readonly includeOriginalPath: boolean }
+) {
+    const normalized = normalizePath(path);
+    const result = applyRuleset.withAuditTrail(ruleset, normalized);
+    const output = [
+        ...(options.includeOriginalPath ? [`Path to evaluate: ${path}`] : []),
+        `Normalized path:  ${normalized}`,
+        "",
+        ...stringifyAuditTrail(ruleset, result),
+    ];
+    process.stderr.write(`${output.join("\n")}\n`);
+}
+
+//------------------------------------------------------------------------------------------------------------------
+// Stringify the audit trail of evaluated rules
+//------------------------------------------------------------------------------------------------------------------
+
+function stringifyAuditTrail(_ruleset: Ruleset, result: ReturnType<typeof applyRuleset.withAuditTrail>) {
+    const auditTrail = ["TODO: Stringify the audit trail"];
+    const conclusion = [
+        "=> Result:",
+        result.includePath ? "🟩 The path was included" : "🟥 The path was excluded",
+        result.isDefaultFallback ? " by default (because no rule matched)" : "",
+    ];
+    return [...auditTrail, "", conclusion.filter(text => text).join(" ")];
 }

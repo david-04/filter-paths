@@ -6,6 +6,13 @@ import { isatty } from "node:tty";
 //----------------------------------------------------------------------------------------------------------------------
 
 export namespace stdin {
+    const getReadlineInterface = (() => {
+        const readlineInterface = createInterface({ input: process.stdin });
+        return () => readlineInterface;
+    })();
+
+    export const isTTY = isatty(0);
+
     //
     //------------------------------------------------------------------------------------------------------------------
     // Invoke a callback for each line
@@ -13,7 +20,7 @@ export namespace stdin {
 
     export async function forEachNonBlankLine(callback: (line: string, index: number) => void | Promise<unknown>) {
         let index = 0;
-        for await (const line of createInterface({ input: process.stdin })) {
+        for await (const line of getReadlineInterface()) {
             if (line.trim()) {
                 index++;
                 await callback(line, index);
@@ -21,5 +28,12 @@ export namespace stdin {
         }
     }
 
-    export const isTTY = isatty(0);
+    //------------------------------------------------------------------------------------------------------------------
+    // Read one line of input
+    //------------------------------------------------------------------------------------------------------------------
+
+    export async function readLine(prompt?: string) {
+        process.stderr.write(prompt ?? "");
+        return new Promise<string>(resolve => getReadlineInterface().question("", resolve));
+    }
 }

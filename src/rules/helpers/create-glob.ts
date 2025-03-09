@@ -17,7 +17,7 @@ export function createGlob(
     const original = assembleGlob(undefined, glob);
     const effective = assembleGlob(directoryScope?.effective, glob);
     [glob, original, effective].forEach(glob => assertGlobIsValid(source, glob));
-    const matches = createGlobMatcher(config, source, effective);
+    const matches = createGlobMatcherForSource(config, source, effective);
     return { original, effective, matches };
 }
 
@@ -38,15 +38,18 @@ function assembleGlob(parent: string | undefined, child: string) {
 // Create a matcher
 //----------------------------------------------------------------------------------------------------------------------
 
-function createGlobMatcher(config: Config, source: Rule.Source.File, glob: string) {
+function createGlobMatcherForSource(config: Config, source: Rule.Source.File, glob: string) {
     try {
-        return picomatch(glob, {
-            dot: true, // match file and directory names that start with a dot
-            nocase: !config.caseSensitive, // case-sensitive or -insensitive comparison
-            nonegate: true, // disallow negated globs that start with "!"
-            strictBrackets: true, // throw an error if brackets, braces, or parens are imbalanced
-        });
+        return createGlobMatcher(config, glob);
     } catch (error) {
         return fail(source, `Invalid glob pattern: ${glob}\n${error}`);
     }
+}
+export function createGlobMatcher(config: Config, glob: string) {
+    return picomatch(glob, {
+        dot: true, // match file and directory names that start with a dot
+        nocase: !config.caseSensitive, // case-sensitive or -insensitive comparison
+        nonegate: true, // disallow negated globs that start with "!"
+        strictBrackets: true,
+    });
 }
