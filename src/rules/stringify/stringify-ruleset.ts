@@ -17,7 +17,11 @@ import { getIndent } from "./get-indent.js";
 
 export function stringifyRuleset(ruleset: Ruleset, ansi: Ansi) {
     const rulesToRender = new Set<Rule>();
-    forEachRuleRecursive(ruleset.rules, rule => rulesToRender.add(rule));
+    forEachRuleRecursive(ruleset.rules, rule => {
+        if (1 < ruleset.rules.length || rule !== ruleset.rules[0]) {
+            rulesToRender.add(rule);
+        }
+    });
     return stringifyRules(ruleset.rules, rulesToRender, ansi);
 }
 
