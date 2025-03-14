@@ -30,7 +30,7 @@ function countVisibleParents(rule: Rule, rulesToRender: RulesToRender) {
 //----------------------------------------------------------------------------------------------------------------------
 
 function getGotoRuleArrow(rule: Rule.Goto, rulesToRender: RulesToRender) {
-    return "|".padEnd(countStepsToGotoParent(rule, rulesToRender) * INDENT_WIDTH - 1);
+    return "|".padEnd(countStepsToGotoParent(rule, rulesToRender) * INDENT_WIDTH);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
