@@ -10,7 +10,6 @@ export class OutputStream {
     public readonly isTTY;
     public readonly ansi;
 
-    //
     //------------------------------------------------------------------------------------------------------------------
     // Initialization
     //------------------------------------------------------------------------------------------------------------------
@@ -51,4 +50,3 @@ export class OutputStream {
 }
 
 export const stdout = new OutputStream(process.stdout);
-export const stderr = new OutputStream(process.stderr);

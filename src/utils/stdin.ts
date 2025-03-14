@@ -1,5 +1,5 @@
 import { createInterface, Interface } from "node:readline";
-import { stderr } from "./stdout.js";
+import { stdout } from "./stdout.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Utility functions to access stdin
@@ -41,7 +41,7 @@ export namespace stdin {
     //------------------------------------------------------------------------------------------------------------------
 
     export async function readLine(prompt?: string) {
-        stderr.write(prompt ?? "");
+        stdout.write(prompt ?? "");
         return new Promise<string>(resolve => getReadlineInterface().question("", resolve));
     }
 
@@ -58,10 +58,10 @@ export namespace stdin {
             if (answer.length) {
                 return answer;
             } else if (previousAnswer?.length) {
-                stderr.print([stderr.cursorUpIfTTY, question, previousAnswer].join(""));
+                stdout.print([stdout.cursorUpIfTTY, question, previousAnswer].join(""));
                 return previousAnswer;
             }
-            stderr.write(stderr.cursorUpIfTTY);
+            stdout.write(stdout.cursorUpIfTTY);
         }
         return "";
     }

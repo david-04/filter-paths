@@ -6,7 +6,7 @@ import { Config } from "../types/config.js";
 import { Ruleset } from "../types/rules.js";
 import { fail } from "../utils/fail.js";
 import { stdin } from "../utils/stdin.js";
-import { stderr, stdout } from "../utils/stdout.js";
+import { stdout } from "../utils/stdout.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Run the application in debug mode
@@ -47,9 +47,9 @@ export async function runDebugWithPipedInput(ruleset: Ruleset) {
 export async function runDebugInteractiveWithRuleset(ruleset: Ruleset) {
     for (let path = await stdin.prompt("Path to evaluate: "); path; path = await stdin.prompt("Path to evaluate: ")) {
         const result = applyRuleset.withAuditTrail(ruleset, path);
-        const output = stringifyAuditTrail(ruleset, result, stderr.ansi);
-        stderr.print(output);
-        stderr.print(["", stderr.DIVIDER, ""]);
+        const output = stringifyAuditTrail(ruleset, result, stdout.ansi);
+        stdout.print(output);
+        stdout.print(["", stdout.DIVIDER, ""]);
     }
 }
 
@@ -60,7 +60,7 @@ export async function runDebugInteractiveWithRuleset(ruleset: Ruleset) {
 export async function runDebugInteractiveWithoutRuleset(config: Config) {
     for (let data = await promptGlobAndPath(config); data; data = await promptGlobAndPath(config, data)) {
         const result = data.glob.matches(normalizePath(data.path)) ? "🟩 matches" : "🟥 does not match";
-        stderr.print([`Result: ${result}`, "", stderr.DIVIDER, "", "Press return to re-use the previous input", ""]);
+        stdout.print([`Result: ${result}`, "", stdout.DIVIDER, "", "Press return to re-use the previous input", ""]);
     }
 }
 
@@ -88,7 +88,7 @@ export async function promptGlob(config: Config, prompt: string, previous?: stri
             return { glob, matches: createGlobMatcher(config, glob) } as const;
         } catch (error) {
             const message = ["ERROR:".padEnd(prompt.length), error].join("");
-            stderr.print(["", message, ""]);
+            stdout.print(["", message, ""]);
         }
     }
 }
