@@ -47,9 +47,33 @@ function createGlobMatcherForSource(config: Config, source: Rule.Source.File, gl
 }
 export function createGlobMatcher(config: Config, glob: string) {
     return picomatch(glob, {
+        basename: false,
+        bash: false,
+        capture: false,
+        contains: false,
+        debug: undefined,
         dot: true, // match file and directory names that start with a dot
+        failglob: true,
+        fastpaths: true,
+        flags: undefined,
+        ignore: undefined,
+        keepQuotes: false,
+        literalBrackets: false,
+        maxLength: 65536,
+        nobrace: false,
+        nobracket: false,
         nocase: !config.caseSensitive, // case-sensitive or -insensitive comparison
+        noextglob: undefined,
+        noglobstar: false,
         nonegate: true, // disallow negated globs that start with "!"
+        noquantifiers: false,
+        posix: false,
+        posixSlashes: false,
+        prepend: undefined,
+        regex: false,
         strictBrackets: true,
+        strictSlashes: undefined,
+        unescape: undefined,
+        windows: false,
     });
 }

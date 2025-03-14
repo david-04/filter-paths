@@ -1,5 +1,5 @@
 import { createInterface, Interface } from "node:readline";
-import { stderr } from "./stdout-and-stderr.js";
+import { stderr } from "./stdout.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Utility functions to access stdin

@@ -1,6 +1,6 @@
 import { Rule } from "../../types/rules.js";
-import { stringifyGotoRuleArrow } from "./goto-rule-operator.js";
-import { isFile, isGoto } from "./rule-type-utils.js";
+import { stringifyGotoRuleArrow } from "../helpers/goto-rule-operator.js";
+import { isFile, isGoto } from "../helpers/rule-type-utils.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Stringify a rule stack

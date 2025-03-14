@@ -3,7 +3,7 @@ import { fail } from "../../utils/fail.js";
 import { filterStack } from "../helpers/filter-stack.js";
 import { forEachRuleRecursive } from "../helpers/for-each-rule-recursive.js";
 import { isImportFile } from "../helpers/rule-type-utils.js";
-import { stringifyStack } from "../helpers/stringify-stack.js";
+import { stringifyStack } from "../stringify/stringify-stack.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Assert that no rule is nested under an "import" rule

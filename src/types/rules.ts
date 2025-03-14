@@ -132,6 +132,7 @@ export namespace Rule {
 
 export type Rule = Rule.DirectoryScope | Rule.Goto | Rule.IncludeOrExcludeGlob | Rule.ImportFile;
 export type Rules = ReadonlyArray<Rule>;
+export type RulesToRender = ReadonlySet<Rule>;
 
 //------------------------------------------------------------------------------------------------------------------
 // The whole rule set

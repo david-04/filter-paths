@@ -1,7 +1,7 @@
 import { Rules } from "../../types/rules.js";
 import { fail } from "../../utils/fail.js";
 import { isArgv, isFile } from "../helpers/rule-type-utils.js";
-import { stringifyStack } from "../helpers/stringify-stack.js";
+import { stringifyStack } from "../stringify/stringify-stack.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Assert that all siblings are on the same indentation level

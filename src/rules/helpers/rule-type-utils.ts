@@ -5,7 +5,7 @@ import { Rule } from "../../types/rules.js";
 // Check if a rule type is "include glob"
 //----------------------------------------------------------------------------------------------------------------------
 
-export function isInclude(ruleType: Rule.Type): ruleType is Rule.Type.INCLUDE_GLOB {
+export function isInclude(ruleType: Rule.Type | undefined): ruleType is Rule.Type.INCLUDE_GLOB {
     return ruleType === Rule.INCLUDE_GLOB;
 }
 
@@ -29,7 +29,7 @@ export function isIncludeOrExcludeGlob(rule: Rule): rule is Rule.IncludeOrExclud
 // Check if a rule type is "exclude glob"
 //----------------------------------------------------------------------------------------------------------------------
 
-export function isExclude(ruleType: Rule.Type): ruleType is Rule.Type.EXCLUDE_GLOB {
+export function isExclude(ruleType: Rule.Type | undefined): ruleType is Rule.Type.EXCLUDE_GLOB {
     return ruleType === Rule.EXCLUDE_GLOB;
 }
 

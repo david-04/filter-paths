@@ -1,11 +1,12 @@
 import { applyRuleset } from "../rules/apply/apply-rules.js";
 import { createGlobMatcher } from "../rules/helpers/create-glob.js";
 import { normalizePath } from "../rules/helpers/normalize-path.js";
+import { stringifyAuditTrail } from "../rules/stringify/stringify-audit-trail.js";
 import { Config } from "../types/config.js";
 import { Ruleset } from "../types/rules.js";
 import { fail } from "../utils/fail.js";
 import { stdin } from "../utils/stdin.js";
-import { stderr, stdout } from "../utils/stdout-and-stderr.js";
+import { stderr, stdout } from "../utils/stdout.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Run the application in debug mode
@@ -32,7 +33,9 @@ export async function runDebugWithPipedInput(ruleset: Ruleset) {
         if (index) {
             stdout.print(["", stdout.DIVIDER, ""]);
         }
-        const output = applyRuleset.withAuditTrail(ruleset, line, { printOriginalPath: true, useColor: stdout.isTTY });
+        stdout.print(`Path to evaluate: ${line}`);
+        const result = applyRuleset.withAuditTrail(ruleset, line);
+        const output = stringifyAuditTrail(ruleset, result, stdout.ansi);
         stdout.print(output);
     });
 }
@@ -43,7 +46,8 @@ export async function runDebugWithPipedInput(ruleset: Ruleset) {
 
 export async function runDebugInteractiveWithRuleset(ruleset: Ruleset) {
     for (let path = await stdin.prompt("Path to evaluate: "); path; path = await stdin.prompt("Path to evaluate: ")) {
-        const output = applyRuleset.withAuditTrail(ruleset, path, { printOriginalPath: false, useColor: stderr.isTTY });
+        const result = applyRuleset.withAuditTrail(ruleset, path);
+        const output = stringifyAuditTrail(ruleset, result, stderr.ansi);
         stderr.print(output);
         stderr.print(["", stderr.DIVIDER, ""]);
     }

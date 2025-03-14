@@ -2,7 +2,7 @@ import { Rule, Ruleset } from "../../types/rules.js";
 import { fail } from "../../utils/fail.js";
 import { forEachRuleRecursive } from "../helpers/for-each-rule-recursive.js";
 import { invert, isDirectoryScope, isIncludeOrExcludeGlob } from "../helpers/rule-type-utils.js";
-import { stringifyStack } from "../helpers/stringify-stack.js";
+import { stringifyStack } from "../stringify/stringify-stack.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Assert that "+" and "-" rules are nested correctly and consistently

@@ -1,6 +1,6 @@
 import { Rule, Rules, Ruleset } from "../../types/rules.js";
-import { stringifyGotoRuleArrow } from "./goto-rule-operator.js";
-import { isGoto } from "./rule-type-utils.js";
+import { stringifyGotoRuleArrow } from "../helpers/goto-rule-operator.js";
+import { isGoto } from "../helpers/rule-type-utils.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Print the rule set

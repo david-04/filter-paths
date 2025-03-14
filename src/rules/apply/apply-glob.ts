@@ -13,7 +13,7 @@ export function applyGlob(
     path: string,
     onRuleApplied: OnGlobEvaluated
 ): Result {
-    const matched = glob.matches(path) === !!isInclude(includeOrExclude);
+    const matched = glob.matches(path);
     onRuleApplied(rule, { matched });
-    return { matchedPath: matched, type: Result.FINAL };
+    return matched ? { includePath: matched === !!isInclude(includeOrExclude), type: Result.FINAL } : undefined;
 }

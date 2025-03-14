@@ -2,10 +2,13 @@
 // Wrapper for an output stream
 //----------------------------------------------------------------------------------------------------------------------
 
+import { ansi } from "./ansi-escape-codes.js";
+
 export class OutputStream {
     public readonly cursorUpIfTTY;
     public readonly DIVIDER;
     public readonly isTTY;
+    public readonly ansi;
 
     //
     //------------------------------------------------------------------------------------------------------------------
@@ -13,6 +16,7 @@ export class OutputStream {
     //------------------------------------------------------------------------------------------------------------------
 
     public constructor(private readonly stdoutOrStderr: typeof process.stdout | typeof process.stderr) {
+        this.ansi = stdoutOrStderr.isTTY ? ansi : undefined;
         this.cursorUpIfTTY = stdoutOrStderr.isTTY ? "\x1b[F" : "";
         this.DIVIDER = OutputStream.getDivider(stdoutOrStderr);
         this.isTTY = stdoutOrStderr.isTTY;

@@ -4,7 +4,7 @@ import { fail } from "../../utils/fail.js";
 import { createGlob } from "../helpers/create-glob.js";
 import { filterStack } from "../helpers/filter-stack.js";
 import { isFile } from "../helpers/rule-type-utils.js";
-import { stringifyStack } from "../helpers/stringify-stack.js";
+import { stringifyStack } from "../stringify/stringify-stack.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Parse a "goto" rule

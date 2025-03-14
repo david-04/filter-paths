@@ -1,9 +1,9 @@
 import { applyRuleset } from "../rules/apply/apply-rules.js";
-import { printRuleset } from "../rules/helpers/print-ruleset.js";
+import { printRuleset } from "../rules/stringify/print-ruleset.js";
 import { Config } from "../types/config.js";
 import { Ruleset } from "../types/rules.js";
 import { stdin } from "../utils/stdin.js";
-import { stdout } from "../utils/stdout-and-stderr.js";
+import { stdout } from "../utils/stdout.js";
 import { runDebug } from "./run-debug.js";
 
 //----------------------------------------------------------------------------------------------------------------------

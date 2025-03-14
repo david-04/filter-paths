@@ -13,5 +13,9 @@ export function applyIncludeOrExcludeGlobRule(
     onRuleApplied: OnGlobEvaluated
 ) {
     const selfResult = applyGlob(rule, rule.type, rule.glob, path, onRuleApplied);
-    return applyRules(rule.children, path, onRuleApplied) ?? selfResult;
+    if (selfResult) {
+        return applyRules(rule.children, path, onRuleApplied) ?? selfResult;
+    } else {
+        return selfResult;
+    }
 }
