@@ -12,4 +12,7 @@ export function assertGlobIsValid(source: Rule.Source.File, glob: string) {
     if (!glob.startsWith("/") && !glob.startsWith("**")) {
         fail(source, 'Each glob must either start with "/" or "**"');
     }
+    if (/[^/]\*\*|\*\*[^/]/.test(`/${glob}/`)) {
+        fail(source, "Globstars (**) must be separated with slashes (/) from the rest of the glob");
+    }
 }
