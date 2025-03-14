@@ -3,5 +3,6 @@
 //----------------------------------------------------------------------------------------------------------------------
 
 export function normalizePath(path: string) {
-    return path.trim().replaceAll("\\", "/").replace(/^\.\//g, "");
+    const normalized = path.trim().replaceAll("\\", "/").replace(/^\.\//g, "");
+    return normalized.startsWith("/") ? normalized : `/${normalized}`;
 }

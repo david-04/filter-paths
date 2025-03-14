@@ -6,6 +6,7 @@ import {
     isExclude,
     isExcludeGlob,
     isGoto,
+    isImportFile,
     isInclude,
     isIncludeGlob,
 } from "../helpers/rule-type-utils.js";
@@ -55,6 +56,8 @@ function getColorizer(rule: Rule, ansi: Ansi): (text: string) => string {
     } else if (isExcludeGlob(rule) || (isDirectoryScope(rule) && isExclude(rule.secondaryAction))) {
         return text => ansi?.fgRed(text) ?? text;
     } else if (isGoto(rule)) {
+        return text => ansi?.normal(text) ?? text;
+    } else if (isImportFile(rule)) {
         return text => ansi?.fgCyan(text) ?? text;
     } else {
         return text => ansi?.normal(text) ?? text;
