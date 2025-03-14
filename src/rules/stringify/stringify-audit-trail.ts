@@ -72,14 +72,12 @@ function stringifyRules(rules: Rules, rulesToRender: RulesToRender, evaluatedRul
 //----------------------------------------------------------------------------------------------------------------------
 
 function stringifyRule(indent: string, rule: Rule, matchStatus: MatchStatus | undefined, ansi: Ansi) {
-    const colorize = getColorizer(rule, matchStatus?.matched ?? false, ansi);
+    const colorize = matchStatus?.matched ? getColorizer(rule, ansi) : (text: string) => ansi?.dim(text) ?? text;
     return colorize(`${indent}${rule.stringified.operator} ${rule.stringified.original}`);
 }
 
-function getColorizer(rule: Rule, matched: boolean, ansi: Ansi): (text: string) => string {
-    if (false === matched) {
-        return text => ansi?.dim(text) ?? text;
-    } else if (isIncludeGlob(rule) || (isDirectoryScope(rule) && isInclude(rule.secondaryAction))) {
+function getColorizer(rule: Rule, ansi: Ansi): (text: string) => string {
+    if (isIncludeGlob(rule) || (isDirectoryScope(rule) && isInclude(rule.secondaryAction))) {
         return text => ansi?.fgGreen(text) ?? text;
     } else if (isExcludeGlob(rule) || (isDirectoryScope(rule) && isExclude(rule.secondaryAction))) {
         return text => ansi?.fgRed(text) ?? text;
