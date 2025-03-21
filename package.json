@@ -1,6 +1,6 @@
 {
     "dependencies": {
-        "@types/node": "^22.13.9",
+        "@types/node": "^22.13.10",
         "@types/picomatch": "^3.0.2",
         "picomatch": "^4.0.2"
     },
@@ -9,5 +9,8 @@
     "private": true,
     "license": "UNLICENSED",
     "type": "module",
-    "swpm": "npm"
+    "swpm": "npm",
+    "devDependencies": {
+        "@david-04/typefinity-cli": "^0.0.3"
+    }
 }
