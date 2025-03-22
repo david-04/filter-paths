@@ -113,7 +113,7 @@ foundStats {
     section = ""; # suppress test suite failures
 }
 
-section && ! /^[ \t]*(---|duration_ms:.*|\.\.\.|[0-9]+\.\.\.?[0-9]+)[ \t]*$/{
+section && !/^[ \t]*(---|duration_ms:.*|\.\.\.|[0-9]+\.\.\.?[0-9]+)[ \t]*$/ {
     section = section "\n" substr($0, indent);
 }
 
@@ -122,6 +122,10 @@ section && ! /^[ \t]*(---|duration_ms:.*|\.\.\.|[0-9]+\.\.\.?[0-9]+)[ \t]*$/{
 #-----------------------------------------------------------------------------------------------------------------------
 
 END {
+    if (section && section != "\n" DIVIDER) {
+        print section;
+        hasErrors = 1
+    }
     output = "";
     exitCode = 0;
     if (!(counters["fail"] + counters["cancelled"] + counters["skipped"] + counters["todo"] + counters["pass"])) {
