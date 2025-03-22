@@ -61,6 +61,7 @@ function parseArgs(args: ReadonlyArray<string>): Config {
         files: new Array<string>(),
         normalizePaths: true,
         printRules: false,
+        testFixtures: undefined,
     };
     let acceptOptions = true;
 

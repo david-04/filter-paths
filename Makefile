@@ -4,8 +4,8 @@ include .launchpad/Makefile.header # see .launchpad/Makefile.documentation
 # Default target
 #-----------------------------------------------------------------------------------------------------------------------
 
-autorun : $(LP_PREREQUISITE_BUNDLE)  # $(LP_PREREQUISITE_TSC)
-	fd | $(call lp.run, build/bundler/filter-paths.js) resources/test.filter --print-rules
+autorun : test # $(LP_PREREQUISITE_BUNDLE) $(LP_PREREQUISITE_TSC)
+	# fd | $(call lp.run, build/bundler/filter-paths.js) resources/test.filter --print-rules
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Bundling

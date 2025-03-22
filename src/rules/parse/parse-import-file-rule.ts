@@ -3,11 +3,11 @@ import { Config } from "../../types/config.js";
 import { Rule } from "../../types/rules.js";
 import { fail } from "../../utils/fail.js";
 import { createFileDescriptor } from "../helpers/create-file-descriptor.js";
+import { getGotoRuleOperator } from "../helpers/goto-rule-operator.js";
 import { isFile } from "../helpers/rule-type-utils.js";
 import { assertFileExists } from "../validate/file-exists.js";
 import { assertNoCyclicImports } from "../validate/no-cyclic-imports.js";
 import { parseRules } from "./parse-rules.js";
-import { getGotoRuleOperator } from "../helpers/goto-rule-operator.js";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Parse an "import file" rule
@@ -25,10 +25,10 @@ export function parseImportFileRule({ config, file, operator, parent, source }: 
         stringified: getStringified(operator, file),
         type: Rule.IMPORT_FILE,
     };
-    assertFileExists(source, file);
+    assertFileExists(config, source, file);
     assertNoCyclicImports(rule);
     stack.push(rule);
-    parseRules(config, rule, loadFile(rule, file));
+    parseRules(config, rule, loadFile(config, rule, file));
     return rule;
 }
 
@@ -85,8 +85,8 @@ function getStringified(operator: string | undefined, file: Rule.Fragment.File):
 // Load and parse given file
 //----------------------------------------------------------------------------------------------------------------------
 
-function loadFile(parent: Rule.ImportFile, file: Rule.Fragment.File): ReadonlyArray<Rule.Source.File> {
-    return loadLines(parent.source, file)
+function loadFile(config: Config, parent: Rule.ImportFile, file: Rule.Fragment.File): ReadonlyArray<Rule.Source.File> {
+    return loadLines(config, parent.source, file)
         .map((line, index) => ({ file, line, lineNumber: index + 1 }))
         .filter(item => !/^\s*(#.*)?$/.test(item.line))
         .map(item => ({ ...item, indentation: -1, parent: parent.source, type: "file" }) as const)
@@ -97,9 +97,12 @@ function loadFile(parent: Rule.ImportFile, file: Rule.Fragment.File): ReadonlyAr
 // Parse a single file
 //----------------------------------------------------------------------------------------------------------------------
 
-function loadLines(source: Rule.Source, file: Rule.Fragment.File) {
+function loadLines(config: Config, source: Rule.Source, file: Rule.Fragment.File) {
     try {
-        return readFileSync(file.resolved).toString().split(/\r?\n/);
+        const fileContent = config.testFixtures
+            ? (config.testFixtures.get(file.resolved) ?? fail("Fixture does not exist"))
+            : readFileSync(file.resolved).toString();
+        return fileContent.split(/\r?\n/);
     } catch (error) {
         return fail(source, `Failed to load file ${file.absolute}\n${error}`);
     }

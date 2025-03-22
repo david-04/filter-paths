@@ -8,4 +8,5 @@ export type Config = {
     readonly files: ReadonlyArray<string>;
     readonly normalizePaths: boolean;
     readonly printRules: boolean;
+    readonly testFixtures: ReadonlyMap<string, string> | undefined;
 };
