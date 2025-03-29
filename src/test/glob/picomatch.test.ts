@@ -1,5 +1,5 @@
 import { describe } from "@david-04/typefinity-cli";
-import { it } from "../utils/test-runner.js";
+import { it } from "../../utils/test-runner.js";
 
 const GLOB_MUST_START_WITH_SLASH_OR_GLOBSTAR = /Each glob must either start with "\/" or "\*\*"/;
 const GLOBSTARS_MUST_BE_SEPARATED_WITH_SLASHES =
