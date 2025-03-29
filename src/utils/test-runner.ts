@@ -19,7 +19,7 @@ export namespace it {
     export type Options = {
         readonly config?: Partial<Pick<Config, "caseSensitive" | "files" | "normalizePaths">>;
         readonly ruleset: string;
-    } & ({ readonly paths: string } | { readonly failsToInitialize: Error | string | RegExp });
+    } & ({ readonly paths: string } | { readonly failsToInitialize: Error | string | RegExp } | {});
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -40,12 +40,14 @@ export function it(description: string, options: it.Options) {
         };
         if ("paths" in options) {
             assertMatchingBehavior(loadRuleset(config), options.paths);
-        } else {
+        } else if ("failsToInitialize" in options) {
             const error =
                 options.failsToInitialize instanceof RegExp
                     ? new RegExp(options.failsToInitialize.source, "is")
                     : options.failsToInitialize;
             expect(() => loadRuleset(config)).toThrow(error);
+        } else {
+            expect(() => loadRuleset(config)).not.toThrow();
         }
     });
 }
@@ -82,7 +84,7 @@ function getTestFixtures(fixtures: string) {
 //----------------------------------------------------------------------------------------------------------------------
 
 function assertMatchingBehavior(ruleset: Ruleset, paths: string) {
-    for (const { path, shouldMatch } of parsePaths(paths)) {
+    for (const { path, shouldMatch } of parsePaths(paths).flatMap(permutePaths)) {
         const result = applyRuleset.withoutAuditTrail(ruleset, path);
         if (result.includePath && !shouldMatch) {
             fail(`The ruleset unexpectedly matched path ${path}`);
@@ -90,6 +92,15 @@ function assertMatchingBehavior(ruleset: Ruleset, paths: string) {
             fail(`The ruleset did not match path ${path}`);
         }
     }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+// Create permutations of paths
+//----------------------------------------------------------------------------------------------------------------------
+
+function permutePaths({ path, shouldMatch }: { readonly path: string; readonly shouldMatch: boolean }) {
+    const normalized = path.replaceAll("\\", "/").replace(/^\.?\//, "");
+    return ["", "/", "./"].map(prefix => ({ path: prefix + normalized, shouldMatch }));
 }
 
 //----------------------------------------------------------------------------------------------------------------------
