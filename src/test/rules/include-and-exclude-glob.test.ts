@@ -94,6 +94,24 @@ describe("include and exclude glob rules", () => {
                 ⛔ important.tmp.log
             `,
         });
+
+        it("stops at first matching innermost rule", {
+            ruleset: `
+                - **/*tmp*
+                - **/*log*
+                  + **/*important*
+                  + **/*access*
+                    - **/*.tmp
+            `,
+            paths: `
+                ⛔ important.tmp
+                ⛔ test.log
+                ⛔ test.log.tmp
+                ✅ important.log
+                ✅ access.log
+                ⛔ access.log.tmp
+            `,
+        });
     });
 
     describe("inconsistencies", () => {
