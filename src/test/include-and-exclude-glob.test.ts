@@ -1,5 +1,5 @@
 import { describe } from "@david-04/typefinity-cli";
-import { it } from "../../utils/test-runner.js";
+import { it } from "../utils/test-runner.js";
 
 describe("include and exclude glob rules", () => {
     describe("include ruleset", () => {

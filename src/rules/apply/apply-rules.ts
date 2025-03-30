@@ -51,7 +51,7 @@ export namespace applyRuleset {
 export function applyRules(rules: Rules, path: string, onGlobEvaluated: OnGlobEvaluated) {
     for (const rule of rules) {
         const result = applyRule(rule, path, onGlobEvaluated);
-        if (isFinal(result) || (isGoto(result) && rule === result.ruleToSkip)) {
+        if (isFinal(result) || (isGoto(result) && rule !== result.ruleToSkip)) {
             return result;
         }
     }
