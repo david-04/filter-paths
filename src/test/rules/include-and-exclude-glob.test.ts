@@ -95,4 +95,150 @@ describe("include and exclude glob rules", () => {
             `,
         });
     });
+
+    describe("inconsistencies", () => {
+        const MISMATCH_ERROR = /Expected an (include|exclude) rule .* but found an (include|exclude) rule/;
+
+        describe("mixing of include and exclude", () => {
+            describe("on the same physical level", () => {
+                describe("in the same file", () => {
+                    it("fails when mixing directly", {
+                        ruleset: `
+                            - **/*.log
+                            + **/*important*
+                        `,
+                        failsToInitialize: MISMATCH_ERROR,
+                    });
+
+                    it("fails when mixing via a directory scope", {
+                        ruleset: `
+                            - **/*.log
+                            @ + **/*important*
+                        `,
+                        failsToInitialize: MISMATCH_ERROR,
+                    });
+                });
+
+                describe("via an import", () => {
+                    it("fails when mixing directly", {
+                        ruleset: `
+                            - **/*.log
+                            import other.filter
+
+                            [other.filter]
+                            + **/*important*
+                        `,
+                        failsToInitialize: MISMATCH_ERROR,
+                    });
+
+                    it("fails when mixing via a directory scope", {
+                        ruleset: `
+                            - **/*.log
+                            import other.filter
+
+                            [other.filter]
+                            @ + **/*important*
+                        `,
+                        failsToInitialize: MISMATCH_ERROR,
+                    });
+                });
+            });
+
+            describe("on the same logical level", () => {
+                it("fails when mixing directly", {
+                    ruleset: `
+                        @ **/logs
+                          + **/*important*
+                        - **/*.tmp
+                    `,
+                    failsToInitialize: MISMATCH_ERROR,
+                });
+
+                it("fails when mixing via an import", {
+                    ruleset: `
+                        @ **/logs
+                          include other.filter
+                        - **/*.tmp
+
+                        [other.filter]
+                        + **/*important*
+                    `,
+                    failsToInitialize: MISMATCH_ERROR,
+                });
+            });
+        });
+
+        describe("nesting the same rule type", () => {
+            describe("directly via include or exclude rule", () => {
+                it("fails when nesting in the same file", {
+                    ruleset: `
+                        - **/*.log
+                          - **/*.log.*
+                        - **/*.tmp
+                    `,
+                    failsToInitialize: MISMATCH_ERROR,
+                });
+
+                it("fails when nesting via an import", {
+                    ruleset: `
+                        - **/*.log
+                          include other.filter
+                        - **/*.tmp
+
+                        [other.filter]
+                        - **/*.log.*
+                    `,
+                    failsToInitialize: MISMATCH_ERROR,
+                });
+            });
+
+            describe("directly via including/excluding directory scope rule", () => {
+                it("fails when nesting in the same file", {
+                    ruleset: `
+                        - **/*.log
+                          @- **/dir/**
+                        - **/*.tmp
+                    `,
+                    failsToInitialize: MISMATCH_ERROR,
+                });
+
+                it("fails when nesting via an import", {
+                    ruleset: `
+                        - **/*.log
+                          include other.filter
+                        - **/*.tmp
+
+                        [other.filter]
+                        @ - **/dir/**
+                    `,
+                    failsToInitialize: MISMATCH_ERROR,
+                });
+            });
+
+            describe("indirectly via directory scope rule", () => {
+                it("fails when nesting in the same file", {
+                    ruleset: `
+                        - **/*.log
+                          @ **/parent/**
+                            - **/*.log.*
+                        - **/*.tmp
+                    `,
+                    failsToInitialize: MISMATCH_ERROR,
+                });
+
+                it("fails when nesting via an import", {
+                    ruleset: `
+                        - **/*.log
+                          include other.filter
+                        - **/*.tmp
+
+                        [other.filter]
+                        @ **/parent/**
+                          - **/*.log.*
+                    `,
+                    failsToInitialize: MISMATCH_ERROR,
+                });
+            });
+        });
+    });
 });
