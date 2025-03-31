@@ -47,6 +47,7 @@ export async function runDebugWithPipedInput(ruleset: Ruleset) {
 export async function runDebugInteractiveWithRuleset(ruleset: Ruleset) {
     for (let path = await stdin.prompt("Path to evaluate: "); path; path = await stdin.prompt("Path to evaluate: ")) {
         const result = applyRuleset.withAuditTrail(ruleset, path);
+        stdout.print("");
         const output = stringifyAuditTrail(ruleset, result, stdout.ansi);
         stdout.print(output);
         stdout.print(["", stdout.DIVIDER, ""]);

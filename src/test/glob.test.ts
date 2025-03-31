@@ -178,6 +178,15 @@ describe("picomatch", () => {
                     ⛔ file-2.txt
                 `,
             });
+
+            it("can be negated", {
+                ruleset: "+ /file-[^12]",
+                paths: `
+                    ⛔ file-1
+                    ⛔ file-2
+                    ✅ file-3
+                `,
+            });
         });
 
         describe("character ranges", () => {
@@ -195,6 +204,34 @@ describe("picomatch", () => {
                     ✅ file-x
                     ✅ file-y
                     ⛔ file-z
+                `,
+            });
+
+            it("can be negated", {
+                ruleset: "+ /file-[^1-5]",
+                paths: `
+                    ⛔ file-1
+                    ⛔ file-5
+                    ✅ file-6
+                    ✅ file-a
+                `,
+            });
+        });
+
+        describe("POSIX classes", () => {
+            it("supports POSIX classes", {
+                ruleset: "+ /file-[:alpha:]",
+                paths: `
+                    ✅ file-a
+                    ⛔ file-1
+                `,
+            });
+
+            it("can be negated", {
+                ruleset: "+ /file-[^:alpha:]",
+                paths: `
+                    ⛔ file-a
+                    ✅ file-1
                 `,
             });
         });
