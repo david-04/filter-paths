@@ -1,9 +1,9 @@
 import { exit } from "node:process";
 import { Config } from "../types/config.js";
 import { fail } from "./fail.js";
+import { VERSION } from "./version.js";
 
 const APP_NAME = "filter-paths";
-const VERSION = "0.0.0";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Syntax help message
