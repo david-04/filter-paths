@@ -4,8 +4,7 @@ include .launchpad/Makefile.header # see .launchpad/Makefile.documentation
 # Default target
 #-----------------------------------------------------------------------------------------------------------------------
 
-autorun : test # $(LP_PREREQUISITE_BUNDLE) $(LP_PREREQUISITE_TSC)
-	# fd | $(call lp.run, build/bundler/filter-paths.js) resources/test.filter --print-rules
+autorun : $(LP_PREREQUISITE_TEST);
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Compile
@@ -14,20 +13,29 @@ autorun : test # $(LP_PREREQUISITE_BUNDLE) $(LP_PREREQUISITE_TSC)
 src/utils/version.ts : CHANGELOG.md bin/update-version-number.sh
 	. bin/update-version-number.sh
 
+src/utils/manual.ts : README.md bin/embed-manual.sh bin/embed-manual.mjs
+	. bin/embed-manual.sh
+
 #-----------------------------------------------------------------------------------------------------------------------
-# Bundling
+# Bundle
 #-----------------------------------------------------------------------------------------------------------------------
 
 $(call lp.bundle.add, src/filter-paths.ts, build/bundler/filter-paths.js, shebang sourcemap)
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Release
+#-----------------------------------------------------------------------------------------------------------------------
+
+$(call lp.help.add-target, release, ............ assemble the release )
+
+release : $(LP_PREREQUISITE_TEST) $(LP_PREREQUISITE_BUNDLE)
+	. bin/assemble-release.sh
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Clean
 #-----------------------------------------------------------------------------------------------------------------------
 
 $(call lp.clean.tsc-output)
-# $(call lp.clean.bundles)
-# $(call lp.clean.npm-packages)
-# $(call lp.clean.files, list files here...)
 
 #-----------------------------------------------------------------------------------------------------------------------
 include .launchpad/Makefile.footer

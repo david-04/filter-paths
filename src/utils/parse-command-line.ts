@@ -1,6 +1,7 @@
 import { exit } from "node:process";
 import { Config } from "../types/config.js";
 import { fail } from "./fail.js";
+import { MANUAL } from "./manual.js";
 import { VERSION } from "./version.js";
 
 const APP_NAME = "filter-paths";
@@ -21,8 +22,12 @@ Usage: ${APP_NAME} [OPTIONS] [--] [FILTER_RULE_FILES...]
   -d | --debug ......................... print which rules were evaluated for each path
   -p | --print-rules ................... print the rules after before processing any input
   -h | --help .......................... display this help screen
+  -m | --manual ........................ display the user manual
   -t | --test .......................... alias for --debug
   -v | --version ....................... display version information
+
+https://www.npmjs.com/package/filter-paths
+https://github.com/david-04/filter-paths
 
 `.trim();
 
@@ -43,7 +48,14 @@ export function parseCommandLine(args: ReadonlyArray<string>): Config {
 
 function handleHelpAndVersionOptions(args: ReadonlyArray<string>) {
     const has = (...options: ReadonlyArray<string>) => options.some(option => args.includes(option));
-    const output = [...(has("-v", "--version") ? [VERSION] : []), ...(has("-h", "--help") ? [USAGE] : [])].join("\n\n");
+    const hasVersion = has("-v", "--version");
+    const hasHelp = has("-h", "--help");
+    const hasManual = has("-m", "--manual");
+    const output = [
+        ...(hasVersion ? [VERSION] : []),
+        ...(hasHelp ? [USAGE] : []),
+        ...(hasManual ? [MANUAL.join("\n")] : []),
+    ].join("\n\n");
     if (output) {
         console.log(output);
         exit(0);

@@ -1,3 +1,0 @@
-+ /included
-  - **/blah
-    # include test.filter

@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 
-set -e
+set -e -o pipefail
 
-if [[ -d bin ]]; then
-    cd bin
-fi
+function __fp_update_version_number() {
+    unset -f __fp_update_version_number
 
-echo Updating version number...
+    if [[ -d bin ]]; then
+        cd bin
+    fi
+    echo Updating version number...
+    echo "export const VERSION = \"$(get-version-number.sh)\";" >../src/utils/version.ts
+}
 
-VERSION_NUMBER=$(get-version-number.sh)
-
-echo "export const VERSION = \"${VERSION_NUMBER?}\";" >../src/utils/version.ts
-
-# sed -i "s/\"version\"\\s*:\\s*\"[^\"]*\"/\"version\": \"$VERSION_NUMBER\"/g" ../resources/package/package.json
+__fp_update_version_number "$@"

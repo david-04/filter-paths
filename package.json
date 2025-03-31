@@ -11,6 +11,8 @@
     "type": "module",
     "swpm": "npm",
     "devDependencies": {
-        "@david-04/typefinity-cli": "^0.0.3"
+        "@david-04/typefinity-cli": "^0.0.3",
+        "html-to-text": "^9.0.5",
+        "showdown": "^2.1.0"
     }
 }

@@ -17,3 +17,4 @@
 /build/tsc/**/*.mjs.map
 /build/tsc/.tsbuildinfo
 /build/tsc/.timestamp.*
+/dist

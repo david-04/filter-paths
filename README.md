@@ -88,7 +88,7 @@ It repeatedly prompts for a path to pass through the filter rules. For every pat
 
 ## Glob syntax
 
-`filter-paths` uses [picomatch](https://www.npmjs.com/package/picomatch) to match paths. 
+`filter-paths` uses [picomatch](https://www.npmjs.com/package/picomatch) to match paths.
 
 ### Wildcards and globstars
 
@@ -126,7 +126,7 @@ Glob:           /test/**/file
 
 Matches:        🟩 test/file
                 🟩 test/backup/file
-                
+
 Does not match: 🟥 testfile
                 🟥 test.file
                 🟥 test?file
@@ -140,7 +140,7 @@ Glob:           /test**file
 
 Matches:        🟩 testfile
                 🟩 test.file
-                
+
 Does not match: 🟥 test/file
                 🟥 test/backup/file
 ```
@@ -158,7 +158,7 @@ Matches:        🟩 test.log.1
                 🟩 test.log.5
                 🟩 test.log.a
                 🟩 test.log.b
-                
+
 Does not match: 🟥 test.log.
                 🟥 test.log.6
                 🟥 test.log.c
@@ -171,7 +171,7 @@ Glob:           /test.log.[^1-5ab]
 
 Matches:        🟩 test.log.6
                 🟩 test.log.c
-                
+
 Does not match: 🟥 test.log.
                 🟥 test.log.1
                 🟥 test.log.2
@@ -192,7 +192,7 @@ Glob:           /test.{txt,md}
 
 Matches:        🟩 test.txt
                 🟩 test.md
-                
+
 Does not match: 🟥 test.tmp
 ```
 
@@ -207,7 +207,7 @@ Matches:        🟩 file
                 🟩 file.ts
                 🟩 file.tsx
                 🟩 file.ts.tmp
-                
+
 Does not match: 🟥 file.
                 🟥 file.js
 ```
@@ -248,8 +248,9 @@ It is not possible to mix include and exclude rules:
 
 ```
 + **/*.ts
-# ERROR: Can't mix include (+) and exclude (-)
 - **/node_modules/**
+
+=> ERROR: Can't mix include (+) and exclude (-)
 ```
 
 This is to avoid ambiguity, as include and exclude globs might both match the same paths.
@@ -270,7 +271,7 @@ When nesting rules, each glob must always match the full path. Nested globs are 
 Filter rules:   - **/tmp/**
                   + /*important*
 
-Excluded paths: 🟥 tmp/important.file                
+Excluded paths: 🟥 tmp/important.file
 ```
 
 The inner glob (`/*important*`) never matches because it contradicts the outer glob (`**/tmp/**`):
@@ -285,7 +286,7 @@ Glob:           **/tmp
 
 Matches:        🟩 tmp
                 🟩 directory/tmp
-                
+
 Does not match: 🟥 tmp/file
 ```
 
@@ -300,7 +301,7 @@ Filter rules: 1: - **/*.log
 
 Includes:     🟩 tmp/important.log   (lines: 1 => 2)
               🟩 tmp/access.log      (lines: 1 => 4)
-                
+
 Excludes:     🟥 tmp/unimportant.log (linea: 1 => 2 => 3)
               🟥 tmp/test.txt        (lines: 5)
 ```
@@ -346,7 +347,7 @@ Filter rules: + /projects/filter-paths/**
 
 Includes:     🟩 projects/filter-paths/experiment/.git./...
               🟩 projects/filter-paths/experiment/node_modules/...
-                
+
 Excludes:     🟥 projects/filter-paths/.git/...
               🟥 projects/filter-paths/node_modules/...
 ```

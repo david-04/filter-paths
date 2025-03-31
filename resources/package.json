@@ -1,0 +1,22 @@
+{
+    "author": "David Hofmann",
+    "bin": "./filter-paths.mjs",
+    "bugs": {
+        "url": "https://github.com/david-04/filter-paths/issues"
+    },
+    "description": "A command-line filter to include/exclude paths based on glob rules.",
+    "homepage": "https://github.com/david-04/filter-paths#readme",
+    "keywords": [
+        "glob",
+        "filter",
+        "file-filter"
+    ],
+    "license": "MIT",
+    "name": "@david-04/filter-paths",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/david-04/filter-paths.git"
+    },
+    "type": "module",
+    "version": "1.0.11"
+}
