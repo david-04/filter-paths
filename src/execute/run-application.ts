@@ -1,4 +1,5 @@
 import { applyRuleset } from "../rules/apply/apply-rules.js";
+import { normalizePath } from "../rules/helpers/normalize-path.js";
 import { stringifyRuleset } from "../rules/stringify/stringify-ruleset.js";
 import { Config } from "../types/config.js";
 import { Ruleset } from "../types/rules.js";
@@ -18,7 +19,7 @@ export async function runApplication(config: Config, ruleset: Ruleset) {
     } else {
         await stdin.forEachNonBlankLine(line => {
             if (applyRuleset.withoutAuditTrail(ruleset, line).includePath) {
-                stdout.print(line);
+                stdout.print(config.normalizeOutput ? normalizePath(line) : line);
             }
         });
     }

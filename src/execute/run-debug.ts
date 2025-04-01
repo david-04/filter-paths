@@ -1,6 +1,6 @@
 import { applyRuleset } from "../rules/apply/apply-rules.js";
 import { createGlobMatcher } from "../rules/helpers/create-glob.js";
-import { normalizePath } from "../rules/helpers/normalize-path.js";
+import { normalizeAndAnchorPath } from "../rules/helpers/normalize-path.js";
 import { stringifyAuditTrail } from "../rules/stringify/stringify-audit-trail.js";
 import { Config } from "../types/config.js";
 import { Ruleset } from "../types/rules.js";
@@ -60,7 +60,7 @@ export async function runDebugInteractiveWithRuleset(ruleset: Ruleset) {
 
 export async function runDebugInteractiveWithoutRuleset(config: Config) {
     for (let data = await promptGlobAndPath(config); data; data = await promptGlobAndPath(config, data)) {
-        const result = data.glob.matches(normalizePath(data.path)) ? "🟩 matches" : "🟥 does not match";
+        const result = data.glob.matches(normalizeAndAnchorPath(data.path)) ? "🟩 matches" : "🟥 does not match";
         stdout.print([`Result: ${result}`, "", stdout.DIVIDER, "", "Press return to re-use the previous input", ""]);
     }
 }

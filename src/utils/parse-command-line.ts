@@ -23,11 +23,15 @@ Usage: ${APP_NAME} [OPTIONS] [--] [FILTER_RULE_FILES...]
   -p | --print-rules ................... print the rules after before processing any input
   -h | --help .......................... display this help screen
   -m | --manual ........................ display the user manual
+  -n | --normalize-output .............. print matched paths in a normalized format
   -t | --test .......................... alias for --debug
   -v | --version ....................... display version information
 
-https://www.npmjs.com/package/filter-paths
+The --normalize-output option only impacts how matching paths are printed. All paths are
+normalized internally before any glob rules are evaluated.
+
 https://github.com/david-04/filter-paths
+https://www.npmjs.com/package/filter-paths
 
 `.trim();
 
@@ -71,7 +75,7 @@ function parseArgs(args: ReadonlyArray<string>): Config {
         caseSensitive: false,
         debug: false,
         files: new Array<string>(),
-        normalizePaths: true,
+        normalizeOutput: false,
         printRules: false,
         testFixtures: undefined,
     };
@@ -86,6 +90,8 @@ function parseArgs(args: ReadonlyArray<string>): Config {
             config.caseSensitive = true;
         } else if (["-d", "--debug"].includes(arg)) {
             config.debug = true;
+        } else if (["-n", "--normalize-output"].includes(arg)) {
+            config.normalizeOutput = true;
         } else if (["-p", "--print-rules"].includes(arg)) {
             config.printRules = true;
         } else if (arg.startsWith("-")) {

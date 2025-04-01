@@ -17,7 +17,7 @@ const DEFAULT_FILENAME = "test.filter";
 
 export namespace it {
     export type Options = {
-        readonly config?: Partial<Pick<Config, "caseSensitive" | "files" | "normalizePaths">>;
+        readonly config?: Partial<Pick<Config, "caseSensitive" | "files" | "normalizeOutput">>;
         readonly ruleset: string;
     } & ({ readonly paths: string } | { readonly failsToInitialize: Error | string | RegExp } | {});
 }
@@ -35,7 +35,7 @@ export function it(description: string, options: it.Options) {
             files: [firstFileName],
             printRules: false,
             testFixtures: fixtures,
-            normalizePaths: true,
+            normalizeOutput: true,
             ...options.config,
         };
         if ("paths" in options) {

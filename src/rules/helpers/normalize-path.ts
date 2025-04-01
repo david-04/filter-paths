@@ -2,7 +2,11 @@
 // Normalize a path
 //----------------------------------------------------------------------------------------------------------------------
 
-export function normalizePath(path: string) {
-    const normalized = path.trim().replaceAll("\\", "/").replace(/^\.\//g, "");
+export function normalizeAndAnchorPath(path: string) {
+    const normalized = normalizePath(path);
     return normalized.startsWith("/") ? normalized : `/${normalized}`;
+}
+
+export function normalizePath(path: string) {
+    return path.trim().replaceAll("\\", "/").replace(/^\.\//g, "");
 }

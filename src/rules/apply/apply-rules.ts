@@ -1,6 +1,6 @@
 import { MatchStatus, OnGlobEvaluated, Result } from "../../types/result.js";
 import { Rule, Rules, Ruleset } from "../../types/rules.js";
-import { normalizePath } from "../helpers/normalize-path.js";
+import { normalizeAndAnchorPath } from "../helpers/normalize-path.js";
 import { isDirectoryScope, isFinal, isGoto, isImportFile, isInclude } from "../helpers/rule-type-utils.js";
 import { applyDirectoryScopeRule } from "./apply-directory-scope-rule.js";
 import { applyGotoRule } from "./apply-goto-rule.js";
@@ -29,10 +29,10 @@ export namespace applyRuleset {
     //------------------------------------------------------------------------------------------------------------------
 
     export function withAuditTrail(ruleset: Ruleset, path: string) {
-        const normalizedPath = normalizePath(path);
+        const normalizedPath = normalizeAndAnchorPath(path);
         const evaluatedRules = new Map<Rule, MatchStatus>();
         const result = applyRuleset(ruleset, normalizedPath, (rule, result) => evaluatedRules.set(rule, result));
-        return { ...result, evaluatedRules, normalizePath, path } as const;
+        return { ...result, evaluatedRules, path } as const;
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -40,7 +40,7 @@ export namespace applyRuleset {
     //------------------------------------------------------------------------------------------------------------------
 
     export function withoutAuditTrail(ruleset: Ruleset, path: string) {
-        return { ...applyRuleset(ruleset, normalizePath(path), () => {}), normalizePath } as const;
+        return applyRuleset(ruleset, normalizeAndAnchorPath(path), () => {});
     }
 }
 

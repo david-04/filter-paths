@@ -27,7 +27,7 @@ export function createGlob(
 
 function assembleGlob(parent: string | undefined, child: string) {
     if (parent) {
-        const separator = child.startsWith("/") || parent.endsWith("/") ? "" : "/";
+        const separator = parent.endsWith("/") || child.startsWith("/") ? "" : "/";
         return [parent, separator, child].join("");
     } else {
         return child;
