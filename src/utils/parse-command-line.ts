@@ -12,23 +12,26 @@ const APP_NAME = "filter-paths";
 
 const USAGE = `
 
-Filter file paths based on glob rules
+Filter paths based on glob rules
 
 Usage: ${APP_NAME} [OPTIONS] [--] [FILTER_RULE_FILES...]
 
 [OPTIONS]
 
-  -c | --case-sensitive ................ match case-sensitive (default: case-insensitive)
-  -d | --debug ......................... print which rules were evaluated for each path
-  -p | --print-rules ................... print the rules after before processing any input
-  -h | --help .......................... display this help screen
-  -m | --manual ........................ display the user manual
-  -n | --normalize-output .............. print matched paths in a normalized format
-  -t | --test .......................... alias for --debug
-  -v | --version ....................... display version information
+  -c | --case-sensitive ....... match globs case-sensitive
+  -d | --debug ................ print which rules were evaluated for each path
+  -p | --print-rules .......... print the filter rules
+  -h | --help ................. display this help screen
+  -m | --manual ............... display the user manual
+  -n | --normalize-output ..... print matched paths in a normalized format
+                                (this option only impacts the output and does
+                                not affect the matching; internally, all paths
+                                are normalized before any globs are evaluated)
+  -t | --test ................. alias for --debug
+  -v | --version .............. display the version number of ${APP_NAME}
 
-The --normalize-output option only impacts how matching paths are printed. All paths are
-normalized internally before any glob rules are evaluated.
+Use option --manual to display the user manual and learn about the filter rule
+file syntax, or view the manual online:
 
 https://github.com/david-04/filter-paths
 https://www.npmjs.com/package/filter-paths
