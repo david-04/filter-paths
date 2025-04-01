@@ -18,6 +18,10 @@ function __fp_assemble_release() {
         return 1
     fi
 
+    if [[ ! -e ../dist ]]; then
+        mkdir -p ../dist
+    fi
+
     cp "../${BUNDLE?}" ../dist/filter-paths.mjs
     cp ../README.md ../dist/README.md
     sed "s/\"version\"\\s*:\\s*\"[^\"]*\"/\"version\": \"$(get-version-number.sh)\"/g" ../resources/package.json >../dist/package.json

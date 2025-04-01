@@ -26,16 +26,25 @@ $(call lp.bundle.add, src/filter-paths.ts, build/bundler/filter-paths.js, sheban
 # Release
 #-----------------------------------------------------------------------------------------------------------------------
 
-$(call lp.help.add-target, release, ............ assemble the release )
+$(call lp.help.add-phony-target, release, ............ assemble the release)
 
 run release : $(LP_PREREQUISITE_TEST) $(LP_PREREQUISITE_BUNDLE)
 	. bin/assemble-release.sh
 
 #-----------------------------------------------------------------------------------------------------------------------
+# Publish
+#-----------------------------------------------------------------------------------------------------------------------
+
+$(call lp.help.add-phony-target, publish, ............ publish the package to npm)
+
+publish : ;
+	. bin/publish.sh
+
+#-----------------------------------------------------------------------------------------------------------------------
 # Clean
 #-----------------------------------------------------------------------------------------------------------------------
 
-$(call lp.clean.tsc-output)
+$(call lp.clean.files, build dist)
 
 #-----------------------------------------------------------------------------------------------------------------------
 include .launchpad/Makefile.footer
