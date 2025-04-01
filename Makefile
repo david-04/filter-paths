@@ -28,7 +28,7 @@ $(call lp.bundle.add, src/filter-paths.ts, build/bundler/filter-paths.js, sheban
 
 $(call lp.help.add-target, release, ............ assemble the release )
 
-release : $(LP_PREREQUISITE_TEST) $(LP_PREREQUISITE_BUNDLE)
+run release : $(LP_PREREQUISITE_TEST) $(LP_PREREQUISITE_BUNDLE)
 	. bin/assemble-release.sh
 
 #-----------------------------------------------------------------------------------------------------------------------
