@@ -55,7 +55,7 @@ export namespace parseImportFileRule {
     //------------------------------------------------------------------------------------------------------------------
 
     export function fromFile(config: Config, parent: Rule, source: Rule.Source, operator: string, data: string) {
-        const file = createFileDescriptor(isFile(parent.source) ? parent.source.file : undefined, data);
+        const file = createFileDescriptor(isFile(parent.source) ? parent.source.file : parent.source.argv, data);
         return parseImportFileRule({ config, file, parent, operator, source });
     }
 
