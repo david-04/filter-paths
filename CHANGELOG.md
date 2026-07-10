@@ -1,6 +1,6 @@
 # Change Log
 
-## [1.0.2](https://github.com/david-04/filter-paths/releases/tag/v1.0.1) (2026-07-10)
+## [1.0.2](https://github.com/david-04/filter-paths/releases/tag/v1.0.2) (2026-07-10)
 
 - Upgraded dependencies
 
