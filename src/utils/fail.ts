@@ -1,6 +1,6 @@
-import { exit } from "node:process";
 import { isFile } from "../rules/helpers/rule-type-utils.js";
 import { Rule } from "../types/rules.js";
+import { exit } from "node:process";
 
 const MAX_MESSAGE_LENGTH = 120;
 

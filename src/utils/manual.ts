@@ -243,7 +243,7 @@ export const MANUAL = [
     " * Globs must either start with a slash (/) or with a globstar (**/). This is   ", // NOSONAR
     "   enforced for readability purposes only. It makes it clearer if a glob can    ", // NOSONAR
     "   match only on root-level or anywhere in nested subdirectories.               ", // NOSONAR
-    " * Globs match \"hidden\" files and directories whose name starts with a dot (.). ", // NOSONAR
+    ' * Globs match "hidden" files and directories whose name starts with a dot (.). ', // NOSONAR
     " * Globs are case-insensitive by default. This can be changed via the           ", // NOSONAR
     "   command-line option --case-sensitive.                                        ", // NOSONAR
     " * Globs can't be negated by prepending an exclamation mark (!). Use include or ", // NOSONAR

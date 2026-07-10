@@ -1,5 +1,5 @@
-import { createInterface, Interface } from "node:readline";
 import { stdout } from "./stdout.js";
+import { createInterface, Interface } from "node:readline";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Utility functions to access stdin

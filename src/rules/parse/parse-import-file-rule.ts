@@ -1,4 +1,3 @@
-import { readFileSync } from "fs";
 import { Config } from "../../types/config.js";
 import { Rule } from "../../types/rules.js";
 import { fail } from "../../utils/fail.js";
@@ -8,6 +7,7 @@ import { isFile } from "../helpers/rule-type-utils.js";
 import { assertFileExists } from "../validate/file-exists.js";
 import { assertNoCyclicImports } from "../validate/no-cyclic-imports.js";
 import { parseRules } from "./parse-rules.js";
+import { readFileSync } from "fs";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Parse an "import file" rule
@@ -74,11 +74,7 @@ export namespace parseImportFileRule {
 //----------------------------------------------------------------------------------------------------------------------
 
 function getStringified(operator: string | undefined, file: Rule.Fragment.File): Rule.Fragment.Stringified {
-    return {
-        operator: operator ? `${operator}` : "",
-        original: file.original,
-        effective: file.resolved,
-    };
+    return { operator: operator ? `${operator}` : "", original: file.original, effective: file.resolved };
 }
 
 //----------------------------------------------------------------------------------------------------------------------

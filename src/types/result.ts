@@ -13,15 +13,9 @@ export namespace Result {
 
     export const { FINAL, GOTO } = Type;
 
-    export type Final = {
-        readonly includePath: boolean;
-        readonly type: Type.FINAL;
-    };
+    export type Final = { readonly includePath: boolean; readonly type: Type.FINAL };
 
-    export type Goto = {
-        readonly ruleToSkip: Rule;
-        readonly type: Type.GOTO;
-    };
+    export type Goto = { readonly ruleToSkip: Rule; readonly type: Type.GOTO };
 }
 
 export type Result = Result.Final | Result.Goto | undefined;

@@ -40,9 +40,5 @@ function toStringified(
     data: string,
     glob: Rule.Fragment.Glob
 ): Rule.Fragment.Stringified {
-    return {
-        operator: isInclude(type) ? "+" : "-",
-        original: data,
-        effective: glob.effective,
-    };
+    return { operator: isInclude(type) ? "+" : "-", original: data, effective: glob.effective };
 }

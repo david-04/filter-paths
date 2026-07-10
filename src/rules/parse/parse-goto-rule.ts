@@ -79,9 +79,5 @@ function getApplicableParents(file: Rule.Fragment.File, parent: Rule) {
 //----------------------------------------------------------------------------------------------------------------------
 
 function toStringified(original: string, glob: Rule.Fragment.Glob): Rule.Fragment.Stringified {
-    return {
-        operator: "<",
-        original,
-        effective: glob.effective,
-    };
+    return { operator: "<", original, effective: glob.effective };
 }

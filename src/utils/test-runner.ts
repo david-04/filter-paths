@@ -1,9 +1,9 @@
-import { crash, expect, tf } from "@david-04/typefinity-cli";
-import { fail } from "assert";
 import { applyRuleset } from "../rules/apply/apply-rules.js";
 import { loadRuleset } from "../rules/load/load-ruleset.js";
 import { Config } from "../types/config.js";
 import { Ruleset } from "../types/rules.js";
+import { crash, expect, tf } from "@david-04/typefinity-cli";
+import { fail } from "assert";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Constants

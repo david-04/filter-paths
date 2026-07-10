@@ -1,106 +1,58 @@
-import { describe } from "@david-04/typefinity-cli";
 import { it } from "../utils/test-runner.js";
+import { describe } from "@david-04/typefinity-cli";
 
 const GLOB_MUST_START_WITH_SLASH_OR_GLOBSTAR = /Each glob must either start with "\/" or "\*\*"/;
 const GLOBSTARS_MUST_BE_SEPARATED_WITH_SLASHES = /Globstars .* must be separated with slashes/;
 
 describe("picomatch", () => {
     describe("wildcard ?", () => {
-        it("does not match the empty string", {
-            ruleset: "+ /file?",
-            paths: "⛔ file",
-        });
+        it("does not match the empty string", { ruleset: "+ /file?", paths: "⛔ file" });
 
-        it("matches single characters", {
-            ruleset: "+ /file?",
-            paths: "✅ file1",
-        });
+        it("matches single characters", { ruleset: "+ /file?", paths: "✅ file1" });
 
-        it("matches dots", {
-            ruleset: "+ /file?txt",
-            paths: "✅ file.txt",
-        });
+        it("matches dots", { ruleset: "+ /file?txt", paths: "✅ file.txt" });
 
-        it("matches question marks", {
-            ruleset: "+ /file?",
-            paths: "✅ file?",
-        });
+        it("matches question marks", { ruleset: "+ /file?", paths: "✅ file?" });
 
-        it("does not match slashes", {
-            ruleset: "+ /dir?file.txt",
-            paths: "⛔ dir/file.txt",
-        });
+        it("does not match slashes", { ruleset: "+ /dir?file.txt", paths: "⛔ dir/file.txt" });
 
-        it("does not match multiple characters", {
-            ruleset: "+ /file?",
-            paths: "⛔ file.txt",
-        });
+        it("does not match multiple characters", { ruleset: "+ /file?", paths: "⛔ file.txt" });
     });
 
     describe("wildcard *", () => {
-        it("matches the empty string", {
-            ruleset: "+ /file*",
-            paths: "✅ file",
-        });
+        it("matches the empty string", { ruleset: "+ /file*", paths: "✅ file" });
 
-        it("matches a single character", {
-            ruleset: "+ /file*txt",
-            paths: "✅ file.txt",
-        });
+        it("matches a single character", { ruleset: "+ /file*txt", paths: "✅ file.txt" });
 
-        it("matches multiple characters", {
-            ruleset: "+ /file*txt",
-            paths: "✅ file-01.txt",
-        });
+        it("matches multiple characters", { ruleset: "+ /file*txt", paths: "✅ file-01.txt" });
 
-        it("does not match slashes", {
-            ruleset: "+ /dir*",
-            paths: "⛔ dir/file",
-        });
+        it("does not match slashes", { ruleset: "+ /dir*", paths: "⛔ dir/file" });
 
-        it("matches dot files", {
-            ruleset: "+ /*fig",
-            paths: "✅ .config",
-        });
+        it("matches dot files", { ruleset: "+ /*fig", paths: "✅ .config" });
     });
 
     describe("globstar (**)", () => {
         describe("matching behavior", () => {
-            it("matches the empty string", {
-                ruleset: "+ **/file.txt",
-                paths: "✅ file.txt",
-            });
+            it("matches the empty string", { ruleset: "+ **/file.txt", paths: "✅ file.txt" });
 
             it("matches any string (including slashes and dot files)", {
                 ruleset: "+ **/file.txt",
                 paths: "✅ root/parent/.child/file.txt",
             });
 
-            it("matches everything", {
-                ruleset: "+ **",
-                paths: "✅ root/parent/child/file.txt",
-            });
+            it("matches everything", { ruleset: "+ **", paths: "✅ root/parent/child/file.txt" });
 
             describe("when chained", () => {
-                it("matches the empty string", {
-                    ruleset: "+ **/**/file.txt",
-                    paths: "✅ file.txt",
-                });
+                it("matches the empty string", { ruleset: "+ **/**/file.txt", paths: "✅ file.txt" });
 
-                it("matches a single directory", {
-                    ruleset: "+ **/**/file.txt",
-                    paths: "✅ directory/file.txt",
-                });
+                it("matches a single directory", { ruleset: "+ **/**/file.txt", paths: "✅ directory/file.txt" });
 
                 it("matches multiple directories", {
                     ruleset: "+ **/**/file.txt",
                     paths: "✅ root/parent/child/file.txt",
                 });
 
-                it("matches everything", {
-                    ruleset: "+ **/**",
-                    paths: "✅ root/parent/child/file.txt",
-                });
+                it("matches everything", { ruleset: "+ **/**", paths: "✅ root/parent/child/file.txt" });
             });
         });
 
@@ -110,15 +62,9 @@ describe("picomatch", () => {
                 paths: "✅ root/parent/child/file.txt",
             });
 
-            it("can be anchored at the end", {
-                ruleset: "+ /root/**",
-                paths: "✅ root/parent/child/file.txt",
-            });
+            it("can be anchored at the end", { ruleset: "+ /root/**", paths: "✅ root/parent/child/file.txt" });
 
-            it("can occur in the middle", {
-                ruleset: "+ /root/**/file.txt",
-                paths: "✅ root/parent/child/file.txt",
-            });
+            it("can occur in the middle", { ruleset: "+ /root/**/file.txt", paths: "✅ root/parent/child/file.txt" });
 
             it("can't follow anything other than a path separator", {
                 ruleset: "+ /root**/file.txt",
@@ -142,15 +88,9 @@ describe("picomatch", () => {
                 `,
             });
 
-            it("does not match any non-given characters", {
-                ruleset: "+ /file-[12]",
-                paths: "⛔ file-3",
-            });
+            it("does not match any non-given characters", { ruleset: "+ /file-[12]", paths: "⛔ file-3" });
 
-            it("does not the empty string", {
-                ruleset: "+ /file-[12]",
-                paths: "⛔ file-",
-            });
+            it("does not the empty string", { ruleset: "+ /file-[12]", paths: "⛔ file-" });
 
             it("can include slashes", {
                 ruleset: "+ /file-[1/].txt",
@@ -252,15 +192,9 @@ describe("picomatch", () => {
     });
 
     describe("start of glob", () => {
-        it("globs can start with a slash", {
-            ruleset: `+ /*.ts`,
-            paths: "✅ /file.ts",
-        });
+        it("globs can start with a slash", { ruleset: `+ /*.ts`, paths: "✅ /file.ts" });
 
-        it("globs can start with a globstar", {
-            ruleset: `+ **/*.ts`,
-            paths: "✅ parent/child/file.ts",
-        });
+        it("globs can start with a globstar", { ruleset: `+ **/*.ts`, paths: "✅ parent/child/file.ts" });
 
         it("globs can't start with a wildcard (*)", {
             ruleset: `+ *.ts`,

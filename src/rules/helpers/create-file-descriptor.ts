@@ -1,6 +1,6 @@
-import { isAbsolute, join, normalize, resolve } from "node:path";
 import { Rule } from "../../types/rules.js";
 import { expandEnvironmentVariables } from "../../utils/environment-variables.js";
+import { isAbsolute, join, normalize, resolve } from "node:path";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Create a file descriptor

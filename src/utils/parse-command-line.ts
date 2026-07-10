@@ -1,8 +1,8 @@
-import { exit } from "node:process";
 import { Config } from "../types/config.js";
 import { fail } from "./fail.js";
 import { MANUAL } from "./manual.js";
 import { VERSION } from "./version.js";
+import { exit } from "node:process";
 
 const APP_NAME = "filter-paths";
 

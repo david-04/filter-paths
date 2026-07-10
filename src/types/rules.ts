@@ -9,10 +9,7 @@ export namespace Rule {
     //------------------------------------------------------------------------------------------------------------------
 
     export namespace Fragment {
-        export type DirectoryScope = {
-            readonly effective: string;
-            readonly original: string;
-        };
+        export type DirectoryScope = { readonly effective: string; readonly original: string };
 
         export type File = {
             readonly absolute: string;
@@ -27,11 +24,7 @@ export namespace Rule {
             readonly original: string;
         };
 
-        export type Stringified = {
-            readonly operator: string;
-            readonly effective: string;
-            readonly original: string;
-        };
+        export type Stringified = { readonly operator: string; readonly effective: string; readonly original: string };
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -48,10 +41,7 @@ export namespace Rule {
             readonly type: "file";
         };
 
-        export type Argv = {
-            readonly argv: Fragment.File;
-            readonly type: "argv";
-        };
+        export type Argv = { readonly argv: Fragment.File; readonly type: "argv" };
     }
 
     export type Source = Source.File | Source.Argv;
@@ -138,7 +128,4 @@ export type RulesToRender = ReadonlySet<Rule>;
 // The whole rule set
 //------------------------------------------------------------------------------------------------------------------
 
-export type Ruleset = {
-    readonly rules: Array<Rule>;
-    readonly unmatchedPathAction: Rule.Type.IncludeOrExclude;
-};
+export type Ruleset = { readonly rules: Array<Rule>; readonly unmatchedPathAction: Rule.Type.IncludeOrExclude };

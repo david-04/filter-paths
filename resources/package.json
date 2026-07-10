@@ -1,23 +1,23 @@
 {
-    "author": "David Hofmann",
-    "bin": "./filter-paths.mjs",
+    "name": "filter-paths",
+    "version": "0.0.0",
+    "description": "A command-line filter to include/exclude paths based on glob rules",
+    "keywords": [
+        "file-filter",
+        "filter",
+        "glob",
+        "wildcard"
+    ],
+    "homepage": "https://github.com/david-04/filter-paths#readme",
     "bugs": {
         "url": "https://github.com/david-04/filter-paths/issues"
     },
-    "description": "A command-line filter to include/exclude paths based on glob rules",
-    "homepage": "https://github.com/david-04/filter-paths#readme",
-    "keywords": [
-        "glob",
-        "filter",
-        "file-filter",
-        "wildcard"
-    ],
     "license": "MIT",
-    "name": "filter-paths",
+    "author": "David Hofmann",
     "repository": {
         "type": "git",
         "url": "https://github.com/david-04/filter-paths.git"
     },
-    "type": "module",
-    "version": "0.0.0"
+    "bin": "./filter-paths.mjs",
+    "type": "module"
 }

@@ -472,8 +472,8 @@ A `goto` rule works like the `goto` or `break` statement in programming language
 
 The `goto` rule is the one in line 4. It consists of two operators:
 
-+ The arrow (`<`) indicates the nesting of the rule (it's a child of `**/*important*` and a sibling of `**/*unimportant*`).
-+ The target (`|`) indicates the level to jump to. In this example, it will jump to the rule in line 5 because both lines' operators (`|` and `-`) have the same indentation level.
+- The arrow (`<`) indicates the nesting of the rule (it's a child of `**/*important*` and a sibling of `**/*unimportant*`).
+- The target (`|`) indicates the level to jump to. In this example, it will jump to the rule in line 5 because both lines' operators (`|` and `-`) have the same indentation level.
 
 When this rule set is applied to path `tmp/important-file`, the following happens:
 

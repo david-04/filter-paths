@@ -8,7 +8,7 @@ const REGEXP = /\${([^{}]+)}/;
 
 const PLACEHOLDER_REGEXP = {
     "start-of-string-only": new RegExp(REGEXP.source, "g"),
-    everywhere: new RegExp(`^${REGEXP.source}`),
+    "everywhere": new RegExp(`^${REGEXP.source}`),
 } as const;
 
 //----------------------------------------------------------------------------------------------------------------------

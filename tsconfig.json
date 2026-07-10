@@ -1,3 +1,1 @@
-{
-    "extends": "./.launchpad/tsconfig.default.json"
-}
+{ "extends": "./.launchpad/tsconfig.default.json" }
