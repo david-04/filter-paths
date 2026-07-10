@@ -135,10 +135,10 @@ lp.bundle : ;
 
 else ifeq "$(call lp.bundle.get-targets)" "" # .............................................. no bundles have been added
 
-$(call lp.fn.declare-phony-targets, bundle, lp.bundle)
+$(call lp.fn.declare-phony-targets, bundle, lp.bundle.error)
 
-lp.bundle :
-	$(error No bundles have been defined via lp.bundle.add
+lp.bundle.error :
+	$(error No bundles have been defined via lp.bundle.add)
 
 else # ........................................................................................... bundles are available
 
@@ -204,7 +204,7 @@ else # .........................................................................
 .PHONY: $(foreach name, $(call lp.uplift.get-phony-targets), lp.$(name))
 
 $(foreach name, $(call lp.uplift.get-phony-targets), lp.$(name)) : ;
-		$(call lp.uplift.get-command-with-hooks, Uplifting...)
+	$(call lp.uplift.get-command-with-hooks, Uplifting...)
 
 endif
 
@@ -247,3 +247,17 @@ $(foreach name, $(call lp.clean.get-phony-targets), lp.$(name)) : ;
     endif
 endif
 
+
+#-----------------------------------------------------------------------------------------------------------------------
+#
+#       ###    ##     ## ########  #######          #### ##     ## ########   #######  ########  ########
+#      ## ##   ##     ##    ##    ##     ##          ##  ###   ### ##     ## ##     ## ##     ##    ##
+#     ##   ##  ##     ##    ##    ##     ##          ##  #### #### ##     ## ##     ## ##     ##    ##
+#    ##     ## ##     ##    ##    ##     ## #######  ##  ## ### ## ########  ##     ## ########     ##
+#    ######### ##     ##    ##    ##     ##          ##  ##     ## ##        ##     ## ##   ##      ##
+#    ##     ## ##     ##    ##    ##     ##          ##  ##     ## ##        ##     ## ##    ##     ##
+#    ##     ##  #######     ##     #######          #### ##     ## ##         #######  ##     ##    ##
+#
+#-----------------------------------------------------------------------------------------------------------------------
+
+$(eval $(__LP_AUTO_IMPORT_RULES))

@@ -1,0 +1,182 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .:
+    dependencies:
+      '@types/node':
+        specifier: ^26.1.1
+        version: 26.1.1
+      '@types/picomatch':
+        specifier: ^4.0.3
+        version: 4.0.3
+      picomatch:
+        specifier: ^4.0.5
+        version: 4.0.5
+    devDependencies:
+      '@david-04/typefinity-cli':
+        specifier: ^0.0.4
+        version: 0.0.4
+      html-to-text:
+        specifier: ^10.0.0
+        version: 10.0.0
+      showdown:
+        specifier: ^2.1.0
+        version: 2.1.0
+
+packages:
+
+  '@david-04/typefinity-cli@0.0.4':
+    resolution: {integrity: sha512-0sm8kGtrxQAzwWFBV2fjMmIQ77mhJU860CW8kgQlQXbBnTTkhc6QZDP67RTP4PfvC4Wox3uAsjgXkgCutKyGww==}
+
+  '@selderee/plugin-htmlparser2@0.12.0':
+    resolution: {integrity: sha512-oELmoyA6ML9jDRMV3kgcMQFKxUfBU0yFVn6yTctVaLT5ygXnxH52I3TZEgV9EhXJC68/uFvE5Daj1/25c0Xa/A==}
+    peerDependencies:
+      selderee: ~0.12.0
+
+  '@types/node@26.1.1':
+    resolution: {integrity: sha512-nxAkRSVkN1Y0JC1W8ky/fTfkGsMmcrRsbx+3XoZE+rMOX71kLYTV7fLXpqud1GpbpP5TuffXFqfX7fH2GgZREw==}
+
+  '@types/picomatch@4.0.3':
+    resolution: {integrity: sha512-iG0T6+nYJ9FAPmx9SsUlnwcq1ZVRuCXcVEvWnntoPlrOpwtSTKNDC9uVAxTsC3PUvJ+99n4RpAcNgBbHX3JSnQ==}
+
+  commander@9.5.0:
+    resolution: {integrity: sha512-KRs7WVDKg86PWiuAqhDrAQnTXZKraVcCc6vFdL14qrZ/DcWwuRo7VoiYXalXO7S5GKpqYiVEwCbgFDfxNHKJBQ==}
+    engines: {node: ^12.20.0 || >=14}
+
+  deepmerge-ts@7.1.5:
+    resolution: {integrity: sha512-HOJkrhaYsweh+W+e74Yn7YStZOilkoPb6fycpwNLKzSPtruFs48nYis0zy5yJz1+ktUhHxoRDJ27RQAWLIJVJw==}
+    engines: {node: '>=16.0.0'}
+
+  dom-serializer@2.0.0:
+    resolution: {integrity: sha512-wIkAryiqt/nV5EQKqQpo3SToSOV9J0DnbJqwK7Wv/Trc92zIAYZ4FlMu+JPFW1DfGFt81ZTCGgDEabffXeLyJg==}
+
+  domelementtype@2.3.0:
+    resolution: {integrity: sha512-OLETBj6w0OsagBwdXnPdN0cnMfF9opN69co+7ZrbfPGrdpPVNBUj02spi6B1N7wChLQiPn4CSH/zJvXw56gmHw==}
+
+  domhandler@5.0.3:
+    resolution: {integrity: sha512-cgwlv/1iFQiFnU96XXgROh8xTeetsnJiDsTc7TYCLFd9+/WNkIqPTxiM/8pSd8VIrhXGTf1Ny1q1hquVqDJB5w==}
+    engines: {node: '>= 4'}
+
+  domutils@3.2.2:
+    resolution: {integrity: sha512-6kZKyUajlDuqlHKVX1w7gyslj9MPIXzIFiz/rGu35uC1wMi+kMhQwGhl4lt9unC9Vb9INnY9Z3/ZA3+FhASLaw==}
+
+  entities@4.5.0:
+    resolution: {integrity: sha512-V0hjH4dGPh9Ao5p0MoRY6BVqtwCjhz6vI5LT8AJ55H+4g9/4vbHx1I54fS0XuclLhDHArPQCiMjDxjaL8fPxhw==}
+    engines: {node: '>=0.12'}
+
+  entities@7.0.1:
+    resolution: {integrity: sha512-TWrgLOFUQTH994YUyl1yT4uyavY5nNB5muff+RtWaqNVCAK408b5ZnnbNAUEWLTCpum9w6arT70i1XdQ4UeOPA==}
+    engines: {node: '>=0.12'}
+
+  html-to-text@10.0.0:
+    resolution: {integrity: sha512-2OH59Gtprdczel+7Rxgpz9hGVJREaf8Lt1H4kZwWHpEn70VQKRuMNGsb2eDbwaTzrYzb0hheiOG1P7Dim0B4dQ==}
+    engines: {node: '>=20.19.0'}
+
+  htmlparser2@10.1.0:
+    resolution: {integrity: sha512-VTZkM9GWRAtEpveh7MSF6SjjrpNVNNVJfFup7xTY3UpFtm67foy9HDVXneLtFVt4pMz5kZtgNcvCniNFb1hlEQ==}
+
+  leac@0.7.0:
+    resolution: {integrity: sha512-qMrZeyEekgdRQ9o6a4NAB2EQZrv827GJdn1vnapwSJ90hWRB4TzUSunvacPkxQ2TnNqHNI1/zSt0hlo0crG8Jw==}
+
+  parseley@0.13.1:
+    resolution: {integrity: sha512-uNBJZzmb60l6p6VWLTmevizNAGnE0xoSf1n0B4q3ntegDNzcS68NRCcBDZTcyXHxt2XhBChsCuqj4M+nChvE/A==}
+
+  peberminta@0.10.0:
+    resolution: {integrity: sha512-80B2AsU+I4Qdb0ZAPSfe9UwvGzwkM37IKIFEvdS3D/3Ndgv2bsuJ0bfG1+iEYO+l7Gfd4EUJmuRyq7efLgRMzQ==}
+
+  picomatch@4.0.5:
+    resolution: {integrity: sha512-RvwwcruNjI1ncT5xRakeyS9Lf8lcItv34KD+aif+VH9kduAyfYBipGh12274xtenIPZ119/R9BdTBa8gAwSh0A==}
+    engines: {node: '>=12'}
+
+  selderee@0.12.0:
+    resolution: {integrity: sha512-b1YMh3+DHZp59DLna3qVwQ5iOla/nrI6mLBNW02XxU77M3046Df6VLkoaJyFz20VsGIG5kkp+FK0kg4K4HnUFw==}
+
+  showdown@2.1.0:
+    resolution: {integrity: sha512-/6NVYu4U819R2pUIk79n67SYgJHWCce0a5xTP979WbNp0FL9MN1I1QK662IDU1b6JzKTvmhgI7T7JYIxBi3kMQ==}
+    hasBin: true
+
+  undici-types@8.3.0:
+    resolution: {integrity: sha512-j375ScV60dom+YkPFIfTLcOiPxkN/buHz5GobjLhixFuANaNs3C9l4GmrWqejgXWJ7BbJcFYpTEUkS1Ge8bpZQ==}
+
+snapshots:
+
+  '@david-04/typefinity-cli@0.0.4': {}
+
+  '@selderee/plugin-htmlparser2@0.12.0(selderee@0.12.0)':
+    dependencies:
+      domelementtype: 2.3.0
+      domhandler: 5.0.3
+      selderee: 0.12.0
+
+  '@types/node@26.1.1':
+    dependencies:
+      undici-types: 8.3.0
+
+  '@types/picomatch@4.0.3': {}
+
+  commander@9.5.0: {}
+
+  deepmerge-ts@7.1.5: {}
+
+  dom-serializer@2.0.0:
+    dependencies:
+      domelementtype: 2.3.0
+      domhandler: 5.0.3
+      entities: 4.5.0
+
+  domelementtype@2.3.0: {}
+
+  domhandler@5.0.3:
+    dependencies:
+      domelementtype: 2.3.0
+
+  domutils@3.2.2:
+    dependencies:
+      dom-serializer: 2.0.0
+      domelementtype: 2.3.0
+      domhandler: 5.0.3
+
+  entities@4.5.0: {}
+
+  entities@7.0.1: {}
+
+  html-to-text@10.0.0:
+    dependencies:
+      '@selderee/plugin-htmlparser2': 0.12.0(selderee@0.12.0)
+      deepmerge-ts: 7.1.5
+      dom-serializer: 2.0.0
+      htmlparser2: 10.1.0
+      selderee: 0.12.0
+
+  htmlparser2@10.1.0:
+    dependencies:
+      domelementtype: 2.3.0
+      domhandler: 5.0.3
+      domutils: 3.2.2
+      entities: 7.0.1
+
+  leac@0.7.0: {}
+
+  parseley@0.13.1:
+    dependencies:
+      leac: 0.7.0
+      peberminta: 0.10.0
+
+  peberminta@0.10.0: {}
+
+  picomatch@4.0.5: {}
+
+  selderee@0.12.0:
+    dependencies:
+      parseley: 0.13.1
+
+  showdown@2.1.0:
+    dependencies:
+      commander: 9.5.0
+
+  undici-types@8.3.0: {}

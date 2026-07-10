@@ -1,8 +1,8 @@
-import picomatch from "picomatch";
 import { Config } from "../../types/config.js";
 import { Rule } from "../../types/rules.js";
 import { fail } from "../../utils/fail.js";
 import { assertGlobIsValid } from "../validate/valid-glob.js";
+import picomatch from "picomatch";
 
 //----------------------------------------------------------------------------------------------------------------------
 // Create a glob with a matcher
@@ -53,7 +53,6 @@ export function createGlobMatcher(config: Config, glob: string) {
         contains: false,
         debug: undefined,
         dot: true, // match file and directory names that start with a dot
-        failglob: true,
         fastpaths: true,
         flags: undefined,
         ignore: undefined,
@@ -66,9 +65,7 @@ export function createGlobMatcher(config: Config, glob: string) {
         noextglob: undefined,
         noglobstar: false,
         nonegate: true, // disallow negated globs that start with "!"
-        noquantifiers: false,
         posix: false,
-        posixSlashes: false,
         prepend: undefined,
         regex: false,
         strictBrackets: true,

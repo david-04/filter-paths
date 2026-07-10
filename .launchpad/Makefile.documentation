@@ -122,8 +122,9 @@ $(call lp.bundle.add,                                  # add a file to be bundle
            inline-sources                              #     - generate a source map and inline sources
            dts                                         #     - generate a bundled d.ts declaration file
            shebang                                     #     - prepend #!/usr/bin/env node to JavaScript bundle
+           exclude=package                             #     - don't bundle the given package (exclude= is repeatable)
        echo "js after-hook",                           # [3] command to run after bundling the js file
-	   echo "dts after-hook"                           # [4] command to run after bundling the d.ts file
+       echo "dts after-hook"                           # [4] command to run after bundling the d.ts file
  )
 
 $(call lp.bundle.add-extra-prerequisites , ...files  ) # add extra prerequisite files that should cause a re-bundle
@@ -234,3 +235,20 @@ $(call lp.run    , dir/js-or-ts-file ) ...arguments  # run a TypeScript source f
 $(call lp.run.js , out/my-app.js     ) ...arguments  # run a JavaScript file
 $(call lp.run.ts , src/my-app.ts     ) ...arguments  # run a TypeScript file (via ts-node)
 
+#-----------------------------------------------------------------------------------------------------------------------
+#
+#       ###    ##     ## ########  #######          #### ##     ## ########   #######  ########  ########
+#      ## ##   ##     ##    ##    ##     ##          ##  ###   ### ##     ## ##     ## ##     ##    ##
+#     ##   ##  ##     ##    ##    ##     ##          ##  #### #### ##     ## ##     ## ##     ##    ##
+#    ##     ## ##     ##    ##    ##     ## #######  ##  ## ### ## ########  ##     ## ########     ##
+#    ######### ##     ##    ##    ##     ##          ##  ##     ## ##        ##     ## ##   ##      ##
+#    ##     ## ##     ##    ##    ##     ##          ##  ##     ## ##        ##     ## ##    ##     ##
+#    ##     ##  #######     ##     #######          #### ##     ## ##         #######  ##     ##    ##
+#
+#-----------------------------------------------------------------------------------------------------------------------
+
+$(call lp.auto-import,                                # generate a file with "import" statements
+       src,                                           # directory containing the file to generate
+       rules.ts,                                      # the file to generate (auto-expands to src/rules.ts)
+       validation-rules/*.ts other-rules/*.ts         # wildcards relative to the base directory (auto-expands to
+)                                                     # src/validation-rules/*.ts and src/other-rules/*.ts)

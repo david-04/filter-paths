@@ -1,18 +1,18 @@
 {
     "dependencies": {
-        "@types/node": "^22.13.14",
-        "@types/picomatch": "^3.0.2",
-        "picomatch": "^4.0.2"
+        "@types/node": "^26.1.1",
+        "@types/picomatch": "^4.0.3",
+        "picomatch": "^4.0.5"
     },
     "name": "find-and-filter-files",
     "version": "0.0.0",
     "private": true,
     "license": "UNLICENSED",
     "type": "module",
-    "swpm": "npm",
+    "swpm": "pnpm",
     "devDependencies": {
-        "@david-04/typefinity-cli": "^0.0.3",
-        "html-to-text": "^9.0.5",
+        "@david-04/typefinity-cli": "^0.0.4",
+        "html-to-text": "^10.0.0",
         "showdown": "^2.1.0"
     }
 }

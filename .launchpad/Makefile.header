@@ -151,7 +151,7 @@ $(call lp.fn.config.validate-enum, LP_CFG_DTS_BUNDLER)
 LP_CFG_TEST_RUNNER_ENUMS="disabled" or "node"
 $(call lp.fn.config.validate-enum, LP_CFG_TEST_RUNNER)
 
-LP_CFG_FORMATTER_ENUMS="disabled", "biome" or "prettier"
+LP_CFG_FORMATTER_ENUMS="disabled", "biome", "oxfmt" or "prettier"
 $(call lp.fn.config.validate-enum, LP_CFG_FORMATTER)
 
 LP_CFG_PACKAGE_MANAGER_ENUMS="npm", "pnpm" or "yarn"
@@ -409,7 +409,7 @@ __LP_BUNDLE_DEFAULT_DTS_TARGETS         =
 __LP_BUNDLE_EFFECTIVE_DTS_TARGETS       =$(__LP_BUNDLE_DEFAULT_DTS_TARGETS)
 __LP_BUNDLE_COMMANDS                    =
 
-__LP_BUNDLE_ALLOWED_OPTIONS             =minify web cli sourcemap inline-sources esm cjs dts shebang
+__LP_BUNDLE_ALLOWED_OPTIONS             =minify web cli sourcemap inline-sources esm cjs dts shebang exclude=%
 
 # $1=target, $2=command, $3=after-hook
 define lp.bundle.create-rule
@@ -463,7 +463,14 @@ lp.bundle.get-js-command-esbuild        =esbuild "$(strip $(1))" \
                                                         $(3), \
                                                         shebang hashbang, \
                                                         "--banner:js=#!/usr/bin/env node" \
+                                                  ) \
+                                                 $(if $(value 3), \
+                                                      $(patsubst exclude=%,\
+                                                                 "--external:%",\
+                                                                 $(filter exclude=%,$(3))\
+                                                       ) \
                                                   )
+
 # $1=src, $2=target, $3=options
 lp.bundle.get-js-command-               =$(error lp.bundle.add can't be called when bundling is disabled)
 lp.bundle.get-js-command                =$(call lp.bundle.get-js-command-$(LP_CFG_BUNDLER),$(1),$(2),$(3))
@@ -547,8 +554,9 @@ LP_PREREQUISITE_BUNDLE_DTS              =$$(call lp.bundle.get-dts-targets)
 #
 #-----------------------------------------------------------------------------------------------------------------------
 
-__LP_FORMAT_EXTENSIONS_prettier         =ts tsx js jsx json html htm css less sass
-__LP_FORMAT_EXTENSIONS_biome            =ts tsx js jsx json # html htm css less sass
+__LP_FORMAT_EXTENSIONS_biome            =css gql graphql htm html js json jsonc json5 jsx                        ts tsx
+__LP_FORMAT_EXTENSIONS_oxfmt            =css gql graphql htm html js json jsonc json5 jsx less md      scss toml ts tsx yaml yml
+__LP_FORMAT_EXTENSIONS_prettier         =css             htm html js json             jsx less md sass           ts tsx
 __LP_FORMAT_EXTENSIONS                  =$(__LP_FORMAT_EXTENSIONS_$(LP_CFG_FORMATTER))
 
 __LP_FORMAT_ENABLED                     =$(if $(LP_CFG_FORMATTER),true)
@@ -561,8 +569,9 @@ __LP_FORMAT_DEFAULT_BEFORE_HOOKS        =
 __LP_FORMAT_EFFECTIVE_BEFORE_HOOKS      =$(__LP_FORMAT_DEFAULT_BEFORE_HOOKS)
 __LP_FORMAT_DEFAULT_AFTER_HOOKS         =
 __LP_FORMAT_EFFECTIVE_AFTER_HOOKS       =$(__LP_FORMAT_DEFAULT_AFTER_HOOKS)
-__LP_FORMAT_DEFAULT_COMMAND_prettier    =prettier --write --ignore-unknown $(patsubst %, '%', $(call lp.format.get-paths))
 __LP_FORMAT_DEFAULT_COMMAND_biome       =biome format --write --files-ignore-unknown=true $(patsubst %, '%', $(call lp.format.get-paths))
+__LP_FORMAT_DEFAULT_COMMAND_oxfmt       =oxfmt -c oxfmt.config.mjs --write $(patsubst %, '%', $(call lp.format.get-paths))
+__LP_FORMAT_DEFAULT_COMMAND_prettier    =prettier --write --ignore-unknown $(patsubst %, '%', $(call lp.format.get-paths))
 __LP_FORMAT_DEFAULT_COMMAND             =$(__LP_FORMAT_DEFAULT_COMMAND_$(LP_CFG_FORMATTER))
 __LP_FORMAT_EFFECTIVE_COMMAND           =$(if $(__LP_FORMAT_EFFECTIVE_PATHS),$(call lp.format.get-default-command))
 __LP_FORMAT_DEFAULT_PATHS               =$(filter-out .launchpad .vscode .yarn node_modules $(LP_CFG_TSC_OUT_DIR), \
@@ -726,3 +735,45 @@ lp.run                                  =$(if $(filter %.ts,$(lastword $(strip $
                                               $(call lp.run.js,$(1)) \
                                           )
 
+#-----------------------------------------------------------------------------------------------------------------------
+#
+#       ###    ##     ## ########  #######          #### ##     ## ########   #######  ########  ########
+#      ## ##   ##     ##    ##    ##     ##          ##  ###   ### ##     ## ##     ## ##     ##    ##
+#     ##   ##  ##     ##    ##    ##     ##          ##  #### #### ##     ## ##     ## ##     ##    ##
+#    ##     ## ##     ##    ##    ##     ## #######  ##  ## ### ## ########  ##     ## ########     ##
+#    ######### ##     ##    ##    ##     ##          ##  ##     ## ##        ##     ## ##   ##      ##
+#    ##     ## ##     ##    ##    ##     ##          ##  ##     ## ##        ##     ## ##    ##     ##
+#    ##     ##  #######     ##     #######          #### ##     ## ##         #######  ##     ##    ##
+#
+#-----------------------------------------------------------------------------------------------------------------------
+
+__LP_AUTO_IMPORT_RULES               =
+
+lp.auto-import.get-base-directory    =$(strip $(patsubst ./%,%,$(if $(patsubst %/,%,$(strip $(1))),$(patsubst %/,%,$(strip $(1)))/)))
+lp.auto-import.normalize-extension   =$(strip $(if $(patsubst esm,,$(LP_CFG_MODULE_SYSTEM)),$(1),$(patsubst %.ts,%.js, $(patsubst %.tsx,%.js,$(1)))))
+lp.auto-import.get-import-statement  =import "./$(call lp.auto-import.normalize-extension,$(patsubst $1%,%,$(2)))";
+lp.auto-import.get-import-statements =$(foreach FILE,$(2),$(call lp.auto-import.get-import-statement,$(strip $(1)),$(FILE)))
+
+define lp.auto-import.define-rule
+$(1)$(2) : $$(sort $$(wildcard $$(foreach GLOB,$(3),$(1)$$(GLOB))))
+	$$(info Updating $(1)$(2)...)
+	$$(file > $(1)$(2),$$(subst ; import,;$$(__LP_LINE_BREAK)import,$$(call lp.auto-import.get-import-statements, \
+        $(strip $(1)),\
+        $$(sort $$(wildcard $$(foreach GLOB,$(3),$(1)$$(GLOB)))) \
+    )))
+$(__LP_LINE_BREAK)
+endef
+
+lp.auto-import =$(call lp.fn.assert.param-not-empty, lp.auto-import, $(if $(value 1), $(1))) \
+                $(call lp.fn.assert.param-not-empty, lp.auto-import, $(if $(value 2), $(2))) \
+                $(call lp.fn.assert.param-not-empty, lp.auto-import, $(if $(value 3), $(3))) \
+                $(call lp.fn.var.append, __LP_AUTO_IMPORT_RULES, \
+                    $$(call lp.auto-import.define-rule,$(strip \
+                        $(call lp.auto-import.get-base-directory,$(1)) \
+                    ),$(strip \
+                        $(patsubst ./%,%,$(2)) \
+                    ),$(strip \
+                        $(3) \
+                    )) \
+                ) \
+                $(call lp.tsc.add-extra-prerequisites, $(call lp.auto-import.get-base-directory, $(1))$(strip $(2)))
